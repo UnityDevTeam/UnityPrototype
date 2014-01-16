@@ -2,18 +2,27 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
-public class MainScript : MonoBehaviour {
+public class MainScript : MonoBehaviour
+{
 	public int molSize = 20;
 	public float minVelocity = 5;
 	public float maxVelocity = 20;
 	public Vector3 extentBox = new Vector3(10,10,10);
 	public Vector3 minBox = new Vector3(-5,-5,-5);
-	private GameObject[] molecules;
 	public string[] pdbPrefabs = {"Assets/testMol.prefab"};
-	//public GameObject prefab;
+
+	private GameObject[] molecules;
+	private bool initialized = false;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		if (!initialized) SpawnObjects ();
+
+	}
+
+	public void SpawnObjects()
+	{
 		molecules = new GameObject[molSize];
 		for (var i=0; i<molSize; i++)
 		{
@@ -27,16 +36,17 @@ public class MainScript : MonoBehaviour {
 			GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 			mol.transform.parent = transform;
 			mol.transform.localPosition = position;
-			//mol.GetComponent<BoidFlocking>().SetController (gameObject);
 			mol.GetComponent<MolScript>().minVelocity = minVelocity;
 			mol.GetComponent<MolScript>().maxVelocity = maxVelocity;
 			molecules[i] = mol;
 		}
 
+		initialized = true;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 		print ("Hello world");
 	}
 }
