@@ -12,6 +12,14 @@ public class MainScriptEditor : Editor
 
 		if (GUILayout.Button ("Spawn objects"))
 		{
+			int childs = myMainScript.transform.childCount;
+			
+			for (int i = childs - 1; i >= 0; i--)
+			{
+				GameObject.DestroyImmediate(myMainScript.transform.GetChild(i).gameObject);	
+			}
+
+
 			myMainScript.SpawnObjects();
 		}
 	}
