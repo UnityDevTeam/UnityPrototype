@@ -9,7 +9,7 @@ public class MainScript : MonoBehaviour
 	public float maxVelocity = 20;
 	public Vector3 extentBox = new Vector3(10,10,10);
 	public Vector3 minBox = new Vector3(-5,-5,-5);
-	public string[] pdbPrefabs = {"Assets/testMol.prefab","Assets/adp.prefab"};
+	public string[] pdbPrefabs = {"Assets/Prefabs/testMol.prefab","Assets/Prefabs/adp.prefab"};
 
 	private GameObject[] molecules;
 	private bool initialized = false;
@@ -47,6 +47,6 @@ public class MainScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		print ("Hello world");
+		//print ("Hello world");
 	}
 }
