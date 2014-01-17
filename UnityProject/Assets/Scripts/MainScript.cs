@@ -1,19 +1,17 @@
 using UnityEngine;
-using UnityEditor;
 using System.Collections;
 
 public class MainScript : MonoBehaviour
 {
-	public int molCount = 20;
-
-	public float minVelocity = 5;
-	public float maxVelocity = 20;
+	public int molCount = 1000;
 
 	public Vector3 extentBox = new Vector3(100, 100, 100);
-	public string[] pdbPrefabs = {"Assets/Prefabs/MolObject.prefab"};
 
 	private GameObject[] molecules;
 	private bool initialized = false;
+
+	private Mesh mesh;
+	private Material material;
 
 	// Use this for initialization
 	void Start ()
@@ -26,29 +24,38 @@ public class MainScript : MonoBehaviour
 
 	public void SpawnObjects()
 	{
-		if (initialized) 
-		{
-			foreach(GameObject obj in molecules)
-			{
-				DestroyImmediate(obj);
-			}				
-		}
+//		if (initialized) 
+//		{
+//			foreach(GameObject obj in molecules)
+//			{
+//				DestroyImmediate(obj);
+//			}				
+//		}
 
 		molecules = new GameObject[molCount];
+		Vector3[] vertices = new Vector3[molCount];
+		int[] indices = new int[molCount];
 
 		for (var i=0; i < molCount; i++)
 		{
 			Vector3 position = new Vector3 ( (Random.value - 0.5f) * extentBox.x, (Random.value - 0.5f) * extentBox.y, (Random.value - 0.5f) * extentBox.z );
 
-			GameObject prefab = AssetDatabase.LoadAssetAtPath("Assets/Prefabs/MolObject.prefab", typeof(GameObject)) as GameObject;
-			GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
+			indices[i] = i;
+			vertices[i] = position;
 
-			mol.transform.parent = transform;
-			mol.transform.localPosition = position;
-//			mol.GetComponent<MolScript>().minVelocity = minVelocity;
-//			mol.GetComponent<MolScript>().maxVelocity = maxVelocity;
-			molecules[i] = mol;
+//			GameObject mol = Instantiate(Resources.Load<GameObject>("MolObject"), transform.position, transform.rotation) as GameObject;
+//			mol.transform.parent = transform;
+//			mol.transform.localPosition = position;
+//			molecules[i] = mol;
 		}
+
+		mesh = new Mesh();
+		mesh.vertices = vertices;
+		mesh.SetIndices(indices, MeshTopology.Points, 0);
+
+		material = new Material(Shader.Find("Custom/MolShader"));
+		material.SetColor("_Color", Color.red);
+		material.SetFloat("_SpriteSize", 10);
 
 		initialized = true;
 	}
@@ -56,6 +63,8 @@ public class MainScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		//print ("Hello world");
+		//print ("Update");
+
+		Graphics.DrawMesh(mesh, Vector3.zero, Quaternion.identity, material, 0);
 	}
 }

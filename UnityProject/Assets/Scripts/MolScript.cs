@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MolScript : MonoBehaviour {
-	private bool inited = false;
-	public float minVelocity;
-	public float maxVelocity;
-	private float randomness;
+public class MolScript : MonoBehaviour 
+{
+	//private bool initialized = false;
+	//public float minVelocity;
+	//public float maxVelocity;
+	//private float randomness;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -14,7 +16,7 @@ public class MolScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-//		rigidbody.velocity = 0.1f*Calc ();// * Time.deltaTime;
+		//		rigidbody.velocity = 0.1f*Calc ();// * Time.deltaTime;
 //		
 //		// enforce minimum and maximum speeds for the boids
 //		float speed = rigidbody.velocity.magnitude;
@@ -26,7 +28,7 @@ public class MolScript : MonoBehaviour {
 //		{
 //			rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 //		}
-//		Debug.Log (rigidbody.velocity);	
+//		
 	}
 
 	private Vector3 Calc ()

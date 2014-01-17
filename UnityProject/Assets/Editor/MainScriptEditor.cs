@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 [CustomEditor(typeof(MainScript))]
 public class MainScriptEditor : Editor
 {
-
-
 	public override void OnInspectorGUI()
 	{
 		DrawDefaultInspector();
@@ -18,19 +19,19 @@ public class MainScriptEditor : Editor
 		}
 	}
 	
-	private void CallbackFunction()
-    {
-		MainScript myMainScript = (MainScript)target;
-        //myMainScript.Update();
-    }
- 
-    void OnEnable()
-    {
-        EditorApplication.update += CallbackFunction;
-    }
- 
-    void OnDisable()
-    {
-        EditorApplication.update -= CallbackFunction;
-    }
+//	private void CallbackFunction()
+//    {
+//		//MainScript myMainScript = (MainScript)target;
+//        //myMainScript.Update();
+//    }
+// 
+//    void OnEnable()
+//    {
+//        EditorApplication.update += CallbackFunction;
+//    }
+// 
+//    void OnDisable()
+//    {
+//        EditorApplication.update -= CallbackFunction;
+//    }
 }
