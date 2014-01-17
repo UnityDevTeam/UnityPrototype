@@ -7,10 +7,7 @@ public class LSystem : MonoBehaviour
 	public string _axiom               = "F";
 	//public string _rule                = "F=(1)F[-&^F][^++&F]||F[--&^F][+&F]";
 	public string _rule                = "F=(1)FF";
-	public float  _angle               = 22.5f;
 	public int    _numberOfDerivations = 3;
-	public float  _segmentWidth        = 0.1f;
-	public float  _segmentHeight       = 1f;
 
 	public Rules _rules = new Rules ();
 	public string _moduleString;
@@ -23,14 +20,11 @@ public class LSystem : MonoBehaviour
 		public Quaternion direction;
 		public Quaternion idefault;
 		public Vector3    position;
-		public Vector3    step;
-
 		
 		public Turtle (Turtle other)
 		{
 			this.direction = other.direction;
 			this.position  = other.position;
-			this.step      = other.step;
 			this.idefault  = other.idefault;
 		}
 		
@@ -38,28 +32,7 @@ public class LSystem : MonoBehaviour
 		{
 			this.direction = direction;
 			this.position  = position;
-			this.step      = step;
 			this.idefault  = Quaternion.Inverse(this.direction);
-		}
-		
-		public void Forward ()
-		{
-			position += direction * step;
-		}
-		
-		public void RotateX (float angle)
-		{
-			direction *= Quaternion.Euler (angle, 0, 0);
-		}
-		
-		public void RotateY (float angle)
-		{
-			direction *= Quaternion.Euler (0, angle, 0);
-		}
-		
-		public void RotateZ (float angle)
-		{
-			direction *= Quaternion.Euler (0, 0, angle);
 		}
 	}
 	
@@ -96,7 +69,7 @@ public class LSystem : MonoBehaviour
 		
 	}
 
-	void addObject(Turtle turtle, GameObject gameObject)
+	void addObject(ref Turtle turtle, GameObject gameObject)
 	{
 		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[0];
 		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[0]; 
@@ -122,11 +95,7 @@ public class LSystem : MonoBehaviour
 	{
 		DestroyOld();
 		
-		Mesh currentMesh = new Mesh ();
-		
-		int chunkCount = 0;
-		
-		Turtle current = new Turtle (Quaternion.identity, Vector3.zero, new Vector3 (0, _segmentHeight, 0));
+		Turtle current = new Turtle (Quaternion.identity, Vector3.zero, new Vector3 (0, 0, 0));
 		Stack<Turtle> stack = new Stack<Turtle> ();
 
 		for (int i = 0; i < _moduleString.Length; i++)
@@ -135,36 +104,7 @@ public class LSystem : MonoBehaviour
 			
 			if (module == "F")
 			{
-				addObject(current, molecule_objects[molecule_names.IndexOf(module)]);
-				current.Forward ();
-			}
-			else if (module == "+")
-			{
-				current.RotateZ (_angle);
-			}
-			else if (module == "-")
-			{
-				current.RotateZ (-_angle);
-			}
-			else if (module == "&")
-			{
-				current.RotateX (_angle);
-			}
-			else if (module == "^")
-			{
-				current.RotateX (-_angle);
-			}
-			else if (module == "\\")
-			{
-				current.RotateY (_angle);
-			}
-			else if (module == "/")
-			{
-				current.RotateY (-_angle);
-			}
-			else if (module == "|")
-			{
-				current.RotateZ (180);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
 			}
 			else if (module == "[")
 			{
