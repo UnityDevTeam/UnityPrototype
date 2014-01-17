@@ -4,13 +4,12 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public string _axiom               = "F";
-	//public string _rule                = "F=(1)F[-&^F][^++&F]||F[--&^F][+&F]";
-	public string _rule                = "F=(1)FF";
-	public int    _numberOfDerivations = 3;
+	public string   _axiom               = "F";
+	public string[] _stringRules         = {"F=(0.97)fF", "F=(0.03)f[F]F"};
+	public int      _numberOfDerivations = 3;
 
-	public Rules _rules = new Rules ();
-	public string _moduleString;
+	public Rules    _rules = new Rules ();
+	public string   _moduleString        = "fffffffffff[ffffffffffffF]ffffffffffffffF";
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
@@ -38,10 +37,13 @@ public class LSystem : MonoBehaviour
 	
 	void Start ()
 	{
-		Rule rule = Rule.Build (_rule);
-		_rules.Add (rule);
+		for (int i = 0; i < _stringRules.Length; i++)
+		{
+			Rule rule = Rule.Build (_stringRules[i]);
+			_rules.Add (rule);
+		}
 
-		Derive ();
+		//Derive ();
 		Interpret ();
 	}
 		
@@ -69,18 +71,18 @@ public class LSystem : MonoBehaviour
 		
 	}
 
-	void addObject(ref Turtle turtle, GameObject gameObject)
+	void addObject(ref Turtle turtle, GameObject gameObject, int bindingIndex)
 	{
-		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[0];
-		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[0]; 
+		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
+		mol.transform.parent = transform;
+
+		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[bindingIndex];
+		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[bindingIndex]; 
 
 		turtle.position  = turtle.position + turtle.direction * move;
 		turtle.direction = Quaternion.Euler (rotate.x, rotate.y, rotate.z) * (turtle.idefault * turtle.direction);
-
-		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
-		mol.transform.parent = transform;
 	}
-		
+
 	void DestroyOld()
 	{
 		int childs = transform.childCount;
@@ -104,12 +106,17 @@ public class LSystem : MonoBehaviour
 			
 			if (module == "F")
 			{
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
+			}
+			if (module == "f")
+			{
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
 			}
 			else if (module == "[")
 			{
 				stack.Push (current);
 				current = new Turtle (current);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf("F")], 1);
 			}
 			else if (module == "]")
 			{

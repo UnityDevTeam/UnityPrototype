@@ -39,11 +39,13 @@ public class Rules
 			return list [0];
 		}
 		
-		float chance = UnityEngine.Random.value;
+		float chance      = UnityEngine.Random.value;
+		float probability = 0.0f;
 		
 		foreach (Rule rule in list)
 		{
-			if (rule.probability <= chance)
+			probability += rule.probability;
+			if (probability >= chance)
 			{
 				return rule;
 			}
