@@ -5,35 +5,41 @@ using System.Collections.Generic;
 public class LSystem : MonoBehaviour
 {	
 	public string _axiom               = "F";
-	public string _rule                = "F=(1)F[-&^F][^++&F]||F[--&^F][+&F]";
+	//public string _rule                = "F=(1)F[-&^F][^++&F]||F[--&^F][+&F]";
+	public string _rule                = "F=(1)FF";
 	public float  _angle               = 22.5f;
 	public int    _numberOfDerivations = 3;
-	public float  _segmentWidth         = 0.1f;
-	public float  _segmentHeight        = 1f;
+	public float  _segmentWidth        = 0.1f;
+	public float  _segmentHeight       = 1f;
 
 	public Rules _rules = new Rules ();
 	public string _moduleString;
 
-	public GameObject molecule;
+	[HideInInspector] public List<String>     molecule_names;
+	[HideInInspector] public List<GameObject> molecule_objects;
 	
 	private struct Turtle
 	{
 		public Quaternion direction;
-		public Vector3 position;
-		public Vector3 step;
+		public Quaternion idefault;
+		public Vector3    position;
+		public Vector3    step;
+
 		
 		public Turtle (Turtle other)
 		{
 			this.direction = other.direction;
-			this.position = other.position;
-			this.step = other.step;
+			this.position  = other.position;
+			this.step      = other.step;
+			this.idefault  = other.idefault;
 		}
 		
 		public Turtle (Quaternion direction, Vector3 position, Vector3 step)
 		{
 			this.direction = direction;
-			this.position = position;
-			this.step = step;
+			this.position  = position;
+			this.step      = step;
+			this.idefault  = Quaternion.Inverse(this.direction);
 		}
 		
 		public void Forward ()
@@ -90,14 +96,17 @@ public class LSystem : MonoBehaviour
 		
 	}
 
-	void addObject(Turtle turtle)
+	void addObject(Turtle turtle, GameObject gameObject)
 	{
-		Vector3 offset = turtle.position - (turtle.direction * (new Vector3 (_segmentWidth, _segmentHeight, 0) * 0.5f));
+		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[0];
+		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[0]; 
 
-		GameObject mol = Instantiate(molecule, offset, turtle.direction) as GameObject;
+		turtle.position  = turtle.position + turtle.direction * move;
+		turtle.direction = Quaternion.Euler (rotate.x, rotate.y, rotate.z) * (turtle.idefault * turtle.direction);
+
+		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
 		mol.transform.parent = transform;
 	}
-
 		
 	void DestroyOld()
 	{
@@ -126,8 +135,8 @@ public class LSystem : MonoBehaviour
 			
 			if (module == "F")
 			{
+				addObject(current, molecule_objects[molecule_names.IndexOf(module)]);
 				current.Forward ();
-				addObject(current);
 			}
 			else if (module == "+")
 			{

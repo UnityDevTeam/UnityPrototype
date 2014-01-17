@@ -3,13 +3,17 @@ using System.Collections;
 
 public class MolScript : MonoBehaviour
 {
-	private bool inited = false;
-	public float minVelocity;
-	public float maxVelocity;
+	private bool  inited = false;
+	public float  minVelocity;
+	public float  maxVelocity;
 	private float randomness;
 
+	public Vector3[] bindingPositions;
+	public Vector3[] bindingOrientations;
+
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 	
 	}
 	
