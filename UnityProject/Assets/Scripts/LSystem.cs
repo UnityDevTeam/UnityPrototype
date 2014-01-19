@@ -4,34 +4,31 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public string   _axiom               = "F";
-	public string[] _stringRules         = {"F=(0.97)fF", "F=(0.03)f[F]F"};
-	public int      _numberOfDerivations = 3;
-
-	public Rules    _rules = new Rules ();
-	public string   _moduleString        = "f[fffffF]ffffF";
+	public string   _axiom        = "F";
+	public string[] _stringRules  = {"F=(0.97)fF", "F=(0.03)f[F]F"};
+	public string   _moduleString = "";
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
+
+	private float mTime = 0.0f;
+	private Rules _rules = new Rules ();
 	
 	private struct Turtle
 	{
 		public Quaternion direction;
-		public Quaternion idefault;
 		public Vector3    position;
 		
 		public Turtle (Turtle other)
 		{
 			this.direction = other.direction;
 			this.position  = other.position;
-			this.idefault  = other.idefault;
 		}
 		
-		public Turtle (Quaternion direction, Vector3 position, Vector3 step)
+		public Turtle (Quaternion direction, Vector3 position)
 		{
 			this.direction = direction;
 			this.position  = position;
-			this.idefault  = Quaternion.Inverse(this.direction);
 		}
 	}
 	
@@ -43,32 +40,26 @@ public class LSystem : MonoBehaviour
 			_rules.Add (rule);
 		}
 
-		//Derive ();
-		Interpret ();
+		_moduleString = _axiom;
 	}
 		
 	void Derive ()
 	{
-		_moduleString = _axiom;
-		for (int i = 0; i < Math.Max(1, _numberOfDerivations); i++)
+		string newModuleString = "";
+		for (int j = 0; j < _moduleString.Length; j++)
 		{
-			string newModuleString = "";
-			for (int j = 0; j < _moduleString.Length; j++)
+			string module = _moduleString [j] + "";
+			
+			if (!_rules.Contains (module))
 			{
-				string module = _moduleString [j] + "";
-				
-				if (!_rules.Contains (module))
-				{
-					newModuleString += module;
-					continue;
-				}
-				
-				Rule rule = _rules.Get (module);
-				newModuleString += rule.successor;
+				newModuleString += module;
+				continue;
 			}
-			_moduleString = newModuleString;
+			
+			Rule rule = _rules.Get (module);
+			newModuleString += rule.successor;
 		}
-		
+		_moduleString = newModuleString;
 	}
 
 	void updateTurtle(ref Turtle turtle, GameObject gameObject, int bindingIndex)
@@ -83,6 +74,7 @@ public class LSystem : MonoBehaviour
 	void addObject(ref Turtle turtle, GameObject gameObject)
 	{
 		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
+		mol.GetComponent<Rigidbody> ().isKinematic = false;
 		mol.transform.parent = transform;
 	}
 
@@ -100,7 +92,7 @@ public class LSystem : MonoBehaviour
 	{
 		DestroyOld();
 		
-		Turtle current = new Turtle (Quaternion.identity, Vector3.zero, new Vector3 (0, 0, 0));
+		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
 		Stack<Turtle> stack = new Stack<Turtle> ();
 
 		for (int i = 0; i < _moduleString.Length; i++)
@@ -134,6 +126,13 @@ public class LSystem : MonoBehaviour
 	
 	void Update ()
 	{
+		mTime += Time.deltaTime;
+		if (mTime > 1.0f)
+		{
+			Derive();
+			Interpret();
+			mTime = 0.0f;
+		}
 
 	}
 }
