@@ -74,7 +74,7 @@ public class LSystem : MonoBehaviour
 	void addObject(ref Turtle turtle, GameObject gameObject)
 	{
 		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
-		mol.GetComponent<Rigidbody> ().isKinematic = false;
+		mol.GetComponent<Rigidbody> ().isKinematic = true;
 		mol.transform.parent = transform;
 	}
 

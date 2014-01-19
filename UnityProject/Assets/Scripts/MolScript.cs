@@ -3,9 +3,11 @@ using System.Collections;
 
 public class MolScript : MonoBehaviour
 {
-	public float  minVelocity;
-	public float  maxVelocity;
-	private float randomness;
+	public float     minVelocity;
+	public float     maxVelocity;
+
+	public float     bindingRadius = 5.0f;
+	public float     bindingAttraction = 10.0f;
 
 	public Vector3[] bindingPositions;
 	public Vector3[] bindingOrientations;
@@ -19,10 +21,9 @@ public class MolScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (rigidbody.isKinematic)
+		if (!rigidbody.isKinematic)
 		{
 			rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, RandomForce(), 25 * Time.deltaTime);
-			Debug.Log (rigidbody.velocity);
 			
 			// enforce minimum and maximum speeds
 			float speed = rigidbody.velocity.magnitude;
@@ -34,6 +35,20 @@ public class MolScript : MonoBehaviour
 			{
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
+
+			//Attract to middle
+			if(transform.position.magnitude < bindingRadius)
+			{
+				rigidbody.AddForce(-transform.position - rigidbody.velocity * bindingAttraction);
+			}
+
+			if(transform.position.magnitude < 1.25f)
+			{
+				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, transform.position.magnitude - 0.25f);
+			}
+
+			if(transform.position.magnitude < 0.25f)
+				rigidbody.isKinematic = true;
 		}
 	}
 
