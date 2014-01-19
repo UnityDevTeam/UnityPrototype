@@ -9,7 +9,7 @@ public class LSystem : MonoBehaviour
 	public int      _numberOfDerivations = 3;
 
 	public Rules    _rules = new Rules ();
-	public string   _moduleString        = "fffffffffff[ffffffffffffF]ffffffffffffffF";
+	public string   _moduleString        = "f[fffffF]ffffF";
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
@@ -71,16 +71,19 @@ public class LSystem : MonoBehaviour
 		
 	}
 
-	void addObject(ref Turtle turtle, GameObject gameObject, int bindingIndex)
+	void updateTurtle(ref Turtle turtle, GameObject gameObject, int bindingIndex)
+	{
+		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[bindingIndex];
+		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[bindingIndex]; 
+		
+		turtle.position  = turtle.position + turtle.direction * move;
+		turtle.direction = turtle.direction * Quaternion.Euler (rotate.x, rotate.y, rotate.z);
+	}
+
+	void addObject(ref Turtle turtle, GameObject gameObject)
 	{
 		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
 		mol.transform.parent = transform;
-
-		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[bindingIndex];
-		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[bindingIndex]; 
-
-		turtle.position  = turtle.position + turtle.direction * move;
-		turtle.direction = Quaternion.Euler (rotate.x, rotate.y, rotate.z) * (turtle.idefault * turtle.direction);
 	}
 
 	void DestroyOld()
@@ -106,17 +109,21 @@ public class LSystem : MonoBehaviour
 			
 			if (module == "F")
 			{
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
 			}
 			if (module == "f")
 			{
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
+				if (i > 0)
+					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
 			}
 			else if (module == "[")
 			{
-				stack.Push (current);
+				stack.Push(current);
 				current = new Turtle (current);
-				addObject(ref current, molecule_objects[molecule_names.IndexOf("F")], 1);
+
+				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("F")], 1);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf("F")]);
 			}
 			else if (module == "]")
 			{
