@@ -15,7 +15,7 @@ public class MainScriptEditor : Editor
 
 		if (GUILayout.Button ("Spawn objects"))
 		{
-			myMainScript.SpawnObjects();
+			myMainScript.CreateMolContainer();
 		}
 	}
 	
