@@ -12,6 +12,9 @@ public class MolScript : MonoBehaviour
 	public Vector3[] bindingPositions;
 	public Vector3[] bindingOrientations;
 
+	[HideInInspector] public Quaternion bindingOrientation;
+	[HideInInspector] public bool finished = false;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -36,19 +39,24 @@ public class MolScript : MonoBehaviour
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
 
+			Vector3 pos = transform.position - transform.parent.position;
+
 			//Attract to middle
-			if(transform.position.magnitude < bindingRadius)
+			if(pos.magnitude < bindingRadius)
 			{
-				rigidbody.AddForce(-transform.position - rigidbody.velocity * bindingAttraction);
+				rigidbody.AddForce(-pos - rigidbody.velocity * bindingAttraction);
 			}
 
-			if(transform.position.magnitude < 1.25f)
+			if(pos.magnitude < 1.25f)
 			{
-				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, transform.position.magnitude - 0.25f);
+				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, pos.magnitude - 0.25f);
 			}
 
-			if(transform.position.magnitude < 0.25f)
+			if(transform.position.magnitude < 0.8f)
+			{
 				rigidbody.isKinematic = true;
+				finished = true;
+			}
 		}
 	}
 

@@ -5,15 +5,16 @@ using System.Collections.Generic;
 public class LSystem : MonoBehaviour
 {	
 	public string   _axiom        = "F";
-	public string[] _stringRules  = {"F=(0.97)fF", "F=(0.03)f[F]F"};
+	public string[] _stringRules  = {"A=(1.0)G", "F=(0.97)mG", "F=(0.03)mBG", "T=(1)[G]"};
 	public string   _moduleString = "";
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
-
-	private float mTime = 0.0f;
-	private Rules _rules = new Rules ();
 	
+	private Rules _rules = new Rules ();
+	private List<GameObject> bindings;
+	private bool changed = true;
+
 	private struct Turtle
 	{
 		public Quaternion direction;
@@ -41,6 +42,8 @@ public class LSystem : MonoBehaviour
 		}
 
 		_moduleString = _axiom;
+
+		bindings = new List<GameObject> ();
 	}
 		
 	void Derive ()
@@ -98,12 +101,8 @@ public class LSystem : MonoBehaviour
 		for (int i = 0; i < _moduleString.Length; i++)
 		{
 			string module = _moduleString [i] + "";
-			
-			if (module == "F")
-			{
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
-			}
-			if (module == "f")
+
+			if (module == "m")
 			{
 				if (i > 0)
 					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
@@ -114,25 +113,77 @@ public class LSystem : MonoBehaviour
 				stack.Push(current);
 				current = new Turtle (current);
 
-				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("F")], 1);
-				addObject(ref current, molecule_objects[molecule_names.IndexOf("F")]);
+				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf("m")]);
 			}
 			else if (module == "]")
 			{
 				current = stack.Pop ();
+			}
+			else if (module == "G")
+			{
+				// create something different
+				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 0);
+
+				GameObject binding = new GameObject(i.ToString());
+				binding.transform.parent = transform;
+				binding.transform.position = current.position;
+				binding.AddComponent("MainScript");
+				binding.GetComponent<MainScript>().bindingOrientation = current.direction;
+
+				bindings.Add(binding);
+			}
+			else if (module == "B")
+			{
+				// create something different
+				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
+				
+				GameObject binding = new GameObject(i.ToString());
+				binding.transform.parent = transform;
+				binding.transform.position = current.position;
+				binding.AddComponent("MainScript");
+				binding.GetComponent<MainScript>().bindingOrientation = current.direction;
+				
+				bindings.Add(binding);
 			}
 		}
 	}
 	
 	void Update ()
 	{
-		mTime += Time.deltaTime;
-		if (mTime > 1.0f)
+		for (int i = 0; i < bindings.Count; i++)
 		{
-			Derive();
-			Interpret();
-			mTime = 0.0f;
+			if(bindings[i].GetComponent<MainScript>().finished)
+			{
+				changed = true;
+				int index = Convert.ToInt32( bindings[i].name );
+				Destroy(bindings[i]);
+				if (_moduleString[index] == 'G')
+				{
+					_moduleString = ReplaceAtIndex(index, 'F', _moduleString);
+				}
+				else if (_moduleString[index] == 'B')
+				{
+					_moduleString = ReplaceAtIndex(index, 'T', _moduleString);
+				}
+			}
 		}
 
+		bindings.RemoveAll (p => p.GetComponent<MainScript> ().finished);
+
+		if (changed)
+		{
+			Derive();
+			Interpret ();
+			changed = false;
+		}
+
+	}
+
+	static string ReplaceAtIndex(int i, char value, string word)
+	{
+		char[] letters = word.ToCharArray();
+		letters[i] = value;
+		return new string (letters);
 	}
 }

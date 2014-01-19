@@ -4,7 +4,7 @@ using System.Collections;
 
 public class MainScript : MonoBehaviour
 {
-	public int molSize = 20;
+	public int molSize = 10;
 	public float minVelocity = 5;
 	public float maxVelocity = 20;
 	public Vector3 extentBox = new Vector3(10,10,10);
@@ -13,6 +13,9 @@ public class MainScript : MonoBehaviour
 
 	private GameObject[] molecules;
 	private bool initialized = false;
+
+	[HideInInspector] public Quaternion bindingOrientation;
+	[HideInInspector] public bool finished = false;
 
 	// Use this for initialization
 	void Start ()
@@ -32,6 +35,7 @@ public class MainScript : MonoBehaviour
 			GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 			mol.transform.parent = transform;
 			mol.transform.localPosition = position;
+			mol.GetComponent<MolScript>().bindingOrientation = bindingOrientation;
 			mol.GetComponent<MolScript>().minVelocity = minVelocity;
 			mol.GetComponent<MolScript>().maxVelocity = maxVelocity;
 			molecules[i] = mol;
@@ -85,6 +89,11 @@ public class MainScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		for (var i=0; i<molSize; i++)
+		{
+			if(molecules[i].GetComponent<MolScript>().finished)
+				finished = true;
+		}
 		//print ("Hello world");
 	}
 }
