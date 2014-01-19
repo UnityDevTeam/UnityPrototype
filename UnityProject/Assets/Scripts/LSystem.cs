@@ -123,6 +123,7 @@ public class LSystem : MonoBehaviour
 			else if (module == "G")
 			{
 				// create something different
+				//Turtle aaa = new Turtle(current);
 				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 0);
 
 				GameObject binding = new GameObject(i.ToString());
@@ -136,7 +137,8 @@ public class LSystem : MonoBehaviour
 			else if (module == "B")
 			{
 				// create something different
-				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
+				Turtle aaa = new Turtle(current);
+				updateTurtle(ref aaa, molecule_objects[molecule_names.IndexOf("m")], 1);
 				
 				GameObject binding = new GameObject(i.ToString());
 				binding.transform.parent = transform;
@@ -153,22 +155,26 @@ public class LSystem : MonoBehaviour
 	{
 		for (int i = 0; i < bindings.Count; i++)
 		{
-			if(bindings[i].GetComponent<MainScript>().finished)
+			if(bindings[i] != null)
 			{
-				changed = true;
-				int index = Convert.ToInt32( bindings[i].name );
-				Destroy(bindings[i]);
-				if (_moduleString[index] == 'G')
+				if(bindings[i].GetComponent<MainScript>().finished)
 				{
-					_moduleString = ReplaceAtIndex(index, 'F', _moduleString);
-				}
-				else if (_moduleString[index] == 'B')
-				{
-					_moduleString = ReplaceAtIndex(index, 'T', _moduleString);
+					changed = true;
+					int index = Convert.ToInt32( bindings[i].name );
+
+					if (_moduleString[index] == 'G')
+					{
+						_moduleString = ReplaceAtIndex(index, 'F', _moduleString);
+					}
+					else if (_moduleString[index] == 'B')
+					{
+						_moduleString = ReplaceAtIndex(index, 'T', _moduleString);
+					}
 				}
 			}
 		}
 
+		bindings.RemoveAll (p => p == null);
 		bindings.RemoveAll (p => p.GetComponent<MainScript> ().finished);
 
 		if (changed)
