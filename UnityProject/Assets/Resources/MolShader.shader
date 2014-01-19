@@ -5,23 +5,32 @@
 	    _Color ("SpriteColor", Color) = (1,1,1,1)	    
         _SpriteSize("SpriteSize", Float) = 1
 	}
+	
 	SubShader 
 	{
 	    Pass 
 	    {
+	    	
 			CGPROGRAM
+			#pragma target 5.0
 			#pragma vertex vert
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 
 			float4 _Color;
 			float _SpriteSize;
-
+			struct PosVelo
+			{
+				float3 position;
+				float3 velocity;
+			};
+			
+			StructuredBuffer<PosVelo>  particles;
+			
 			struct vertexInput 
 			{
-	            float4 pos : POSITION;
+	            uint vertexid           : SV_VertexID;
         	};
-
 			struct fragmentInput 
 			{
 			    float4 pos : SV_POSITION;			    
@@ -31,10 +40,10 @@
 			fragmentInput vert (vertexInput v)
 			{
 			    fragmentInput output;
-			    
-			    output.pos = mul (UNITY_MATRIX_MVP, v.pos);
+			    //float4 position = float4(particles[v.vertexid].position,1.0);
+			    float4 position = float4(25,25,25,1.0);
+			    output.pos = mul (UNITY_MATRIX_MVP, position);
 			    output.size = _SpriteSize;
-			    
 			    return output;
 			}
 
