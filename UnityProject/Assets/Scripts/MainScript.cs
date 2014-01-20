@@ -4,7 +4,6 @@ using System.Collections;
 public class MainScript : MonoBehaviour
 {
 	public int molCount = 1000;
-	public Vector3 extentBox = new Vector3(100, 100, 100);
 
 	// Use this for initialization
 	void Start ()
@@ -20,7 +19,7 @@ public class MainScript : MonoBehaviour
 		for (var i=0; i < molCount; i++)
 		{
 			indices[i] = i;
-			vertices[i] = new Vector3 ( (Random.value - 0.5f) * extentBox.x, (Random.value - 0.5f) * extentBox.y, (Random.value - 0.5f) * extentBox.z );
+			vertices[i] = new Vector3 ( (Random.value - 0.5f), (Random.value - 0.5f), (Random.value - 0.5f));
 		}
 
 		GameObject molContainer = new GameObject("Mol Container");	
