@@ -40,8 +40,13 @@ public class MolScript : MonoBehaviour
 			}
 
 			Vector3 pos = transform.position - transform.parent.position;
+			Vector3 nPos = pos + rigidbody.velocity;
 
-			//Attract to middle
+			if(nPos.magnitude > 10.0f)
+			{
+				rigidbody.velocity = -rigidbody.velocity;
+			}
+
 			if(pos.magnitude < bindingRadius)
 			{
 				rigidbody.AddForce(-pos - rigidbody.velocity * bindingAttraction);

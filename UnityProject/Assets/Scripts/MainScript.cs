@@ -20,7 +20,7 @@ public class MainScript : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		createBoundaryObjects ();
+		//createBoundaryObjects ();
 		if (!initialized) SpawnObjects ();
 	}
 
