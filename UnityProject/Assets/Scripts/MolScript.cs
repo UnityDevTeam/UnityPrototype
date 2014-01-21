@@ -38,7 +38,7 @@ public class MolScript : MonoBehaviour
 			{
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
-
+/*
 			Vector3 pos = transform.position - transform.parent.position;
 			Vector3 nPos = pos + rigidbody.velocity;
 
@@ -62,6 +62,7 @@ public class MolScript : MonoBehaviour
 				rigidbody.isKinematic = true;
 				finished = true;
 			}
+			*/
 		}
 	}
 
