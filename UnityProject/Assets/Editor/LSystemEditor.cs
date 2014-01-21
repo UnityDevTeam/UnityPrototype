@@ -3,7 +3,6 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
-
 [CustomEditor(typeof(LSystem))]
 public class LSystemEditor : Editor
 {
@@ -25,7 +24,7 @@ public class LSystemEditor : Editor
 		{
 			EditorGUILayout.BeginHorizontal();
 			myLSystemScript.molecule_names[i]   = EditorGUILayout.TextField(myLSystemScript.molecule_names[i]);
-			myLSystemScript.molecule_objects[i] = EditorGUILayout.ObjectField(myLSystemScript.molecule_objects[i], typeof(GameObject)) as GameObject;
+			myLSystemScript.molecule_objects[i] = EditorGUILayout.ObjectField(myLSystemScript.molecule_objects[i], typeof(GameObject), false) as GameObject;
 			EditorGUILayout.EndHorizontal();
 		}
 	}

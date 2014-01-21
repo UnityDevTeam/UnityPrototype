@@ -3,74 +3,115 @@ using System.Collections.Generic;
 
 public class AgentsSystem : MonoBehaviour
 {
-	/*
-	public int     molCount   = 50;
-	public Vector3 extentBox  = new Vector3( 20, 20, 20);
-	public Vector3 minBox     = new Vector3(-10,-10,-10);
-	public string  pdbPrefab  = "adp";
-	*/
-	
-	private List<GameObject> free_molecules;
-	private List<GameObject> locals;
+	private Transform freeMolecules = null;
+	private Transform locals        = null;
+
+
+	private float timing = 0.0f;
+	private float posun  = 2.0f;
+	private GameObject sphereDebug   = null;
 
 	void Start ()
 	{
-		locals         = new List<GameObject> ();
-		free_molecules = new List<GameObject> ();
+		freeMolecules = transform.Find("freeMolecules");
+		locals        = transform.Find("locals");
 
-		createLocalSystem (Vector3.zero);
-	}
-	
-	public void SpawnObjects()
-	{
-		/*
-		molecules = new GameObject[molCount];
-
-		for (var i=0; i<molCount; i++)
+		if (!freeMolecules)
 		{
-			Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
-
-			GameObject prefab                = Resources.Load(pdbPrefab) as GameObject;
-			GameObject molecule              = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-			molecule.transform.parent        = transform;
-			molecule.transform.localPosition = position;
-
-			molecules[i] = molecule;
+			GameObject objectFreeMolecules = new GameObject("freeMolecules");
+			objectFreeMolecules.transform.parent = transform;
+			freeMolecules = objectFreeMolecules.transform;
 		}
-		*/
 
-		createLocalSystem (Vector3.zero);
+		if (!locals)
+		{
+			GameObject objectLocals = new GameObject("locals");
+			objectLocals.transform.parent = transform;
+			locals = objectLocals.transform;
+		}
+
+		sphereDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+		sphereDebug.transform.localScale = new Vector3(10.0f, 10.0f, 10.0f);
+		sphereDebug.transform.parent = transform;
+		Destroy (sphereDebug.GetComponent<MeshRenderer> ());
+
+		createLocalSystem ("local", Vector3.zero);
 	}
 
-	public void createLocalSystem(Vector3 position)
+	public void createLocalSystem(string name, Vector3 position)
 	{
-		GameObject go = new GameObject ("local");
-		go.transform.parent   = transform;
+		GameObject go = new GameObject (name);
+		go.transform.parent   = locals.transform;
 		go.transform.position = position;
 		go.AddComponent("LocalAgentSystem");
-		locals.Add (go);
+	}
+
+	public void removeLocalSystem(string name)
+	{
+		Transform local = locals.transform.Find (name);
+
+		if (local)
+		{
+			int childCount = local.childCount;
+			for (int i = 0; i < childCount; i++)
+			{
+				Transform child = local.GetChild(0);
+				child.parent = freeMolecules.transform;
+			}
+
+			DestroyImmediate(local.gameObject);
+		}
+	}
+
+	public void distributeFreeMolecules()
+	{
+		int freeMoleculesCount = freeMolecules.childCount;
+		int freeMoleculesIndex = 0;
+		for (int i = 0; i < freeMoleculesCount; i++)
+		{	
+			for (int j = 0; j < locals.childCount; j++)
+			{
+				GameObject child = locals.transform.GetChild(j).gameObject;
+				GameObject molChild = freeMolecules.GetChild(freeMoleculesIndex).gameObject;
+				Vector3 distance = molChild.transform.position - child.transform.position;
+				
+				if (distance.magnitude < child.GetComponent<LocalAgentSystem>().size / 2.0f)
+				{
+					freeMolecules.GetChild(freeMoleculesIndex).parent = child.transform;
+					break;
+				}
+				freeMoleculesIndex++;
+			}
+		}
+	}
+
+	public void removeFreeMolecules()
+	{
+		int freeMoleculesCount = freeMolecules.childCount;
+		for (int i = 0; i < freeMoleculesCount; i++)
+		{
+			DestroyImmediate(freeMolecules.GetChild(0).gameObject);
+		}
 	}
 
 	void Update ()
 	{
-		if (free_molecules.Count > 0)
+		if(timing >= 0.0f)
+			timing += Time.deltaTime;
+
+		if (timing > 1.0f)
 		{
-			for (int i = 0; i < free_molecules.Count; i++)
-			{
-				for (int j = 0; j < locals.Count; j++)
-				{
-					Vector3 distance = free_molecules [i].transform.position - locals [j].transform.position;
+			removeLocalSystem("local");
+			createLocalSystem("local", Vector3.zero + new Vector3(posun, 0.0f, 0.0f));
 
-					if (distance.magnitude < locals [j].GetComponent<LocalAgentSystem>().size)
-					{
-						locals [j].GetComponent<LocalAgentSystem>().AddAgent(free_molecules [i]);
-						break;
-					}
-				}
-			}
+			sphereDebug.transform.position = Vector3.zero + new Vector3(posun, 0.0f, 0.0f);
 
-			free_molecules = new List<GameObject> ();
+			posun += 2.0f;
+
+			distributeFreeMolecules();
+			removeFreeMolecules();
+
+			timing = 0.0f;
 		}
-
 	}
 }

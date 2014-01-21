@@ -9,7 +9,7 @@ public class MainScript : MonoBehaviour
 	public float maxVelocity = 20;
 	public Vector3 extentBox = new Vector3(10,10,10);
 	public Vector3 minBox = new Vector3(-5,-5,-5);
-	public string[] pdbPrefabs = {"Assets/Prefabs/testMol.prefab","Assets/Prefabs/adp.prefab"};
+	public string[] pdbPrefabs = {"testMol","adp"};
 
 	private GameObject[] molecules;
 	private bool initialized = false;
@@ -30,8 +30,8 @@ public class MainScript : MonoBehaviour
 		for (var i=0; i<molSize; i++)
 		{
 			Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
-			int pdbid = Random.Range (0,2);
-			GameObject prefab = AssetDatabase.LoadAssetAtPath(pdbPrefabs[1], typeof(GameObject)) as GameObject;
+			//int pdbid = Random.Range (0,2);
+			GameObject prefab = Resources.Load(pdbPrefabs[1]) as GameObject;
 			GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 			mol.transform.parent = transform;
 			mol.transform.localPosition = position;

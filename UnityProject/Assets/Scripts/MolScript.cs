@@ -18,7 +18,7 @@ public class MolScript : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	
+
 	}
 	
 	// Update is called once per frame
@@ -26,6 +26,7 @@ public class MolScript : MonoBehaviour
 	{
 		if (!rigidbody.isKinematic)
 		{
+
 			rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, RandomForce(), 25 * Time.deltaTime);
 			
 			// enforce minimum and maximum speeds
@@ -38,31 +39,32 @@ public class MolScript : MonoBehaviour
 			{
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
-/*
+			/*
 			Vector3 pos = transform.position - transform.parent.position;
 			Vector3 nPos = pos + rigidbody.velocity;
 
-			if(nPos.magnitude > 10.0f)
+			if(nPos.magnitude > 5.0f)
 			{
 				rigidbody.velocity = -rigidbody.velocity;
 			}
 
 			if(pos.magnitude < bindingRadius)
 			{
-				rigidbody.AddForce(-pos - rigidbody.velocity * bindingAttraction);
+				rigidbody.AddForce(-pos * bindingAttraction + rigidbody.velocity);
 			}
 
 			if(pos.magnitude < 1.25f)
 			{
 				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, pos.magnitude - 0.25f);
 			}
-
+			*/
+			/*
 			if(pos.magnitude < 0.8f)
 			{
 				rigidbody.isKinematic = true;
 				finished = true;
 			}
-			*/
+*/
 		}
 	}
 
