@@ -19,17 +19,34 @@ public class LocalAgentSystem : MonoBehaviour
 
 	private void CheckAgents()
 	{
+		/*
 		List<GameObject> children = new List<GameObject>();
 		
 		foreach (Transform child in transform) children.Add(child.gameObject);
-		for( int i = 0; i < children.Count; i++)
+		*/
+		int childCount = transform.childCount;
+		int childIndex = 0;
+		for( int i = 0; i < childCount; i++)
 		{
-			if(children[i].transform.localPosition.magnitude > size / 2.0f)
-				Destroy(children[i]);
+			Transform child = transform.GetChild(childIndex);
+			if(child.localPosition.magnitude > size / 2.0f)
+			{
+				Destroy(child.gameObject);
+			}
+			else
+			{
+				childIndex++;
+			}
 		}
 
 		if (transform.childCount < count) 
 		{
+			//CheckGlobalFreeAgents();
+		}
+
+		if (transform.childCount < count) 
+		{
+			//CheckGlobalFreeAgents();
 			AddMissingAgents();
 		}
 	}

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 public class AgentsSystem : MonoBehaviour
 {
 	private Transform freeMolecules = null;
+	private Transform oldMolecules  = null;
 	private Transform locals        = null;
-
-
+	
 	private float timing = 0.0f;
 	private float posun  = 2.0f;
 	private GameObject sphereDebug   = null;
@@ -14,6 +14,7 @@ public class AgentsSystem : MonoBehaviour
 	void Start ()
 	{
 		freeMolecules = transform.Find("freeMolecules");
+		oldMolecules  = transform.Find("oldMolecules");
 		locals        = transform.Find("locals");
 
 		if (!freeMolecules)
@@ -21,6 +22,13 @@ public class AgentsSystem : MonoBehaviour
 			GameObject objectFreeMolecules = new GameObject("freeMolecules");
 			objectFreeMolecules.transform.parent = transform;
 			freeMolecules = objectFreeMolecules.transform;
+		}
+
+		if (!oldMolecules)
+		{
+			GameObject objectOldMolecules = new GameObject("oldMolecules");
+			objectOldMolecules.transform.parent = transform;
+			oldMolecules = objectOldMolecules.transform;
 		}
 
 		if (!locals)
@@ -94,8 +102,51 @@ public class AgentsSystem : MonoBehaviour
 		}
 	}
 
+	public void removeOldMolecules()
+	{
+		int oldMoleculesCount = oldMolecules.childCount;
+		for (int i = 0; i < oldMoleculesCount; i++)
+		{
+			DestroyImmediate(oldMolecules.GetChild(0).gameObject);
+		}
+	}
+
+	public void TimeUpdateFreeMolecules()
+	{
+		int freeMoleculesCount = freeMolecules.childCount;
+		int freeMoleculesIndex = 0;
+
+		for (int i = 0; i < freeMoleculesCount; i++)
+		{
+			Transform child = freeMolecules.GetChild(freeMoleculesIndex);
+			child.GetComponent<MolScript>().life -= Time.deltaTime;
+
+			if(child.GetComponent<MolScript>().life < 0)
+			{
+				child.parent = oldMolecules;
+			}
+			else
+			{
+				freeMoleculesIndex++;
+			}
+		}
+		removeOldMolecules ();
+	}
+
 	void Update ()
 	{
+		/*
+		if(timing >= 0.0f)
+			timing += Time.deltaTime;
+		
+		if (timing > 1.0f)
+		{
+			removeLocalSystem("local");
+		}
+		*/
+
+		//TimeUpdateFreeMolecules ();
+		/*
 		if(timing >= 0.0f)
 			timing += Time.deltaTime;
 
@@ -113,5 +164,6 @@ public class AgentsSystem : MonoBehaviour
 
 			timing = 0.0f;
 		}
+		*/
 	}
 }
