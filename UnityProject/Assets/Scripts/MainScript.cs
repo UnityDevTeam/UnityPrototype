@@ -91,8 +91,10 @@ public class MainScript : MonoBehaviour
 	{
 		for (var i=0; i<molSize; i++)
 		{
+			/*
 			if(molecules[i].GetComponent<MolScript>().finished)
 				finished = true;
+				*/
 		}
 		//print ("Hello world");
 	}

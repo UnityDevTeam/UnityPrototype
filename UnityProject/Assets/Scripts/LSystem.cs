@@ -4,15 +4,17 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public string   _axiom        = "F";
+	public string   _axiom        = "A";
 	public string[] _stringRules  = {"A=(1.0)G", "F=(0.97)mG", "F=(0.03)mBG", "T=(1)[G]"};
 	public string   _moduleString = "";
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
-	
+
+	private GameObject agentsSystem = null;
+
 	private Rules _rules = new Rules ();
-	private List<GameObject> bindings;
+	private List<Vector3> structureIdentification;
 	private bool changed = true;
 
 	private struct Turtle
@@ -43,7 +45,10 @@ public class LSystem : MonoBehaviour
 
 		_moduleString = _axiom;
 
-		bindings = new List<GameObject> ();
+		structureIdentification = new List<Vector3> ();
+
+		agentsSystem = new GameObject("agentsSystem");
+		agentsSystem.AddComponent("AgentsSystem");
 	}
 		
 	void Derive ()
@@ -83,6 +88,8 @@ public class LSystem : MonoBehaviour
 
 	void DestroyOld()
 	{
+		structureIdentification.Clear ();
+
 		int childs = transform.childCount;
 		
 		for (int i = childs - 1; i >= 0; i--)
@@ -107,6 +114,7 @@ public class LSystem : MonoBehaviour
 				if (i > 0)
 					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
 				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
+				structureIdentification.Add(current.position);
 			}
 			else if (module == "[")
 			{
@@ -115,6 +123,7 @@ public class LSystem : MonoBehaviour
 
 				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
 				addObject(ref current, molecule_objects[molecule_names.IndexOf("m")]);
+				structureIdentification.Add(current.position);
 			}
 			else if (module == "]")
 			{
@@ -123,59 +132,48 @@ public class LSystem : MonoBehaviour
 			else if (module == "G")
 			{
 				// create something different
-				//Turtle aaa = new Turtle(current);
 				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 0);
 
-				GameObject binding = new GameObject(i.ToString());
-				binding.transform.parent = transform;
-				binding.transform.position = current.position;
-				binding.AddComponent("MainScript");
-				binding.GetComponent<MainScript>().bindingOrientation = current.direction;
-
-				bindings.Add(binding);
+				agentsSystem.GetComponent<AgentsSystem>().createLocalSystem(i.ToString(), current.position, current.direction);
+				structureIdentification.Add(current.position);
 			}
 			else if (module == "B")
 			{
 				// create something different
-				Turtle aaa = new Turtle(current);
-				updateTurtle(ref aaa, molecule_objects[molecule_names.IndexOf("m")], 1);
-				
-				GameObject binding = new GameObject(i.ToString());
-				binding.transform.parent = transform;
-				binding.transform.position = current.position;
-				binding.AddComponent("MainScript");
-				binding.GetComponent<MainScript>().bindingOrientation = current.direction;
-				
-				bindings.Add(binding);
+				Turtle tempTurtle = new Turtle(current);
+				updateTurtle(ref tempTurtle, molecule_objects[molecule_names.IndexOf("m")], 1);
+
+				agentsSystem.GetComponent<AgentsSystem>().createLocalSystem(i.ToString(), tempTurtle.position, tempTurtle.direction);
+				structureIdentification.Add(tempTurtle.position);
 			}
 		}
 	}
 	
 	void Update ()
 	{
-		for (int i = 0; i < bindings.Count; i++)
+		List<Vector3> finishedBindings = agentsSystem.GetComponent<AgentsSystem> ().CheckLocalAgentsSystems ();
+		if (finishedBindings.Count > 0)
 		{
-			if(bindings[i] != null)
+			for (int i = 0; i < finishedBindings.Count; i++)
 			{
-				if(bindings[i].GetComponent<MainScript>().finished)
+				for(int j = 0; j < structureIdentification.Count; j++)
 				{
-					changed = true;
-					int index = Convert.ToInt32( bindings[i].name );
-
-					if (_moduleString[index] == 'G')
+					if(structureIdentification[j] == finishedBindings[i])
 					{
-						_moduleString = ReplaceAtIndex(index, 'F', _moduleString);
-					}
-					else if (_moduleString[index] == 'B')
-					{
-						_moduleString = ReplaceAtIndex(index, 'T', _moduleString);
+						if (_moduleString[j] == 'G')
+						{
+							_moduleString = ReplaceAtIndex(j, 'F', _moduleString);
+						}
+						else if (_moduleString[j] == 'B')
+						{
+							_moduleString = ReplaceAtIndex(j, 'T', _moduleString);
+						}
 					}
 				}
 			}
+			changed = true;
+			agentsSystem.GetComponent<AgentsSystem> ().RemoveFinishedLocalAgentsSystems (finishedBindings);
 		}
-
-		bindings.RemoveAll (p => p == null);
-		bindings.RemoveAll (p => p.GetComponent<MainScript> ().finished);
 
 		if (changed)
 		{

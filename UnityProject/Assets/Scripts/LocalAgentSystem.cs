@@ -12,6 +12,9 @@ public class LocalAgentSystem : MonoBehaviour
 	private float spawnTimer       = 0.0f;
 	private Transform globalSystem = null;
 
+	public Quaternion bindingOrientation = Quaternion.identity;
+	public bool finished = false;
+
 	void Start ()
 	{
 	}
@@ -62,12 +65,7 @@ public class LocalAgentSystem : MonoBehaviour
 		Vector3 randomVector = new Vector3 (Random.value, Random.value, Random.value) - new Vector3(0.5f, 0.5f, 0.5f);
 		randomVector.Normalize ();
 		randomVector.Scale (new Vector3(0.4f * size, 0.4f * size, 0.4f * size));
-		/*
-		float posX = ((Random.value) * 0.1f + 0.8f) * size;
-		float posY = ((Random.value) * 0.1f + 0.8f) * size;
-		float posZ = ((Random.value) * 0.1f + 0.8f) * size;
-		*/
-		//Vector3 position = new Vector3 ( posX, posY, Random.value * size ) - new Vector3(0.5f*size, 0.5f*size, 0.5f*size);
+
 		Vector3 position = randomVector;
 
 		GameObject prefab                = Resources.Load(prefabString) as GameObject;
@@ -76,6 +74,7 @@ public class LocalAgentSystem : MonoBehaviour
 		molecule.transform.localPosition = position;
 		molecule.rigidbody.velocity      = -position;
 		molecule.GetComponent<MolScript>().life = 0.0f;	
+		molecule.GetComponent<MolScript>().bindingOrientation = bindingOrientation;	
 	}
 
 	private void AddMissingAgents()
@@ -84,15 +83,6 @@ public class LocalAgentSystem : MonoBehaviour
 		for(int i = 0; i < missingCount; i++)
 		{
 			AddOneMissingAgent();
-			/*
-			Vector3 position = new Vector3 ( Random.value * size, Random.value * size, Random.value * size ) - new Vector3(0.5f*size, 0.5f*size, 0.5f*size);
-			
-			GameObject prefab                = Resources.Load(prefabString) as GameObject;
-			GameObject molecule              = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-			molecule.transform.parent        = transform;
-			molecule.transform.localPosition = position;
-			molecule.GetComponent<MolScript>().life = 0.0f;
-			*/
 		}
 
 	}

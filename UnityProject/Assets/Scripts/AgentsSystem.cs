@@ -6,10 +6,6 @@ public class AgentsSystem : MonoBehaviour
 	private Transform freeMolecules = null;
 	private Transform oldMolecules  = null;
 	private Transform locals        = null;
-	
-	private float timing = 0.0f;
-	private float posun  = 2.0f;
-	private GameObject sphereDebug   = null;
 
 	void Start ()
 	{
@@ -37,76 +33,67 @@ public class AgentsSystem : MonoBehaviour
 			objectLocals.transform.parent = transform;
 			locals = objectLocals.transform;
 		}
-
-		sphereDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		sphereDebug.transform.localScale = new Vector3(10.0f, 10.0f, 10.0f);
-		sphereDebug.transform.parent = transform;
-		Destroy (sphereDebug.GetComponent<MeshRenderer> ());
-
-		createLocalSystem ("local", Vector3.zero);
 	}
 
-	public void createLocalSystem(string name, Vector3 position)
+	public void createLocalSystem(string name, Vector3 position, Quaternion orientation)
 	{
+		// TODO: better identification of local agents system
+		for (int i = 0; i < locals.childCount; i++)
+		{
+			if(locals.GetChild(i).position == position)
+			{
+				return;
+			}
+		}
+
 		GameObject go = new GameObject (name);
 		go.transform.parent   = locals.transform;
 		go.transform.position = position;
 		go.AddComponent("LocalAgentSystem");
 		go.GetComponent<LocalAgentSystem> ().setGlobalSystem (gameObject);
+		go.GetComponent<LocalAgentSystem> ().bindingOrientation = orientation;
 	}
 
-	public void removeLocalSystem(string name)
-	{
-		Transform local = locals.transform.Find (name);
-
-		if (local)
+	public void removeLocalSystem(Transform local)
+	{	
+		int childCount = local.childCount;
+		for (int i = 0; i < childCount; i++)
 		{
-			int childCount = local.childCount;
-			for (int i = 0; i < childCount; i++)
-			{
-				Transform child = local.GetChild(0);
-				child.parent = freeMolecules.transform;
-			}
-
-			DestroyImmediate(local.gameObject);
+			Transform child = local.GetChild(0);
+			child.parent = freeMolecules.transform;
 		}
+
+		DestroyImmediate(local.gameObject);
 	}
 
 	public void distributeFreeMolecules()
 	{
+		RemoveInactiveFreeMolecules ();
+
 		int freeMoleculesCount = freeMolecules.childCount;
 		int freeMoleculesIndex = 0;
 		for (int i = 0; i < freeMoleculesCount; i++)
-		{	
+		{
+			bool removed = false;
 			for (int j = 0; j < locals.childCount; j++)
 			{
-				GameObject child = locals.transform.GetChild(j).gameObject;
-
-				int maxLocalCount = child.GetComponent<LocalAgentSystem>().count;
-				if(child.transform.childCount >= maxLocalCount)
-				{
-					break;
-				}
-
-				GameObject molChild = freeMolecules.GetChild(freeMoleculesIndex).gameObject;
-				Vector3 distance = molChild.transform.position - child.transform.position;
+				GameObject   child       = locals.transform.GetChild(j).gameObject;
+				GameObject molChild      = freeMolecules.GetChild(freeMoleculesIndex).gameObject;
+				int        maxLocalCount = child.GetComponent<LocalAgentSystem>().count;
+				Vector3    distance      = molChild.transform.position - child.transform.position;
 				
-				if (distance.magnitude < child.GetComponent<LocalAgentSystem>().size / 2.0f)
+				if ( (child.transform.childCount >= maxLocalCount) && (distance.magnitude < child.GetComponent<LocalAgentSystem>().size / 2.0f))
 				{
 					freeMolecules.GetChild(freeMoleculesIndex).parent = child.transform;
+					removed = true;
 					break;
 				}
+			}
+
+			if(!removed)
+			{
 				freeMoleculesIndex++;
 			}
-		}
-	}
-
-	public void removeFreeMolecules()
-	{
-		int freeMoleculesCount = freeMolecules.childCount;
-		for (int i = 0; i < freeMoleculesCount; i++)
-		{
-			DestroyImmediate(freeMolecules.GetChild(0).gameObject);
 		}
 	}
 
@@ -141,38 +128,78 @@ public class AgentsSystem : MonoBehaviour
 		removeOldMolecules ();
 	}
 
+	public List<Vector3> CheckLocalAgentsSystems()
+	{
+		List<Vector3> returnValue = new List<Vector3> ();
+
+		int localsCount = locals.childCount;
+		for (int i = 0; i < localsCount; i++)
+		{
+			GameObject local = locals.GetChild(i).gameObject;
+
+			if(local.GetComponent<LocalAgentSystem>().finished)
+			{
+				returnValue.Add(local.transform.position);
+			}
+		}
+
+		return returnValue;
+	}
+
+	public void RemoveFinishedLocalAgentsSystems(List<Vector3> finishedLocalAgentsSystems)
+	{
+		int localAgentsCount = locals.childCount;
+		int localAgentsIndex = 0;
+		bool removed = false;
+
+		for (int i = 0; i < localAgentsCount; i++)
+		{
+			for(int j = 0; j < finishedLocalAgentsSystems.Count; j++)
+			{
+				Transform localChild = locals.GetChild(localAgentsIndex);
+				if(localChild.position == finishedLocalAgentsSystems[j])
+				{
+					removeLocalSystem(localChild);
+					removed = true;
+					break;
+				}
+			}
+
+			// This shouldn't happen
+			if(!removed)
+			{
+				localAgentsIndex++;
+			}
+		}
+		/*
+		for (int i = 0; i < finishedLocalAgentsSystems.Count; i++)
+		{
+			removeLocalSystem(finishedLocalAgentsSystems[i]);
+		}
+		*/
+	}
+
+	private void RemoveInactiveFreeMolecules()
+	{	
+		int freeMoleculesCount = freeMolecules.childCount;
+		int freeMoleculesIndex = 0;
+		for (int i = 0; i < freeMoleculesCount; i++)
+		{
+			Transform molecule = freeMolecules.GetChild(freeMoleculesIndex);
+
+			if(molecule.gameObject.rigidbody.isKinematic)
+			{
+				Destroy (molecule.gameObject);
+				break;
+			}
+
+			freeMoleculesIndex++;
+		}
+	}
+
 	void Update ()
 	{
-		/*
-		if(timing >= 0.0f)
-			timing += Time.deltaTime;
-		
-		if (timing > 1.0f)
-		{
-			removeLocalSystem("local");
-		}
-		*/
-
 		TimeUpdateFreeMolecules ();
 		distributeFreeMolecules ();
-		/*
-		if(timing >= 0.0f)
-			timing += Time.deltaTime;
-
-		if (timing > 1.0f)
-		{
-			removeLocalSystem("local");
-			createLocalSystem("local", Vector3.zero + new Vector3(posun, 0.0f, 0.0f));
-
-			sphereDebug.transform.position = Vector3.zero + new Vector3(posun, 0.0f, 0.0f);
-
-			posun += 2.0f;
-
-			distributeFreeMolecules();
-			removeFreeMolecules();
-
-			timing = 0.0f;
-		}
-		*/
 	}
 }
