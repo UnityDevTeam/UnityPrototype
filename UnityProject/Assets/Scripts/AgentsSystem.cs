@@ -52,6 +52,7 @@ public class AgentsSystem : MonoBehaviour
 		go.transform.parent   = locals.transform;
 		go.transform.position = position;
 		go.AddComponent("LocalAgentSystem");
+		go.GetComponent<LocalAgentSystem> ().setGlobalSystem (gameObject);
 	}
 
 	public void removeLocalSystem(string name)
@@ -80,6 +81,13 @@ public class AgentsSystem : MonoBehaviour
 			for (int j = 0; j < locals.childCount; j++)
 			{
 				GameObject child = locals.transform.GetChild(j).gameObject;
+
+				int maxLocalCount = child.GetComponent<LocalAgentSystem>().count;
+				if(child.transform.childCount >= maxLocalCount)
+				{
+					break;
+				}
+
 				GameObject molChild = freeMolecules.GetChild(freeMoleculesIndex).gameObject;
 				Vector3 distance = molChild.transform.position - child.transform.position;
 				
@@ -145,7 +153,8 @@ public class AgentsSystem : MonoBehaviour
 		}
 		*/
 
-		//TimeUpdateFreeMolecules ();
+		TimeUpdateFreeMolecules ();
+		distributeFreeMolecules ();
 		/*
 		if(timing >= 0.0f)
 			timing += Time.deltaTime;

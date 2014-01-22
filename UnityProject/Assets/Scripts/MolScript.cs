@@ -14,12 +14,15 @@ public class MolScript : MonoBehaviour
 
 	[HideInInspector] public Quaternion bindingOrientation;
 	[HideInInspector] public bool finished = false;
-	[HideInInspector] public float life    = 2.0f;
+	public float life    = 0.0f;
 
 	// Use this for initialization
 	void Start ()
 	{
-
+		Transform tr  = transform.GetChild (0);
+		Color col = tr.renderer.material.color;
+		col.a = life / 2.0f;
+		tr.renderer.material.color = col;
 	}
 	
 	// Update is called once per frame
@@ -58,7 +61,7 @@ public class MolScript : MonoBehaviour
 			{
 				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, pos.magnitude - 0.25f);
 			}
-			*/
+*/
 			/*
 			if(pos.magnitude < 0.8f)
 			{
