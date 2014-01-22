@@ -74,6 +74,7 @@ public class LocalAgentSystem : MonoBehaviour
 		GameObject molecule              = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 		molecule.transform.parent        = transform;
 		molecule.transform.localPosition = position;
+		molecule.rigidbody.velocity      = -position;
 		molecule.GetComponent<MolScript>().life = 0.0f;	
 	}
 

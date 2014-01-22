@@ -23,7 +23,8 @@ public class MolScript : MonoBehaviour
 		Color col = tr.renderer.material.color;
 		col.a = life / 2.0f;
 		tr.renderer.material.color = col;
-		rigidbody.isKinematic = true;
+
+		//rigidbody.isKinematic = true;
 	}
 	
 	// Update is called once per frame
