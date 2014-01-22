@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class LocalAgentSystem : MonoBehaviour
 {
 	public float size  = 20.0f;
-	public int   count = 3;
+	public int   count = 100;
 
 	public string prefabString = "adp";
 
@@ -59,8 +59,17 @@ public class LocalAgentSystem : MonoBehaviour
 
 	private void AddOneMissingAgent()
 	{
-		Vector3 position = new Vector3 ( Random.value * size, Random.value * size, Random.value * size ) - new Vector3(0.5f*size, 0.5f*size, 0.5f*size);
-		
+		Vector3 randomVector = new Vector3 (Random.value, Random.value, Random.value) - new Vector3(0.5f, 0.5f, 0.5f);
+		randomVector.Normalize ();
+		randomVector.Scale (new Vector3(0.4f * size, 0.4f * size, 0.4f * size));
+		/*
+		float posX = ((Random.value) * 0.1f + 0.8f) * size;
+		float posY = ((Random.value) * 0.1f + 0.8f) * size;
+		float posZ = ((Random.value) * 0.1f + 0.8f) * size;
+		*/
+		//Vector3 position = new Vector3 ( posX, posY, Random.value * size ) - new Vector3(0.5f*size, 0.5f*size, 0.5f*size);
+		Vector3 position = randomVector;
+
 		GameObject prefab                = Resources.Load(prefabString) as GameObject;
 		GameObject molecule              = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 		molecule.transform.parent        = transform;

@@ -14,7 +14,7 @@ public class MolScript : MonoBehaviour
 
 	[HideInInspector] public Quaternion bindingOrientation;
 	[HideInInspector] public bool finished = false;
-	public float life    = 0.0f;
+	public float life    = 2.0f;
 
 	// Use this for initialization
 	void Start ()
@@ -23,6 +23,7 @@ public class MolScript : MonoBehaviour
 		Color col = tr.renderer.material.color;
 		col.a = life / 2.0f;
 		tr.renderer.material.color = col;
+		rigidbody.isKinematic = true;
 	}
 	
 	// Update is called once per frame
