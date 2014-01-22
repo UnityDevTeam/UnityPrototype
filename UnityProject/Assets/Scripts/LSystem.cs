@@ -128,6 +128,7 @@ public class LSystem : MonoBehaviour
 			else if (module == "]")
 			{
 				current = stack.Pop ();
+				structureIdentification.Add(Vector3.zero);
 			}
 			else if (module == "G")
 			{

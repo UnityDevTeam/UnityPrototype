@@ -171,12 +171,6 @@ public class AgentsSystem : MonoBehaviour
 				localAgentsIndex++;
 			}
 		}
-		/*
-		for (int i = 0; i < finishedLocalAgentsSystems.Count; i++)
-		{
-			removeLocalSystem(finishedLocalAgentsSystems[i]);
-		}
-		*/
 	}
 
 	private void RemoveInactiveFreeMolecules()
