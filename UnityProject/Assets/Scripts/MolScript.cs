@@ -53,7 +53,8 @@ public class MolScript : MonoBehaviour
 
 				if(pos.magnitude < 1.25f)
 				{
-					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, pos.magnitude - 0.25f);
+					//rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.identity, pos.magnitude - 0.25f);
+					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, bindingOrientation, 1.25f - pos.magnitude);
 				}
 
 				if(pos.magnitude < 0.4f)
