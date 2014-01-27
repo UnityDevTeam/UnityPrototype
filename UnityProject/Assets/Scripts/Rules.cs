@@ -19,6 +19,11 @@ public class Rules
 		}
 		list.Add(rule);
 	}
+
+	public void Clear()
+	{
+		_lookupTable.Clear ();
+	}
 	
 	public bool Contains (string module)
 	{

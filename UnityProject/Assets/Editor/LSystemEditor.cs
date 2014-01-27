@@ -11,6 +11,11 @@ public class LSystemEditor : Editor
 		DrawDefaultInspector();
 		LSystem myLSystemScript = (LSystem)target;
 
+		if (GUILayout.Button ("Update rules"))
+		{
+			myLSystemScript.updateRules();
+		}
+
 		if (GUILayout.Button ("Add"))
 		{
 			GameObject gameObject = new GameObject();

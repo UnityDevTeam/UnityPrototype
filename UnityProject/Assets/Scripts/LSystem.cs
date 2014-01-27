@@ -51,6 +51,9 @@ public class LSystem : MonoBehaviour
 
 	public void updateRules()
 	{
+		lSystemRules.Clear ();
+		communicatorRules.Clear ();
+
 		for (int i = 0; i < lSystemRulesStr.Length; i++)
 		{
 			Rule rule = Rule.Build (lSystemRulesStr[i]);
@@ -197,7 +200,6 @@ public class LSystem : MonoBehaviour
 			Interpret ();
 			changed = false;
 		}
-
 	}
 
 	static string ReplaceAtIndex(int i, char value, string word)
