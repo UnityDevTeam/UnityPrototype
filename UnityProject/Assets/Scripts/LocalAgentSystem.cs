@@ -7,15 +7,17 @@ public class LocalAgentSystem : MonoBehaviour
 	public int   count = 100;
 
 	public string prefabString = "adp";
-
-
+	
 	private float spawnTimer       = 0.0f;
 	private Transform globalSystem = null;
 
 	public Quaternion bindingOrientation = Quaternion.identity;
 	public bool finished = false;
 
-	void Start ()
+	public int   stepCounter = 0;
+	public float simTime     = 0.0f;
+
+	void Awake ()
 	{
 	}
 
@@ -69,6 +71,8 @@ public class LocalAgentSystem : MonoBehaviour
 		Vector3 position = randomVector;
 
 		GameObject prefab                = Resources.Load(prefabString) as GameObject;
+		prefab.GetComponent<MolScript> ().life = 0.0f;
+
 		GameObject molecule              = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
 		molecule.transform.parent        = transform;
 		molecule.transform.localPosition = position;
@@ -87,10 +91,29 @@ public class LocalAgentSystem : MonoBehaviour
 
 	}
 
+	private void TimeStep()
+	{
+		spawnTimer += Time.fixedDeltaTime;
+		CheckAgents ();
+	}
+
+	void FixedUpdate()
+	{
+		TimeStep ();
+	}
+
 	void Update ()
 	{
+		/*
 		spawnTimer += Time.deltaTime;
 
 		CheckAgents ();
+
+		if (!finished)
+		{
+			simTime += Time.deltaTime;
+			stepCounter++;
+		}
+		*/
 	}
 }

@@ -7,7 +7,7 @@ public class AgentsSystem : MonoBehaviour
 	private Transform oldMolecules  = null;
 	private Transform locals        = null;
 
-	void Start ()
+	void Awake ()
 	{
 		freeMolecules = transform.Find("freeMolecules");
 		oldMolecules  = transform.Find("oldMolecules");
@@ -139,6 +139,7 @@ public class AgentsSystem : MonoBehaviour
 
 			if(local.GetComponent<LocalAgentSystem>().finished)
 			{
+				//Debug.Log("Agent system : " + local.name + " was finished in " + local.GetComponent<LocalAgentSystem>().stepCounter + " steps and " + local.GetComponent<LocalAgentSystem>().simTime + " sec.");
 				returnValue.Add(local.transform.position);
 			}
 		}
@@ -191,9 +192,14 @@ public class AgentsSystem : MonoBehaviour
 		}
 	}
 
-	void Update ()
+	private void TimeStep()
 	{
 		TimeUpdateFreeMolecules ();
 		distributeFreeMolecules ();
+	}
+
+	void FixedUpdate()
+	{
+		TimeStep ();
 	}
 }

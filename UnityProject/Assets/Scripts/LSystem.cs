@@ -20,6 +20,8 @@ public class LSystem : MonoBehaviour
 	private List<Vector3> structureIdentification;
 	private bool changed = true;
 
+	public static int stepsPerUpdate = 5;
+
 	private struct Turtle
 	{
 		public Quaternion direction;
@@ -37,14 +39,14 @@ public class LSystem : MonoBehaviour
 			this.position  = position;
 		}
 	}
-	
-	void Start ()
+
+	void Awake()
 	{
 		lSystemState = axiom;
 		updateRules ();
-
+		
 		structureIdentification = new List<Vector3> ();
-
+		
 		agentsSystem = new GameObject("agentsSystem");
 		agentsSystem.AddComponent("AgentsSystem");
 	}
@@ -102,9 +104,10 @@ public class LSystem : MonoBehaviour
 		turtle.direction = turtle.direction * Quaternion.Euler (rotate.x, rotate.y, rotate.z);
 	}
 
-	void addObject(ref Turtle turtle, GameObject gameObject)
+	void addObject(ref Turtle turtle, GameObject go)
 	{
-		GameObject mol = Instantiate(gameObject, turtle.position, turtle.direction) as GameObject;
+		go.GetComponent<MolScript> ().life = 2.0f;
+		GameObject mol = Instantiate(go, turtle.position, turtle.direction) as GameObject;
 		mol.GetComponent<Rigidbody> ().isKinematic = true;
 		mol.transform.parent = transform;
 	}
@@ -170,8 +173,8 @@ public class LSystem : MonoBehaviour
 			}
 		}
 	}
-	
-	void Update ()
+
+	private void TimeStep()
 	{
 		List<Vector3> finishedBindings = agentsSystem.GetComponent<AgentsSystem> ().CheckLocalAgentsSystems ();
 		if (finishedBindings.Count > 0)
@@ -185,7 +188,9 @@ public class LSystem : MonoBehaviour
 						char symbol = lSystemState[j];
 						if (communicatorRules.ContainsKey(symbol))
 						{
-							lSystemState = ReplaceAtIndex(j, communicatorRules[symbol], lSystemState);
+							char[] lSystemStateChars = lSystemState.ToCharArray();
+							lSystemStateChars[j] = communicatorRules[symbol];
+							lSystemState = new string(lSystemStateChars);
 						}
 					}
 				}
@@ -193,7 +198,7 @@ public class LSystem : MonoBehaviour
 			changed = true;
 			agentsSystem.GetComponent<AgentsSystem> ().RemoveFinishedLocalAgentsSystems (finishedBindings);
 		}
-
+		
 		if (changed)
 		{
 			Derive();
@@ -202,10 +207,18 @@ public class LSystem : MonoBehaviour
 		}
 	}
 
-	static string ReplaceAtIndex(int i, char value, string word)
+	void FixedUpdate()
 	{
-		char[] letters = word.ToCharArray();
-		letters[i] = value;
-		return new string (letters);
+		TimeStep ();
+	}
+
+	void Update ()
+	{
+		//
+	}
+
+	void Start ()
+	{
+		//
 	}
 }
