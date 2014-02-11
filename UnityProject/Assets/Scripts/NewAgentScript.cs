@@ -3,8 +3,8 @@ using System.Collections;
 
 public class NewAgentScript : MonoBehaviour
 {
-	public float minVelocity = 10.0f;
-	public float maxVelocity = 20.0f;
+	public float minVelocity = 5.0f;
+	public float maxVelocity = 10.0f;
 
 	// Use this for initialization
 	void Start ()
@@ -16,7 +16,7 @@ public class NewAgentScript : MonoBehaviour
 	void Update ()
 	{
 		if (rigidbody && !rigidbody.isKinematic)
-		{		
+		{
 			rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, RandomForce(), Time.deltaTime);
 			
 			// enforce minimum and maximum speeds
@@ -29,7 +29,6 @@ public class NewAgentScript : MonoBehaviour
 			{
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
-
 
 			// Bouncing - will be removed or specified otherwise
 			Vector3 pos = transform.position + rigidbody.velocity;

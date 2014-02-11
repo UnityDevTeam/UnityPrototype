@@ -3,17 +3,14 @@ using System.Collections;
 
 public class NewAgentSystem : MonoBehaviour
 {
-	/*public conditions[] Conditions;*/
-
-	public int mAgentsCount = 1000;
+	public int agentsCount = 1000;
 	public Vector3 extentBox = new Vector3(100, 100, 100);
 	public Vector3 minBox = new Vector3(-50, -50, -50);
 	public string pdbPrefabs = "testAgent2";
-
-	// Use this for initialization
+	
 	void Start ()
 	{
-		for (int i = 0; i < mAgentsCount; i++)
+		for (int i = 0; i < agentsCount; i++)
 		{
 			Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
 
