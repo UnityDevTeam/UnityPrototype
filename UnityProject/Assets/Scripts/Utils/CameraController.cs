@@ -9,7 +9,6 @@ public class CameraController : MonoBehaviour
 	public float ySpeed = 200.0f;
 	public int yMinLimit = -80;
 	public int yMaxLimit = 80;
-	public int zoomRate = 40;
 	public float moveSpeed = 0.3f;
 	public float rotationSpeed = 5.0f;
 
