@@ -3,16 +3,12 @@ using System.Collections;
 
 public class NewAgentSystem : MonoBehaviour
 {
-	public float volume  = 1000000.0f;
-	public float time    = 0.0f;
-	public float density = 0.0001f;
-
 	/*public conditions[] Conditions;*/
 
-	public int mAgentsCount = 10000;
+	public int mAgentsCount = 1000;
 	public Vector3 extentBox = new Vector3(100, 100, 100);
 	public Vector3 minBox = new Vector3(-50, -50, -50);
-	public string pdbPrefabs = "testAgent";
+	public string pdbPrefabs = "testAgent2";
 
 	// Use this for initialization
 	void Start ()

@@ -30,6 +30,8 @@ public class NewAgentScript : MonoBehaviour
 				rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
 			}
 
+
+			// Bouncing - will be removed or specified otherwise
 			Vector3 pos = transform.position + rigidbody.velocity;
 			if (Mathf.Abs(pos.x) > 50)
 			{
