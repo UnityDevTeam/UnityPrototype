@@ -40,7 +40,7 @@ public class NewAgentSystemEditor : Editor
 			
 			if (GUILayout.Button ("Remove agent types"))
 			{
-				//
+				DestroyImmediate(agentType);
 			}
 			
 			EditorGUILayout.EndVertical();
