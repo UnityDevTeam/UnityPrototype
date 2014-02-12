@@ -4,14 +4,27 @@ using System.Collections.Generic;
 
 public class NewAgentSystem : MonoBehaviour
 {
+	static public float minDensity = 0.00001f;
+	static public float maxDensity = 0.001f;
+
 	public int agentsCount = 1000;
 
 	public Vector3 extentBox = new Vector3(100, 100, 100);
 	public Vector3 minBox = new Vector3(-50, -50, -50);
 
-	[HideInInspector] public List<string> agentTypesName;
-	[HideInInspector] public List<float> agentTypesDensity;
-	
+	[HideInInspector] public List<string>         agentTypesName            = new List<string> ();
+	[HideInInspector] public List<float>          agentTypesDensityConstant = new List<float> ();
+	[HideInInspector] public List<AnimationCurve> agentTypesDensityCurve    = new List<AnimationCurve> ();
+
+	public float time = 0.0f;
+
+	public void addAgentTypesIntensity()
+	{
+		AnimationCurve ac = new AnimationCurve ();
+
+		agentTypesDensityCurve.Add (new AnimationCurve());
+	}
+
 	void Start ()
 	{
 		agentsCount = 0;
@@ -22,7 +35,7 @@ public class NewAgentSystem : MonoBehaviour
 			GameObject agentTypeObject = new GameObject(agentTypesName[i]);
 			agentTypeObject.transform.parent = transform;
 
-			int agentTypeCount = (int)(agentTypesDensity[i] * agentSystemVolume);
+			int agentTypeCount = (int)(agentTypesDensityConstant[i] * agentSystemVolume);
 
 			for (int j = 0; j < agentTypeCount; j++)
 			{
@@ -38,7 +51,12 @@ public class NewAgentSystem : MonoBehaviour
 		}
 	}
 
-	void Update () {
-	
+	void Update ()
+	{
+		/*
+		time += Time.deltaTime;
+		float agentsCount = agentTypesDensityCurve [0].Evaluate (time);
+		print (agentsCount);
+		*/
 	}
 }

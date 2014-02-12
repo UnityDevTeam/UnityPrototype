@@ -23,17 +23,28 @@ public class NewAgentSystemEditor : Editor
 		{
 			options.Remove(selAgentsNames[i]);
 
+			EditorGUILayout.LabelField(selAgentsNames[i], GUILayout.Width(100));
+
 			EditorGUILayout.BeginHorizontal ();
 
-			EditorGUILayout.LabelField(selAgentsNames[i], GUILayout.Width(100));
-			myAgentSystem.agentTypesDensity[i] = EditorGUILayout.Slider( myAgentSystem.agentTypesDensity[i], 0.00001f, 0.0001f );
+			GameObject previewObj = Resources.Load(selAgentsNames[i]) as GameObject;
+			GUILayout.Label(AssetPreview.GetAssetPreview(previewObj));
+
+			EditorGUILayout.BeginVertical();
+
+			myAgentSystem.agentTypesDensityConstant[i] = EditorGUILayout.Slider( myAgentSystem.agentTypesDensityConstant[i], NewAgentSystem.minDensity, NewAgentSystem.maxDensity );
+			GUILayoutOption[] curveOptions = { GUILayout.Width(100), GUILayout.Height(100) };
+
+			myAgentSystem.agentTypesDensityCurve[i] = EditorGUILayout.CurveField(myAgentSystem.agentTypesDensityCurve[i], Color.green, new Rect(0.0f, 0.0f, 10.0f, 0.1f), curveOptions);
 
 			if (GUILayout.Button ("Remove agent types"))
 			{
 				myAgentSystem.agentTypesName.RemoveAt(i);
-				myAgentSystem.agentTypesDensity.RemoveAt(i);
+				myAgentSystem.agentTypesDensityConstant.RemoveAt(i);
+				myAgentSystem.agentTypesDensityCurve.RemoveAt(i);
 			}
 
+			EditorGUILayout.EndVertical();
 			EditorGUILayout.EndHorizontal ();
 		}
 
@@ -45,7 +56,8 @@ public class NewAgentSystemEditor : Editor
 			if (GUILayout.Button ("Add agent type"))
 			{
 				myAgentSystem.agentTypesName.Add (options [index]);
-				myAgentSystem.agentTypesDensity.Add(0.00001f);
+				myAgentSystem.agentTypesDensityConstant.Add(0.00001f);
+				myAgentSystem.agentTypesDensityCurve.Add(new AnimationCurve());
 			}
 
 			EditorGUILayout.EndHorizontal ();
