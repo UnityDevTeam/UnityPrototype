@@ -4,17 +4,11 @@ using System.Collections.Generic;
 
 public class NewAgentSystem : MonoBehaviour
 {
-	public int agentsCount = 1000;
-
 	public Vector3 extentBox = new Vector3(100, 100, 100);
 	public Vector3 minBox = new Vector3(-50, -50, -50);
-
-	[HideInInspector] public List<string>         agentTypesName            = new List<string> ();
-	[HideInInspector] public List<float>          agentTypesDensityConstant = new List<float> ();
-	public List<AnimationCurve> agentTypesDensityCurve    = new List<AnimationCurve> ();
-
-	[HideInInspector] public AnimationCurve ac;
-
+	
+	public int agentsCount = 0;
+	private float volume = 0.0f;
 	public float time = 0.0f;
 
 	public void addAgentType(string prefabName)
@@ -23,44 +17,52 @@ public class NewAgentSystem : MonoBehaviour
 		go.AddComponent<AgentType> ();
 		go.transform.parent = transform;
 	}
-	/*
-	void Start ()
+
+	public void checkAgentsCounts (float time)
 	{
 		agentsCount = 0;
-		float agentSystemVolume = extentBox.x * extentBox.y * extentBox.z;
 
-		for (int i = 0; i < agentTypesName.Count; i++)
+		for (int i = 0; i < transform.childCount; i++)
 		{
-			GameObject agentTypeObject = new GameObject(agentTypesName[i]);
-			agentTypeObject.transform.parent = transform;
+			GameObject agentTypeObject = transform.GetChild (i).gameObject;
 
-			int agentTypeCount = (int)(agentTypesDensityConstant[i] * agentSystemVolume);
+			int newAgentTypeCount = (int)(agentTypeObject.GetComponent<AgentType>().evaluate(time) * volume);
+			agentsCount += newAgentTypeCount;
 
-			for (int j = 0; j < agentTypeCount; j++)
+			if(newAgentTypeCount < agentTypeObject.transform.childCount)
 			{
-				Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
-				
-				GameObject prefab = Resources.Load(agentTypesName[i]) as GameObject;
-				GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-				mol.transform.parent = agentTypeObject.transform;
-				mol.transform.localPosition = position;
+				int countDelta = agentTypeObject.transform.childCount - newAgentTypeCount;
+				for(int j = 0; j < countDelta; j++)
+				{
+					DestroyImmediate(agentTypeObject.transform.GetChild(0).gameObject);
+				}
 			}
-
-			agentsCount += agentTypeCount;
+			else if(newAgentTypeCount > agentTypeObject.transform.childCount)
+			{
+				int countDelta =  newAgentTypeCount - agentTypeObject.transform.childCount;
+				for(int j = 0; j < countDelta; j++)
+				{
+					Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
+					
+					GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
+					GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
+					mol.transform.parent = agentTypeObject.transform;
+					mol.transform.localPosition = position;
+				}
+			}
 		}
 	}
-	*/
 
 	void Start ()
 	{
 		agentsCount = 0;
-		float agentSystemVolume = extentBox.x * extentBox.y * extentBox.z;
+		volume = extentBox.x * extentBox.y * extentBox.z;
 		
 		for (int i = 0; i < transform.childCount; i++)
 		{
 			GameObject agentTypeObject = transform.GetChild(i).gameObject;
 			
-			int agentTypeCount = (int)(agentTypeObject.GetComponent<AgentType>().densityConstant * agentSystemVolume);
+			int agentTypeCount = (int)(agentTypeObject.GetComponent<AgentType>().densityConstant * volume);
 			
 			for (int j = 0; j < agentTypeCount; j++)
 			{
@@ -79,7 +81,6 @@ public class NewAgentSystem : MonoBehaviour
 	void Update ()
 	{
 		time += Time.deltaTime;
-		float agentsCount = ac.Evaluate (time);
-		print (agentsCount);
+		checkAgentsCounts (time);
 	}
 }

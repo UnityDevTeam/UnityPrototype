@@ -6,7 +6,7 @@ public class AgentType : MonoBehaviour
 	static public float minDensity = 0.00001f;
 	static public float maxDensity = 0.001f;
 
-	public AnimationCurve densityFunction = AnimationCurve.Linear(0.0f, minDensity, 10.0f, minDensity);
+	public AnimationCurve densityFunction = AnimationCurve.Linear(0.0f, minDensity * 100.0f, 10.0f, minDensity * 100.0f);
 	public float          densityConstant = minDensity;
 	public bool           isConstant      = true;
 
@@ -14,11 +14,11 @@ public class AgentType : MonoBehaviour
 	{
 		float ret = densityConstant;
 
-		if (isConstant)
+		if (!isConstant)
 		{
 			if(densityFunction != null)
 			{
-				ret = densityFunction.Evaluate (time);
+				ret = densityFunction.Evaluate (time) / 100.0f;
 			}
 		}
 
