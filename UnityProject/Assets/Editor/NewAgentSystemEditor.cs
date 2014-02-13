@@ -72,9 +72,9 @@ public class NewAgentSystemEditor : Editor
 		}
 
 		EditorGUILayout.Separator ();
-		float agentSpeed = NewAgentScript.minVelocity;
+		float agentSpeed = RandomMove.minVelocity;
 		agentSpeed = EditorGUILayout.Slider ("Agents speed : ", agentSpeed, 5.0f, 40.0f);
-		NewAgentScript.minVelocity = agentSpeed;
-		NewAgentScript.maxVelocity = agentSpeed + 10.0f;
+		RandomMove.minVelocity = agentSpeed;
+		RandomMove.maxVelocity = agentSpeed + 10.0f;
 	}
 }

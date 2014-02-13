@@ -3,9 +3,6 @@ using System.Collections;
 
 public class NewAgentScript : MonoBehaviour
 {
-	public static float minVelocity = 5.0f;
-	public static float maxVelocity = 10.0f;
-
 	// Use this for initialization
 	void Start ()
 	{
@@ -14,7 +11,7 @@ public class NewAgentScript : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update ()
-	{
+	{/*
 		if (rigidbody && !rigidbody.isKinematic)
 		{
 			rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, RandomForce(), Time.deltaTime);
@@ -46,13 +43,14 @@ public class NewAgentScript : MonoBehaviour
 			{
 				rigidbody.velocity = new Vector3 (  rigidbody.velocity.x,  rigidbody.velocity.y, -rigidbody.velocity.z);
 			}
-		}
+		}*/
 	}
-
+	/*
 	private Vector3 RandomForce()
 	{
 		Vector3 randomize = new Vector3 ((Random.value *2) -1, (Random.value * 2) -1, (Random.value * 2) -1);
 		randomize.Normalize();
 		return randomize;
 	}
+	*/
 }

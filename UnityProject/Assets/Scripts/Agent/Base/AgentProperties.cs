@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AgentProperties
+public class AgentProperties : ScriptableObject
 {
 	public Vector3 position;
 	public Vector3 velocity;
