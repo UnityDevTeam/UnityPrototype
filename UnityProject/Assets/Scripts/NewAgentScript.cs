@@ -3,8 +3,8 @@ using System.Collections;
 
 public class NewAgentScript : MonoBehaviour
 {
-	public float minVelocity = 5.0f;
-	public float maxVelocity = 10.0f;
+	public static float minVelocity = 5.0f;
+	public static float maxVelocity = 10.0f;
 
 	// Use this for initialization
 	void Start ()

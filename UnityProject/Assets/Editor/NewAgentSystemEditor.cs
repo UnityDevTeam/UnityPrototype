@@ -15,7 +15,8 @@ public class NewAgentSystemEditor : Editor
 		NewAgentSystem myAgentSystem = (NewAgentSystem)target;
 		
 		List<string> options = new List<string> (allOptions);
-		
+
+		EditorGUILayout.Separator ();
 		EditorGUILayout.LabelField("Defined agent types : ");
 		for (int i = 0; i < myAgentSystem.transform.childCount; i++)
 		{
@@ -32,23 +33,32 @@ public class NewAgentSystemEditor : Editor
 			EditorGUILayout.BeginVertical();
 
 			AgentType agentTypeScript = agentType.GetComponent<AgentType>();
-			
-			agentTypeScript.densityConstant = EditorGUILayout.Slider( agentTypeScript.densityConstant, AgentType.minDensity, AgentType.maxDensity );
 
-			GUILayoutOption[] curveOptions = { GUILayout.Width(100), GUILayout.Height(100) };
-			agentTypeScript.densityFunction = EditorGUILayout.CurveField(agentTypeScript.densityFunction, Color.green, new Rect(0.0f, 0.0f, 10.0f, 0.1f), curveOptions);
-			
+			agentTypeScript.isConstant = EditorGUILayout.Toggle("Is density constant ", agentTypeScript.isConstant);
+
+			if(agentTypeScript.isConstant)
+			{
+				agentTypeScript.densityConstant = EditorGUILayout.Slider( agentTypeScript.densityConstant, AgentType.minDensity, AgentType.maxDensity );
+			}
+			else
+			{
+				agentTypeScript.densityFunction = EditorGUILayout.CurveField(agentTypeScript.densityFunction, Color.green, new Rect(0.0f, 0.0f, 10.0f, 0.1f), GUILayout.Height(80));
+			}
+
+			EditorGUILayout.EndVertical();
+			EditorGUILayout.EndHorizontal ();
+
 			if (GUILayout.Button ("Remove agent types"))
 			{
 				DestroyImmediate(agentType);
 			}
-			
-			EditorGUILayout.EndVertical();
-			EditorGUILayout.EndHorizontal ();
 		}
-		
+
 		if (options.Count != 0)
 		{
+			EditorGUILayout.Separator ();
+			EditorGUILayout.LabelField("Add new agent types : ");
+
 			EditorGUILayout.BeginHorizontal ();
 			
 			index = EditorGUILayout.Popup (index, options.ToArray ());
@@ -60,5 +70,11 @@ public class NewAgentSystemEditor : Editor
 			
 			EditorGUILayout.EndHorizontal ();
 		}
+
+		EditorGUILayout.Separator ();
+		float agentSpeed = NewAgentScript.minVelocity;
+		agentSpeed = EditorGUILayout.Slider ("Agents speed : ", agentSpeed, 5.0f, 40.0f);
+		NewAgentScript.minVelocity = agentSpeed;
+		NewAgentScript.maxVelocity = agentSpeed + 10.0f;
 	}
 }

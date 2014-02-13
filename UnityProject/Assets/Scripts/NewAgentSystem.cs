@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class NewAgentSystem : MonoBehaviour
 {
-	public Vector3 extentBox = new Vector3(100, 100, 100);
-	public Vector3 minBox = new Vector3(-50, -50, -50);
-	
+	public Vector3 systemSize = new Vector3(100, 100, 100);	
 	public int agentsCount = 0;
-	private float volume = 0.0f;
 	public float time = 0.0f;
+
+	private Vector3 minBox;
+	private float volume;
 
 	public void addAgentType(string prefabName)
 	{
@@ -42,7 +42,7 @@ public class NewAgentSystem : MonoBehaviour
 				int countDelta =  newAgentTypeCount - agentTypeObject.transform.childCount;
 				for(int j = 0; j < countDelta; j++)
 				{
-					Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
+					Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
 					
 					GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
 					GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
@@ -56,7 +56,8 @@ public class NewAgentSystem : MonoBehaviour
 	void Start ()
 	{
 		agentsCount = 0;
-		volume = extentBox.x * extentBox.y * extentBox.z;
+		minBox = new Vector3 (transform.position.x - systemSize.x / 2.0f, transform.position.y - systemSize.y / 2.0f, transform.position.z - systemSize.z / 2.0f);
+		volume = systemSize.x * systemSize.y * systemSize.z;
 		
 		for (int i = 0; i < transform.childCount; i++)
 		{
@@ -66,7 +67,8 @@ public class NewAgentSystem : MonoBehaviour
 			
 			for (int j = 0; j < agentTypeCount; j++)
 			{
-				Vector3 position = new Vector3 ( Random.value * extentBox.x, Random.value * extentBox.y, Random.value * extentBox.z ) + minBox;
+
+				Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
 				
 				GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
 				GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
