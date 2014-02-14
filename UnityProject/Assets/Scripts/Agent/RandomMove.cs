@@ -4,8 +4,7 @@ using System.Collections;
 [AddComponentMenu("Agent/Behaviour/RandomMove")]
 public class RandomMove : BehaviourUnary
 {
-	public static float minVelocity = 5.0f;
-	public static float maxVelocity = 10.0f;
+	public static float speed = 5.0f;
 	
 	private Vector3 randomDirection = Vector3.zero;
 	private float randomTime = 0.0f;
@@ -26,7 +25,7 @@ public class RandomMove : BehaviourUnary
 			gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<MeshFilter>().mesh.bounds.extents.x;
 		}
 
-		randomDirection = Random.Range (minVelocity, maxVelocity) * randomNormalVector ();
+		randomDirection = speed * randomNormalVector ();
 	}
 
 	void Update ()
@@ -35,23 +34,14 @@ public class RandomMove : BehaviourUnary
 
 		if (timer > randomTime)
 		{
-			randomDirection = Random.Range (minVelocity, maxVelocity) * randomNormalVector ();
+			randomDirection = speed * randomNormalVector ();
 
 			randomTime = Random.Range (0.5f, 2.0f);
 			timer = 0.0f;
 		}
 
 		rigidbody.velocity = Vector3.Lerp (rigidbody.velocity, randomDirection, Time.deltaTime );
-
-		float speed = rigidbody.velocity.magnitude;
-		if (speed > maxVelocity)
-		{
-			rigidbody.velocity = rigidbody.velocity.normalized * maxVelocity;
-		}
-		else if (speed < minVelocity)
-		{
-			rigidbody.velocity = rigidbody.velocity.normalized * minVelocity;
-		}
+		rigidbody.velocity = rigidbody.velocity.normalized * speed;
 	}
 
 	private Vector3 randomNormalVector()
