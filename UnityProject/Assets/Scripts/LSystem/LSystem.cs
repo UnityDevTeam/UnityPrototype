@@ -4,97 +4,76 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public string   axiom                = "A";
-	public string[] lSystemRulesStr      = {"A=(1.0)G", "F=(0.97)mG", "F=(0.03)mBG", "T=(1)[G]"};
-	public string[] communicatorRulesStr = {"G=F", "B=T"};
-	public string   lSystemState         = "";
+	public Symbol       axiom = new Symbol ("A");
+	public List<Symbol> state = new List<Symbol>();
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
-
+	
 	private GameObject agentsSystem = null;
+	private Rules rules = new Rules ();
 
-	private Rules                  lSystemRules      = new Rules ();
-	private Dictionary<char, char> communicatorRules = new Dictionary<char, char> ();
-
-	private List<Vector3> structureIdentification;
-	private bool changed = true;
-
-	public static int stepsPerUpdate = 5;
-
-	private struct Turtle
-	{
-		public Quaternion direction;
-		public Vector3    position;
-		
-		public Turtle (Turtle other)
-		{
-			this.direction = other.direction;
-			this.position  = other.position;
-		}
-		
-		public Turtle (Quaternion direction, Vector3 position)
-		{
-			this.direction = direction;
-			this.position  = position;
-		}
-	}
-
+	public string strState;
+	
+	Dictionary<ISymbol, string> testing;
+	
 	void Awake()
 	{
-		lSystemState = axiom;
-		updateRules ();
+		ISymbol.EqualityComparer comparer = new ISymbol.EqualityComparer ();
+		testing = new Dictionary<ISymbol, string> (comparer);
+
+		Symbol aaa = new Symbol("aaa");
+		Symbol bbb = new Symbol("bbb");
+		Symbol ccc = new Symbol("ccc");
+
+		Symbol a = new Symbol ("aaa");
+
+		CommunicationSymbol cs = new CommunicationSymbol ("aaa", "G", new Vector3 (1.0f, 1.0f, 1.0f), new Quaternion (1.0f, 1.0f, 1.0f, 1.0f), 10.0f, null);
+		CommunicationSymbol cs1 = new CommunicationSymbol ("aaa", "A", new Vector3 (1.0f, 1.0f, 1.0f), new Quaternion (1.0f, 1.0f, 1.0f, 1.0f), 10.0f, null);
+
+		cs1.operationIdentifierVar = false;
+
+		testing.Add(aaa, "a");
+		testing.Add(bbb, "b");
+		testing.Add(ccc, "c");
+		testing.Add(cs, "d");
+
+		if (aaa == a) {
+			print ("1 testing");
+		}
 		
-		structureIdentification = new List<Vector3> ();
 		
+		if (testing.ContainsKey (cs1))
+		{
+			print ("2 testing");
+		}
+		/*
+		state.Add(axiom);
+				
 		agentsSystem = new GameObject("agentsSystem");
 		agentsSystem.AddComponent("AgentsSystem");
+		*/
 	}
-
-	public void updateRules()
-	{
-		lSystemRules.Clear ();
-		communicatorRules.Clear ();
-
-		for (int i = 0; i < lSystemRulesStr.Length; i++)
-		{
-			Rule rule = Rule.Build (lSystemRulesStr[i]);
-			lSystemRules.Add (rule);
-		}
-
-		for (int i = 0; i < communicatorRulesStr.Length; i++)
-		{
-			string[] ruleSides = communicatorRulesStr[i].Split('=');
-
-			if (ruleSides.Length != 2)
-			{
-				// TODO: need some kind of warning
-				return;
-			}
-
-			communicatorRules.Add(ruleSides[0][0], ruleSides[1][0]);
-		}
-	}
-		
+	
 	void Derive ()
 	{
-		string newState = "";
-		for (int j = 0; j < lSystemState.Length; j++)
+		List<Symbol> newState = new List<Symbol> ();
+		for (int j = 0; j < state.Count; j++)
 		{
-			string module = lSystemState [j] + "";
+			Symbol module = state[j];
 			
-			if (!lSystemRules.Contains (module))
+			if (!rules.Contains (module))
 			{
-				newState += module;
+				newState.Add(module);
 				continue;
 			}
 			
-			Rule rule = lSystemRules.Get (module);
-			newState += rule.successor;
+			Rule rule = rules.Get (module);
+			newState.AddRange(rule.successor);
 		}
-		lSystemState = newState;
+		state = newState;
 	}
-
+	
 	void updateTurtle(ref Turtle turtle, GameObject gameObject, int bindingIndex)
 	{
 		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[bindingIndex];
@@ -103,7 +82,7 @@ public class LSystem : MonoBehaviour
 		turtle.position  = turtle.position + turtle.direction * move;
 		turtle.direction = turtle.direction * Quaternion.Euler (rotate.x, rotate.y, rotate.z);
 	}
-
+	
 	void addObject(ref Turtle turtle, GameObject go)
 	{
 		go.GetComponent<MolScript> ().life = 2.0f;
@@ -111,11 +90,9 @@ public class LSystem : MonoBehaviour
 		mol.GetComponent<Rigidbody> ().isKinematic = true;
 		mol.transform.parent = transform;
 	}
-
+	
 	void DestroyOld()
 	{
-		structureIdentification.Clear ();
-
 		int childs = transform.childCount;
 		
 		for (int i = childs - 1; i >= 0; i--)
@@ -130,95 +107,52 @@ public class LSystem : MonoBehaviour
 		
 		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
 		Stack<Turtle> stack = new Stack<Turtle> ();
-
-		for (int i = 0; i < lSystemState.Length; i++)
+		/*
+		for (int i = 0; i < state.Count; i++)
 		{
-			string module = lSystemState [i] + "";
-
-			if (module == "m")
+			Symbol module = state[i];
+			
+			if (module.name == "m")
 			{
 				if (i > 0)
-					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module)], 0);
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module)]);
-				structureIdentification.Add(current.position);
+					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module.name)], 0);
+				addObject(ref current, molecule_objects[molecule_names.IndexOf(module.name)]);
 			}
 			else if (module == "[")
 			{
 				stack.Push(current);
 				current = new Turtle (current);
-
+				
 				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
 				addObject(ref current, molecule_objects[molecule_names.IndexOf("m")]);
-				structureIdentification.Add(current.position);
 			}
 			else if (module == "]")
 			{
 				current = stack.Pop ();
-				structureIdentification.Add(Vector3.zero);
-			}
-			else if (module == "G")
-			{
-				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 0);
-
-				agentsSystem.GetComponent<AgentsSystem>().createLocalSystem(i.ToString(), current.position, current.direction);
-				structureIdentification.Add(current.position);
-			}
-			else if (module == "B")
-			{
-				Turtle tempTurtle = new Turtle(current);
-				updateTurtle(ref tempTurtle, molecule_objects[molecule_names.IndexOf("m")], 1);
-
-				agentsSystem.GetComponent<AgentsSystem>().createLocalSystem(i.ToString(), tempTurtle.position, tempTurtle.direction);
-				structureIdentification.Add(tempTurtle.position);
 			}
 		}
+		*/
 	}
 
+	void Query()
+	{
+		strState = "";
+		for (int i = 0; i < state.Count; i++)
+		{
+			strState += state[i].name;
+		}
+
+	}
+	
 	private void TimeStep()
 	{
-		List<Vector3> finishedBindings = agentsSystem.GetComponent<AgentsSystem> ().CheckLocalAgentsSystems ();
-		if (finishedBindings.Count > 0)
-		{
-			for (int i = 0; i < finishedBindings.Count; i++)
-			{
-				for(int j = 0; j < structureIdentification.Count; j++)
-				{
-					if(structureIdentification[j] == finishedBindings[i])
-					{
-						char symbol = lSystemState[j];
-						if (communicatorRules.ContainsKey(symbol))
-						{
-							char[] lSystemStateChars = lSystemState.ToCharArray();
-							lSystemStateChars[j] = communicatorRules[symbol];
-							lSystemState = new string(lSystemStateChars);
-						}
-					}
-				}
-			}
-			changed = true;
-			agentsSystem.GetComponent<AgentsSystem> ().RemoveFinishedLocalAgentsSystems (finishedBindings);
-		}
-		
-		if (changed)
-		{
-			Derive();
-			Interpret ();
-			changed = false;
-		}
+		Derive();
+		Query ();
+		Interpret ();
 	}
-
+	
 	void FixedUpdate()
 	{
-		TimeStep ();
-	}
-
-	void Update ()
-	{
-		//
-	}
-
-	void Start ()
-	{
-		//
+		//TimeStep ();
 	}
 }

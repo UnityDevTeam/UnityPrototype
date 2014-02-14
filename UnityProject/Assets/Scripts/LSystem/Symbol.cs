@@ -1,61 +1,71 @@
 ﻿using System.Collections.Generic;
 
-public class Symbol
+public class ISymbol
 {
-	private bool _isTerm = false;
-	private string _name;
-	private Dictionary<string, float> _parameters = new Dictionary<string, float >();
+	public string name;
 
-
-	public bool isTerm
+	public class EqualityComparer : IEqualityComparer<ISymbol>
 	{
-		get {
-			return this._isTerm;
+		public bool Equals(ISymbol x, ISymbol y)
+		{
+			if (x.GetType () == y.GetType ())
+			{
+				return x.Equals(y);
+			}
+			else
+			{
+				return false;
+			}
+			
 		}
+		
+		public int GetHashCode(ISymbol x)
+		{
+			return  x.name.GetHashCode ();
+		}
+	}
+}
+
+public class Symbol : ISymbol
+{
+	public Symbol()
+	{
+		name = "";
+	}
+
+	public Symbol( string nName )
+	{
+		name = nName;
+	}
+
+	public static bool operator ==(Symbol x, Symbol y) 
+	{
+		return (x.name == y.name);
 	}
 	
-	public string name
+	public static bool operator !=(Symbol x, Symbol y) 
 	{
-		get {
-			return this.name;
-		}
-	}
-	
-	public Dictionary<string, float> parameters
-	{
-		get {
-			return this._parameters;
-		}
+		return (x.name != y.name);
 	}
 
-	public void setParameter( string paramName, float paramValue )
+	public override bool Equals(System.Object obj)
 	{
-		if (_parameters.ContainsKey (paramName))
+		if (obj == null)
 		{
-			_parameters[paramName] = paramValue;
+			return false;
 		}
-	}
 
-	public void addParameter( string paramName, float paramValue )
-	{
-		_parameters.Add (paramName, paramValue);
-	}
-
-	public void removeParameter( string paramName)
-	{
-		if (_parameters.ContainsKey (paramName))
+		Symbol p = obj as Symbol;
+		if ((System.Object)p == null)
 		{
-			_parameters.Remove(paramName);
+			return false;
 		}
+
+		return (name == p.name);
 	}
 
-	public float getParameter( string paramName)
+	public override int GetHashCode()
 	{
-		if (_parameters.ContainsKey (paramName))
-		{
-			return _parameters[paramName];
-		}
-
-		return 0.0f;
+		return name.GetHashCode();
 	}
 }

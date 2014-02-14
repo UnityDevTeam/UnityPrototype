@@ -3,13 +3,13 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
-[CustomEditor(typeof(LSystem))]
-public class LSystemEditor : Editor
+[CustomEditor(typeof(StrLSystem))]
+public class StrLSystemEditor : Editor
 {
 	public override void OnInspectorGUI()
 	{
 		DrawDefaultInspector();
-		LSystem myLSystemScript = (LSystem)target;
+		StrLSystem myLSystemScript = (StrLSystem)target;
 
 		if (GUILayout.Button ("Update rules"))
 		{
