@@ -8,6 +8,8 @@ public class NewAgentSystem : MonoBehaviour
 	public int agentsCount = 0;
 	public float time = 0.0f;
 
+
+	static public float agentScale = 1.0f;
 	private Vector3 minBox;
 	private float volume;
 
@@ -53,6 +55,23 @@ public class NewAgentSystem : MonoBehaviour
 		}
 	}
 
+	public void scaleAgents ()
+	{
+		for (int i = 0; i < transform.childCount; i++)
+		{
+			GameObject agentTypeObject = transform.GetChild (i).gameObject;
+			
+
+			for(int j = 0; j < agentTypeObject.transform.childCount; j++)
+			{
+				Transform agentTransform = agentTypeObject.transform.GetChild(j);
+
+				agentTransform.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
+
+			}
+		}
+	}
+
 	void Start ()
 	{
 		agentsCount = 0;
@@ -84,5 +103,6 @@ public class NewAgentSystem : MonoBehaviour
 	{
 		time += Time.deltaTime;
 		checkAgentsCounts (time);
+		scaleAgents ();
 	}
 }

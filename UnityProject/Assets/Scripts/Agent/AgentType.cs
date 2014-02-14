@@ -4,7 +4,7 @@ using System.Collections;
 public class AgentType : MonoBehaviour
 {
 	static public float minDensity = 0.00001f;
-	static public float maxDensity = 0.001f;
+	static public float maxDensity = 0.1f;
 
 	public AnimationCurve densityFunction = AnimationCurve.Linear(0.0f, minDensity * 100.0f, 10.0f, minDensity * 100.0f);
 	public float          densityConstant = minDensity;
