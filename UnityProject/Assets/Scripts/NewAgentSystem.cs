@@ -5,11 +5,12 @@ using System.Collections.Generic;
 public class NewAgentSystem : MonoBehaviour
 {
 	public Vector3 systemSize = new Vector3(100, 100, 100);	
-	public int agentsCount = 0;
-	public float time = 0.0f;
 
+	[HideInInspector] public int agentsCount = 0;
+	[HideInInspector] public float time      = 0.0f;
+	[HideInInspector] public float agentScale = 1.0f;
 
-	static public float agentScale = 1.0f;
+	private float oldAgentScale    = 1.0f;
 	private Vector3 minBox;
 	private float volume;
 
@@ -70,6 +71,8 @@ public class NewAgentSystem : MonoBehaviour
 
 			}
 		}
+
+		oldAgentScale = agentScale;
 	}
 
 	void Start ()
@@ -103,6 +106,10 @@ public class NewAgentSystem : MonoBehaviour
 	{
 		time += Time.deltaTime;
 		checkAgentsCounts (time);
-		scaleAgents ();
+
+		if (agentScale != oldAgentScale)
+		{
+			scaleAgents ();
+		}
 	}
 }

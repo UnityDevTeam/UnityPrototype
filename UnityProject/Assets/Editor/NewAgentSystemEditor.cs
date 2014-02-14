@@ -17,6 +17,10 @@ public class NewAgentSystemEditor : Editor
 		List<string> options = new List<string> (allOptions);
 
 		EditorGUILayout.Separator ();
+		EditorGUILayout.LabelField("Agents count : " + myAgentSystem.agentsCount);
+		EditorGUILayout.LabelField("Time : " + myAgentSystem.time);
+
+		EditorGUILayout.Separator ();
 		EditorGUILayout.LabelField("Defined agent types : ");
 		for (int i = 0; i < myAgentSystem.transform.childCount; i++)
 		{
@@ -78,6 +82,6 @@ public class NewAgentSystemEditor : Editor
 		RandomMove.maxVelocity = agentSpeed + 10.0f;
 
 		EditorGUILayout.Separator ();
-		NewAgentSystem.agentScale = EditorGUILayout.Slider ("Agents scale : ", NewAgentSystem.agentScale, 1.0f, 100.0f);
+		myAgentSystem.agentScale = EditorGUILayout.Slider ("Agents scale : ", myAgentSystem.agentScale, 1.0f, 100.0f);
 	}
 }
