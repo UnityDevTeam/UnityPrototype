@@ -13,16 +13,14 @@ public class CommunicationQueryList : MonoBehaviour
 		return new List<CommunicationQuery> (queries.Values);
 	}
 
-	public void addQueries (List<CommunicationQuery> newQueries)
+	public void Add(CommunicationQuery query)
 	{
-		// kind of dirty trick
-		queries.Clear ();
+		queries.Add (query.symbolId, query);
+	}
 
-		for (int i = 0; i < newQueries.Count; i++)
-		{
-			if(!queries.ContainsKey(newQueries[i].symbolId))
-				queries.Add(newQueries[i].symbolId, newQueries[i]);
-		}
+	public void Remove(int symbolId)
+	{
+		queries.Remove (symbolId);
 	}
 
 	void Start ()

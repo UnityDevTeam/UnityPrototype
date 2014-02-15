@@ -17,8 +17,7 @@ public class LSystem : MonoBehaviour
 	int counter = 0;
 
 	float timer = 0.0f;
-
-
+	
 	private GameObject communicationQueryObject = null;
 	
 	void Awake()
@@ -132,7 +131,14 @@ public class LSystem : MonoBehaviour
 					symbolIdCounter++;
 
 					newState.Add(newSymbol);
+
+					if(newSymbol.GetType() == typeof(CommunicationSymbol))
+					{
+						communicationQueryObject.GetComponent<CommunicationQueryList> ().Add(createQuery((CommunicationSymbol)newSymbol));
+					}
 				}
+
+				communicationQueryObject.GetComponent<CommunicationQueryList> ().Remove(state[j].id);
 			}
 			else
 			{
@@ -177,6 +183,11 @@ public class LSystem : MonoBehaviour
 		return queries;
 	}
 
+	private CommunicationQuery createQuery(CommunicationSymbol symbol)
+	{
+		return new CommunicationQuery(symbol.id, 0, symbol.operationPosition, symbol.operationOrientation, symbol.operationResultType, symbol.operationTimer);
+	}
+	
 	private void preEnviromentStep()
 	{
 		List<CommunicationQuery> queries = communicationQueryObject.GetComponent<CommunicationQueryList> ().getQueries ();
@@ -200,11 +211,6 @@ public class LSystem : MonoBehaviour
 		}
 	}
 
-	private void postEnviromentStep ()
-	{
-		communicationQueryObject.GetComponent<CommunicationQueryList> ().addQueries (sendCommunicationQuerries());
-	}
-	
 	private void interpret ()
 	{
 		// move turtle move
@@ -215,7 +221,6 @@ public class LSystem : MonoBehaviour
 		preEnviromentStep ();
 		derive();
 		interpret ();
-		postEnviromentStep ();
 
 		// debug
 		printState ();
