@@ -4,7 +4,7 @@ using System;
 
 public class Rules
 {
-	private Dictionary<Symbol, List<Rule>> _lookupTable = new Dictionary<Symbol, List<Rule>> ();
+	private Dictionary<ISymbol, List<Rule>> _lookupTable = new Dictionary<ISymbol, List<Rule>> (new ISymbol.EqualityComparer ());
 	
 	public void Add (Rule rule)
 	{
@@ -27,19 +27,33 @@ public class Rules
 		_lookupTable.Clear ();
 	}
 	
-	public bool Contains (Symbol module)
+	public bool Contains (ISymbol module)
 	{
 		return _lookupTable.ContainsKey(module);
 	}
+
+	private List<Rule> conditioning(ISymbol module, List<Rule> rules)
+	{
+		List<Rule> result = new List<Rule> ();
+
+		for (int i = 0; i < rules.Count; i++)
+		{
+			if(rules[i].passCondition(module))
+				result.Add(rules[i]);
+		}
+
+		return result;
+	}
 	
-	public Rule Get (Symbol module)
+	public Rule Get (ISymbol module)
 	{
 		if (!_lookupTable.ContainsKey (module))
 		{
 			return null;
 		}
 		
-		List<Rule> list = _lookupTable [module];
+		List<Rule> list = conditioning(module, _lookupTable [module]);
+
 		
 		if (list.Count == 1)
 		{

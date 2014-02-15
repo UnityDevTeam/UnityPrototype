@@ -4,63 +4,106 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public Symbol       axiom = new Symbol ("A");
-	public List<Symbol> state = new List<Symbol>();
+	public Symbol        axiom = new Symbol ("A");
+	public List<ISymbol> state = new List<ISymbol>();
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
-	
-	private GameObject agentsSystem = null;
-	private Rules rules = new Rules ();
 
+	private Rules rules = new Rules ();
+	private int symbolIdCounter = 0;
 	public string strState;
-	
-	Dictionary<ISymbol, string> testing;
+
+	int counter = 0;
+
+	float timer = 0.0f;
+
+
+	private GameObject communicationQueryObject = null;
 	
 	void Awake()
 	{
-		ISymbol.EqualityComparer comparer = new ISymbol.EqualityComparer ();
-		testing = new Dictionary<ISymbol, string> (comparer);
-
-		Symbol aaa = new Symbol("aaa");
-		Symbol bbb = new Symbol("bbb");
-		Symbol ccc = new Symbol("ccc");
-
-		Symbol a = new Symbol ("aaa");
-
-		CommunicationSymbol cs = new CommunicationSymbol ("aaa", "G", new Vector3 (1.0f, 1.0f, 1.0f), new Quaternion (1.0f, 1.0f, 1.0f, 1.0f), 10.0f, null);
-		CommunicationSymbol cs1 = new CommunicationSymbol ("aaa", "A", new Vector3 (1.0f, 1.0f, 1.0f), new Quaternion (1.0f, 1.0f, 1.0f, 1.0f), 10.0f, null);
-
-		cs1.operationIdentifierVar = false;
-
-		testing.Add(aaa, "a");
-		testing.Add(bbb, "b");
-		testing.Add(ccc, "c");
-		testing.Add(cs, "d");
-
-		if (aaa == a) {
-			print ("1 testing");
-		}
-		
-		
-		if (testing.ContainsKey (cs1))
+		if (!communicationQueryObject)
 		{
-			print ("2 testing");
+			communicationQueryObject = GameObject.Find("Communication Query");
+			if(!communicationQueryObject)
+			{
+				communicationQueryObject = new GameObject("Communication Query");
+				communicationQueryObject.AddComponent<CommunicationQueryList>();
+			}
 		}
-		/*
+
 		state.Add(axiom);
-				
-		agentsSystem = new GameObject("agentsSystem");
-		agentsSystem.AddComponent("AgentsSystem");
-		*/
+
+		setTestRules ();
+	}
+
+	void setTestRules()
+	{
+		Symbol A = new Symbol("A");
+		CommunicationSymbol ACG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		List<ISymbol> ARS = new List<ISymbol> ();
+		ARS.Add (ACG);
+
+		Rule P1 = new Rule (A, ARS, 1.0f);
+
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol C1 = new CommunicationSymbol ("C");
+		C1.operationIdentifier = "G";
+
+		Symbol m = new Symbol("m");
+
+		CommunicationSymbol C1CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		List<ISymbol> C1RS = new List<ISymbol> ();
+		C1RS.Add (m);
+		C1RS.Add (C1CG);
+
+		CommunicationCondition C1C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+
+		Rule P2 = new Rule (C1, C1RS, C1C, 0.5f);
+
+		////////////////////////////////////////////////////////////////////////
+		
+		CommunicationSymbol C2CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		CommunicationSymbol C2CB = new CommunicationSymbol ("C", "B", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+
+		List<ISymbol> C2RS = new List<ISymbol> ();
+		C2RS.Add (m);
+		C2RS.Add (C2CG);
+		C2RS.Add (C2CB);
+		
+		Rule P3 = new Rule (C1, C2RS, C1C, 0.5f);
+
+		/////////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol C2 = new CommunicationSymbol ("C");
+		C2.operationIdentifier = "B";
+		
+		Symbol b = new Symbol("b");
+		
+		CommunicationSymbol C3CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		List<ISymbol> C3RS = new List<ISymbol> ();
+		C3RS.Add (b);
+		C3RS.Add (C3CG);
+		
+		Rule P4 = new Rule (C2, C3RS, C1C, 1.0f);
+
+		/////////////////////////////////////////////////////////////////////////
+
+		rules.Add (P1);
+		rules.Add (P2);
+		rules.Add (P3);
+		rules.Add (P4);
 	}
 	
-	void Derive ()
+	void derive ()
 	{
-		List<Symbol> newState = new List<Symbol> ();
+		List<ISymbol> newState = new List<ISymbol> ();
+
 		for (int j = 0; j < state.Count; j++)
 		{
-			Symbol module = state[j];
+			ISymbol module = state[j];
 			
 			if (!rules.Contains (module))
 			{
@@ -69,90 +112,124 @@ public class LSystem : MonoBehaviour
 			}
 			
 			Rule rule = rules.Get (module);
-			newState.AddRange(rule.successor);
+			if(rule != null)
+			{
+				List<ISymbol> newSymbols = rule.successor;
+				for(int i = 0; i < newSymbols.Count; i++)
+				{
+					ISymbol newSymbol = null;
+
+					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
+					{
+						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
+					}
+					else
+					{
+						newSymbol = new Symbol((Symbol)newSymbols[i]);
+					}
+
+					newSymbol.id = symbolIdCounter;
+					symbolIdCounter++;
+
+					newState.Add(newSymbol);
+				}
+			}
+			else
+			{
+				newState.Add(module);
+			}
 		}
 		state = newState;
 	}
-	
-	void updateTurtle(ref Turtle turtle, GameObject gameObject, int bindingIndex)
-	{
-		Vector3 rotate = gameObject.GetComponent<MolScript>().bindingOrientations[bindingIndex];
-		Vector3 move   = gameObject.GetComponent<MolScript>().bindingPositions[bindingIndex]; 
-		
-		turtle.position  = turtle.position + turtle.direction * move;
-		turtle.direction = turtle.direction * Quaternion.Euler (rotate.x, rotate.y, rotate.z);
-	}
-	
-	void addObject(ref Turtle turtle, GameObject go)
-	{
-		go.GetComponent<MolScript> ().life = 2.0f;
-		GameObject mol = Instantiate(go, turtle.position, turtle.direction) as GameObject;
-		mol.GetComponent<Rigidbody> ().isKinematic = true;
-		mol.transform.parent = transform;
-	}
-	
-	void DestroyOld()
-	{
-		int childs = transform.childCount;
-		
-		for (int i = childs - 1; i >= 0; i--)
-		{
-			GameObject.Destroy(transform.GetChild(i).gameObject);	
-		}
-	}
-	
-	void Interpret ()
-	{
-		DestroyOld();
-		
-		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
-		Stack<Turtle> stack = new Stack<Turtle> ();
-		/*
-		for (int i = 0; i < state.Count; i++)
-		{
-			Symbol module = state[i];
-			
-			if (module.name == "m")
-			{
-				if (i > 0)
-					updateTurtle(ref current, molecule_objects[molecule_names.IndexOf(module.name)], 0);
-				addObject(ref current, molecule_objects[molecule_names.IndexOf(module.name)]);
-			}
-			else if (module == "[")
-			{
-				stack.Push(current);
-				current = new Turtle (current);
-				
-				updateTurtle(ref current, molecule_objects[molecule_names.IndexOf("m")], 1);
-				addObject(ref current, molecule_objects[molecule_names.IndexOf("m")]);
-			}
-			else if (module == "]")
-			{
-				current = stack.Pop ();
-			}
-		}
-		*/
-	}
 
-	void Query()
+	void printState()
 	{
 		strState = "";
 		for (int i = 0; i < state.Count; i++)
 		{
-			strState += state[i].name;
+			if(state[i].GetType() == typeof(CommunicationSymbol))
+			{
+				CommunicationSymbol cs = state[i] as CommunicationSymbol;
+				strState += cs.name + "{" + cs.id + "}" + "(" + cs.operationIdentifier + ")";
+			}
+			else
+			{
+				strState += state[i].name + "{" + state[i].id + "}";
+			}
 		}
+		print (strState);
+	}
 
+	public List<CommunicationQuery> sendCommunicationQuerries()
+	{
+		List<CommunicationQuery> queries = new List<CommunicationQuery> ();
+		
+		for(int i = 0; i < state.Count; i++)
+		{
+			if(state[i].GetType() == typeof(CommunicationSymbol))
+			{
+				CommunicationSymbol cs = state[i] as CommunicationSymbol;
+				CommunicationQuery newQuery = new CommunicationQuery(cs.id, 0, cs.operationPosition, cs.operationOrientation, cs.operationResultType, cs.operationTimer);
+				queries.Add(newQuery);
+			}
+		}
+		
+		return queries;
+	}
+
+	private void preEnviromentStep()
+	{
+		List<CommunicationQuery> queries = communicationQueryObject.GetComponent<CommunicationQueryList> ().getQueries ();
+
+		for(int i = 0; i < state.Count; i++)
+		{
+			if(state[i].GetType() == typeof(CommunicationSymbol))
+			{
+				CommunicationSymbol cs = state[i] as CommunicationSymbol;
+
+				for(int j = 0; j < queries.Count; j++)
+				{
+					if(queries[j].symbolId == cs.id)
+					{
+						cs.operationTimer  = queries[j].time;
+						cs.operationResult = queries[j].result;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private void postEnviromentStep ()
+	{
+		communicationQueryObject.GetComponent<CommunicationQueryList> ().addQueries (sendCommunicationQuerries());
 	}
 	
+	private void interpret ()
+	{
+		// move turtle move
+	}
+
 	private void TimeStep()
 	{
-		Derive();
-		Query ();
-		Interpret ();
+		preEnviromentStep ();
+		derive();
+		interpret ();
+		postEnviromentStep ();
+
+		// debug
+		printState ();
 	}
 	
-	void FixedUpdate()
+	void Update()
 	{
-		//TimeStep ();
+		timer += Time.deltaTime;
+
+		if (timer > 3.0f)
+		{
+			TimeStep ();
+			timer = 0.0f;
+			counter++;
+		}
 	}
 }

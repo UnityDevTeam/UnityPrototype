@@ -7,6 +7,7 @@ public class CommunicationSymbol : ISymbol
 	private KeyValuePair<Vector3,    bool> _operationPosition;
 	private KeyValuePair<Quaternion, bool> _operationOrientation;
 	private KeyValuePair<float,      bool> _operationTimer;
+	private KeyValuePair<string,     bool> _operationResultType;
 	private KeyValuePair<GameObject, bool> _operationResult;
 
 	public string operationIdentifier
@@ -57,6 +58,18 @@ public class CommunicationSymbol : ISymbol
 		set { this._operationTimer = new KeyValuePair<float, bool>(this._operationTimer.Key, value ); }
 	}
 
+	public string operationResultType
+	{
+		get { return this._operationResultType.Key; }
+		set { this._operationResultType = new KeyValuePair<string, bool>(value, true); }
+	}
+	
+	public bool operationResultTypeVar
+	{
+		get { return this._operationResultType.Value; }
+		set { this._operationResultType = new KeyValuePair<string, bool>(this._operationResultType.Key, value ); }
+	}
+
 	public GameObject operationResult
 	{
 		get { return this._operationResult.Key; }
@@ -69,23 +82,40 @@ public class CommunicationSymbol : ISymbol
 		set { this._operationResult = new KeyValuePair<GameObject, bool>(this._operationResult.Key, value ); }
 	}
 
-
-
 	public CommunicationSymbol()
 	{
 		name = "";
 	}
-	
-	public CommunicationSymbol( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, GameObject nOperationResult )
+
+	public CommunicationSymbol( string nName)
+	{
+		name = nName;
+	}
+
+	public CommunicationSymbol( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
 	{
 		name                 = nName;
 		operationIdentifier  = nOperationIdentifier;
 		operationPosition    = nOperationPosition;
 		operationOrientation = nOperationOrientation;
 		operationTimer       = nOperationTimer;
+		operationResultType  = nOperationResultType;
 		operationResult      = nOperationResult;
 	}
-	
+
+	public CommunicationSymbol( CommunicationSymbol nSymbol )
+	{
+		id   = nSymbol.id;
+		name = nSymbol.name;
+
+		_operationIdentifier  = new KeyValuePair<string,     bool>(nSymbol.operationIdentifier,  nSymbol.operationIdentifierVar);
+		_operationPosition    = new KeyValuePair<Vector3,    bool>(nSymbol.operationPosition,    nSymbol.operationPositionVar);
+		_operationOrientation = new KeyValuePair<Quaternion, bool>(nSymbol.operationOrientation, nSymbol.operationOrientationVar);
+		_operationTimer       = new KeyValuePair<float,      bool>(nSymbol.operationTimer,       nSymbol.operationTimerVar);
+		_operationResultType  = new KeyValuePair<string,     bool>(nSymbol.operationResultType,  nSymbol.operationResultTypeVar);
+		_operationResult      = new KeyValuePair<GameObject, bool>(nSymbol.operationResult,      nSymbol.operationResultVar);
+	}
+
 	public static bool operator ==(CommunicationSymbol x, CommunicationSymbol y) 
 	{
 		if (x.name == y.name)
@@ -104,6 +134,10 @@ public class CommunicationSymbol : ISymbol
 
 			if(x.operationTimerVar && y.operationTimerVar)
 				if(x.operationTimer != y.operationTimer)
+					return false;
+
+			if(x.operationResultTypeVar && y.operationResultTypeVar)
+				if(x.operationResultType != y.operationResultType)
 					return false;
 
 			return true;
@@ -131,7 +165,11 @@ public class CommunicationSymbol : ISymbol
 			if(x.operationTimerVar && y.operationTimerVar)
 				if(x.operationTimer != y.operationTimer)
 					return true;
-			
+
+			if(x.operationResultTypeVar && y.operationResultTypeVar)
+				if(x.operationResultType != y.operationResultType)
+					return true;
+
 			return false;
 		}
 		
@@ -168,6 +206,10 @@ public class CommunicationSymbol : ISymbol
 			if(operationTimerVar && p.operationTimerVar)
 				if(operationTimer != p.operationTimer)
 					return false;
+
+			if(operationResultTypeVar && p.operationResultTypeVar)
+				if(operationResultType != p.operationResultType)
+					return false;
 			
 			return true;
 		}
@@ -182,6 +224,7 @@ public class CommunicationSymbol : ISymbol
 			_operationPosition.GetHashCode() ^
 			_operationOrientation.GetHashCode() ^
 			_operationTimer.GetHashCode() ^
+			_operationResultType.GetHashCode() ^
 			_operationResult.GetHashCode()
 				;
 

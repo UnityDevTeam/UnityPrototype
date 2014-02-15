@@ -3,6 +3,7 @@
 public class ISymbol
 {
 	public string name;
+	public int id;
 
 	public class EqualityComparer : IEqualityComparer<ISymbol>
 	{
@@ -30,12 +31,26 @@ public class Symbol : ISymbol
 {
 	public Symbol()
 	{
+		id   = 0;
 		name = "";
 	}
 
 	public Symbol( string nName )
 	{
+		id   = 0;
 		name = nName;
+	}
+
+	public Symbol( int nId, string nName )
+	{
+		id   = nId;
+		name = nName;
+	}
+
+	public Symbol( Symbol nSymbol )
+	{
+		id   = nSymbol.id;
+		name = nSymbol.name;
 	}
 
 	public static bool operator ==(Symbol x, Symbol y) 
