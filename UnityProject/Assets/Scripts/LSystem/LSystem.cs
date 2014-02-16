@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {	
-	public Symbol        axiom = new Symbol ("A");
+	private int symbolIdCounter = 1;
+	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
 
 	[HideInInspector] public List<String>     molecule_names;
 	[HideInInspector] public List<GameObject> molecule_objects;
 
 	private Rules rules = new Rules ();
-	private int symbolIdCounter = 0;
+
 	public string strState;
 
 	int counter = 0;
@@ -34,12 +35,74 @@ public class LSystem : MonoBehaviour
 
 		state.Add(axiom);
 
-		setTestRules ();
+
+		setTestState ();
+		interpret ();
+		//setTestRules ();
 	}
 
+	void setTestState ()
+	{
+		BindingSymbol   g0  = new BindingSymbol  (0,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m1  = new StructureSymbol(1,  "m", "testAgent2");
+		BindingSymbol   g2  = new BindingSymbol  (2,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m3  = new StructureSymbol(3,  "m", "testAgent2");
+		BindingSymbol   g4  = new BindingSymbol  (4,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m5  = new StructureSymbol(5,  "m", "testAgent2");
+		BindingSymbol   g6  = new BindingSymbol  (6,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m7  = new StructureSymbol(7,  "m", "testAgent2");
+		BindingSymbol   g8  = new BindingSymbol  (8,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m9  = new StructureSymbol(9,  "m", "testAgent2");
+		BindingSymbol   g10 = new BindingSymbol  (10, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m11 = new StructureSymbol(11, "m", "testAgent2");
+		BindingSymbol   g12 = new BindingSymbol  (12, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m13 = new StructureSymbol(13, "m", "testAgent2");
+		BindingSymbol   g14 = new BindingSymbol  (14, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m15 = new StructureSymbol(15, "m", "testAgent2");
+		BindingSymbol   g16 = new BindingSymbol  (16, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m17 = new StructureSymbol(17, "m", "testAgent2");
+		BindingSymbol   g18 = new BindingSymbol  (18, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m19 = new StructureSymbol(19, "m", "testAgent2");
+		BindingSymbol   g20 = new BindingSymbol  (20, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m21 = new StructureSymbol(21, "m", "testAgent2");
+		BindingSymbol   g22 = new BindingSymbol  (22, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol m23 = new StructureSymbol(23, "m", "testAgent2");
+		BindingSymbol   g24 = new BindingSymbol  (24, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+
+		state.Add (g0);
+		state.Add (m1);
+		state.Add (g2);
+		state.Add (m3);
+		state.Add (g4);
+		state.Add (m5);
+		state.Add (g6);
+		state.Add (m7);
+		state.Add (g8);
+		state.Add (m9);
+		state.Add (g10);
+		state.Add (m11);
+		state.Add (g12);
+		state.Add (m13);
+		state.Add (g14);
+		state.Add (m15);
+		state.Add (g16);
+		state.Add (m17);
+		state.Add (g18);
+		state.Add (m19);
+		state.Add (g20);
+		state.Add (m21);
+		state.Add (g22);
+		state.Add (m23);
+		state.Add (g24);
+
+	}
+	/*
 	void setTestRules()
 	{
 		Symbol A = new Symbol("A");
+		A.id = symbolIdCounter;
+		symbolIdCounter++;
+
 		CommunicationSymbol ACG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
 		List<ISymbol> ARS = new List<ISymbol> ();
 		ARS.Add (ACG);
@@ -95,7 +158,7 @@ public class LSystem : MonoBehaviour
 		rules.Add (P3);
 		rules.Add (P4);
 	}
-	
+	*/
 	void derive ()
 	{
 		List<ISymbol> newState = new List<ISymbol> ();
@@ -124,7 +187,7 @@ public class LSystem : MonoBehaviour
 					}
 					else
 					{
-						newSymbol = new Symbol((Symbol)newSymbols[i]);
+						newSymbol = new StructureSymbol((StructureSymbol)newSymbols[i]);
 					}
 
 					newSymbol.id = symbolIdCounter;
@@ -210,10 +273,65 @@ public class LSystem : MonoBehaviour
 			}
 		}
 	}
+	
+	void DestroyOld()
+	{
+		int childs = transform.childCount;
+		
+		for (int i = childs - 1; i >= 0; i--)
+		{
+			GameObject.Destroy(transform.GetChild(i).gameObject);	
+		}
+	}
+
+	void addObject(ref Turtle turtle, string prefabName)
+	{
+		GameObject prefab = Resources.Load(prefabName) as GameObject;
+		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
+
+		// remove agents components
+		if (mol.GetComponent<RandomMove> ())
+			Destroy (mol.GetComponent<RandomMove> ());
+
+		if (mol.GetComponent<RandomRotate> ())
+			Destroy (mol.GetComponent<RandomRotate> ());
+
+		if (mol.GetComponent<GlobalAttraction> ())
+			Destroy (mol.GetComponent<GlobalAttraction> ());
+
+		if (mol.GetComponent<GlobalBindingQuery> ())
+			Destroy (mol.GetComponent<GlobalBindingQuery> ());
+
+		if (mol.GetComponent<BoundaryBounce> ())
+			Destroy (mol.GetComponent<BoundaryBounce> ());
+	}
+
+	void updateTurtle(ref Turtle turtle, Vector3 positionDelta, Vector3 orientationDelta)
+	{
+		turtle.position  = turtle.position + turtle.direction * positionDelta;
+		turtle.direction = turtle.direction * Quaternion.Euler (orientationDelta.x, orientationDelta.y, orientationDelta.z);
+	}
 
 	private void interpret ()
 	{
-		// move turtle move
+		DestroyOld();
+		
+		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
+		Stack<Turtle> stack = new Stack<Turtle> ();
+		
+		for (int i = 0; i < state.Count; i++)
+		{
+			ISymbol symbol = state[i];
+
+			if(symbol.GetType() == typeof(StructureSymbol))
+			{
+				addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
+			}
+			else if(symbol.GetType() == typeof(BindingSymbol))
+			{
+				updateTurtle(ref current, ((BindingSymbol)symbol).bindingPosition, ((BindingSymbol)symbol).bindingOrientation);
+			}
+		}
 	}
 
 	private void TimeStep()
@@ -228,6 +346,7 @@ public class LSystem : MonoBehaviour
 	
 	void Update()
 	{
+		/*
 		timer += Time.deltaTime;
 
 		if (timer > 3.0f)
@@ -236,5 +355,6 @@ public class LSystem : MonoBehaviour
 			timer = 0.0f;
 			counter++;
 		}
+		*/
 	}
 }

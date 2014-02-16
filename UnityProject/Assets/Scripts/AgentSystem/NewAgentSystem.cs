@@ -9,15 +9,16 @@ public class NewAgentSystem : MonoBehaviour
 	[HideInInspector] public int agentsCount = 0;
 	[HideInInspector] public float time      = 0.0f;
 	[HideInInspector] public float agentScale = 1.0f;
+	
+	[HideInInspector] public AgentSystemQuery agentQueries;
+	private GameObject communicationQueryObject = null;
 
-
-	[HideInInspector] public AgentSystemQuery queries;
-
-	private float oldAgentScale    = 1.0f;
+	private float oldAgentScale = 1.0f;
 	private Vector3 minBox;
 	private float volume;
 
-	private GameObject communicationQueryObject = null;
+
+	////////////////////////////////////////////////////////////////////////////////////////
 
 	public void addAgentType(string prefabName)
 	{
@@ -51,14 +52,6 @@ public class NewAgentSystem : MonoBehaviour
 				for(int j = 0; j < countDelta; j++)
 				{
 					spawnAgent(agentTypeObject);
-					/*
-					Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
-					
-					GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
-					GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-					mol.transform.parent = agentTypeObject.transform;
-					mol.transform.localPosition = position;
-					*/
 				}
 			}
 		}
@@ -83,9 +76,64 @@ public class NewAgentSystem : MonoBehaviour
 		oldAgentScale = agentScale;
 	}
 
+	private void spawnAgent(GameObject agentTypeObject)
+	{
+		Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
+		
+		GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
+		GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
+		mol.transform.parent = agentTypeObject.transform;
+		mol.transform.localPosition = position;
+		
+		if (mol.GetComponent<GlobalAttraction> ())
+			mol.GetComponent<GlobalAttraction> ().queries   = agentQueries;
+		
+		if (mol.GetComponent<GlobalBindingQuery> ())
+			mol.GetComponent<GlobalBindingQuery> ().queries = agentQueries;
+	}
+
+	public void getCommunicationQuerries()
+	{
+		Dictionary<int, CommunicationQuery> commQueries = communicationQueryObject.GetComponent<CommunicationQueryList>().queries;
+		List<CommunicationQueryPair> queries = new List<CommunicationQueryPair>();
+
+
+		foreach (KeyValuePair<int, CommunicationQuery> commQuery in commQueries)
+		{
+			for(int i = 0; i < agentQueries.queries.Count; i++)
+			{
+				if(commQuery.Key == agentQueries.queries[i].query.symbolId)
+				{
+					queries.Add(agentQueries.queries[i]);
+					break;
+				}
+			}
+
+			queries.Add(new CommunicationQueryPair(commQuery.Value));
+		}
+		
+		agentQueries.queries = queries;
+	}
+
+	public void updateCommunicationQuerries()
+	{
+		List<CommunicationQuery> updatedQueries = new List<CommunicationQuery> ();
+
+
+		for (int i = 0; i < agentQueries.queries.Count; i++)
+		{
+			if(agentQueries.queries[i].changed)
+			{
+				updatedQueries.Add(agentQueries.queries[i].query);
+			}
+		}
+
+		communicationQueryObject.GetComponent<CommunicationQueryList>().updateFromAgents (updatedQueries);
+	}
+
 	void Awake()
 	{
-		queries = new AgentSystemQuery();
+		agentQueries = new AgentSystemQuery();
 
 		if (!communicationQueryObject)
 		{
@@ -96,22 +144,6 @@ public class NewAgentSystem : MonoBehaviour
 				communicationQueryObject.AddComponent<CommunicationQueryList>();
 			}
 		}
-	}
-
-	private void spawnAgent(GameObject agentTypeObject)
-	{
-		Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
-		
-		GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
-		GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-		mol.transform.parent = agentTypeObject.transform;
-		mol.transform.localPosition = position;
-
-		if (mol.GetComponent<GlobalAttraction> ())
-			mol.GetComponent<GlobalAttraction> ().queries = queries;
-
-		if (mol.GetComponent<GlobalQuery> ())
-			mol.GetComponent<GlobalQuery> ().queries = queries;
 	}
 
 	void Start ()
@@ -129,14 +161,6 @@ public class NewAgentSystem : MonoBehaviour
 			for (int j = 0; j < agentTypeCount; j++)
 			{
 				spawnAgent(agentTypeObject);
-				/*
-				Vector3 position = new Vector3 ( Random.value * systemSize.x, Random.value * systemSize.y, Random.value * systemSize.z ) + minBox;
-				
-				GameObject prefab = Resources.Load(agentTypeObject.name) as GameObject;
-				GameObject mol = Instantiate(prefab, transform.position, transform.rotation) as GameObject;
-				mol.transform.parent = agentTypeObject.transform;
-				mol.transform.localPosition = position;
-				*/
 			}
 			
 			agentsCount += agentTypeCount;
@@ -152,5 +176,8 @@ public class NewAgentSystem : MonoBehaviour
 		{
 			scaleAgents ();
 		}
+
+		updateCommunicationQuerries ();
+		getCommunicationQuerries ();
 	}
 }

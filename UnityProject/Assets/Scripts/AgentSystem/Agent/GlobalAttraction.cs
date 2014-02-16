@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("Agent/Behaviour/GlobalAttraction")]
 public class GlobalAttraction : AgentBehaviourNary
 {
 	public AgentSystemQuery queries;

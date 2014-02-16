@@ -23,6 +23,17 @@ public class CommunicationQueryList : MonoBehaviour
 		queries.Remove (symbolId);
 	}
 
+	public void updateFromAgents (List<CommunicationQuery> updatedQueries)
+	{
+		for (int i = 0; i < updatedQueries.Count; i++)
+		{
+			if(queries.ContainsKey(updatedQueries[i].symbolId))
+			{
+				queries[updatedQueries[i].symbolId].result = updatedQueries[i].result;
+			}
+		}
+	}
+
 	void Start ()
 	{
 	
@@ -30,20 +41,6 @@ public class CommunicationQueryList : MonoBehaviour
 
 	void Update ()
 	{
-		timer += Time.deltaTime;
 
-		if (timer > 4.0f)
-		{
-			if(queries.Count > 0)
-			{
-				foreach(KeyValuePair<int, CommunicationQuery> query in queries)
-				{
-					query.Value.result = new GameObject("test");
-					break;
-				}
-			}
-
-			timer = 0.0f;
-		}
 	}
 }

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GlobalQuery : AgentTriggerNary
+[AddComponentMenu("Agent/Trigger/GlobalBindingQuery")]
+public class GlobalBindingQuery : AgentTriggerNary
 {
 	public AgentSystemQuery queries;
 
