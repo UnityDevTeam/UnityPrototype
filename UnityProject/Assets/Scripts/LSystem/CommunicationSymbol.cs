@@ -10,6 +10,9 @@ public class CommunicationSymbol : ISymbol
 	private KeyValuePair<string,     bool> _operationResultType;
 	private KeyValuePair<GameObject, bool> _operationResult;
 
+	private Vector3    _turtlePosition    = Vector3.zero;
+	private Quaternion _turtleOrientation = Quaternion.identity;
+
 	public string operationIdentifier
 	{
 		get { return this._operationIdentifier.Key; }
@@ -225,9 +228,13 @@ public class CommunicationSymbol : ISymbol
 			_operationOrientation.GetHashCode() ^
 			_operationTimer.GetHashCode() ^
 			_operationResultType.GetHashCode() ^
-			_operationResult.GetHashCode()
-				;
+			_operationResult.GetHashCode();
+	}
 
+	public void fillTurtleValues(Turtle turtle)
+	{
+		_turtlePosition    = turtle.position;
+		_turtleOrientation = turtle.direction;
 	}
 }
 

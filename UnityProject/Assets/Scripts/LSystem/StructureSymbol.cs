@@ -18,6 +18,13 @@ public class StructureSymbol : ISymbol
 		name                = nName;
 		structurePrefabName = "";
 	}
+
+	public StructureSymbol( string nName, string nStructurePrefabName )
+	{
+		id                  = 0;
+		name                = nName;
+		structurePrefabName = nStructurePrefabName;
+	}
 	
 	public StructureSymbol( int nId, string nName, string nStructurePrefabName )
 	{

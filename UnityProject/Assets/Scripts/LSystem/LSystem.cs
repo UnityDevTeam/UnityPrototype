@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 
@@ -7,9 +7,6 @@ public class LSystem : MonoBehaviour
 	private int symbolIdCounter = 1;
 	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
-
-	[HideInInspector] public List<String>     molecule_names;
-	[HideInInspector] public List<GameObject> molecule_objects;
 
 	private Rules rules = new Rules ();
 
@@ -35,130 +32,85 @@ public class LSystem : MonoBehaviour
 
 		state.Add(axiom);
 
-
-		setTestState ();
-		interpret ();
-		//setTestRules ();
+		setTestRules ();
 	}
 
-	void setTestState ()
-	{
-		BindingSymbol   g0  = new BindingSymbol  (0,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m1  = new StructureSymbol(1,  "m", "testAgent2");
-		BindingSymbol   g2  = new BindingSymbol  (2,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m3  = new StructureSymbol(3,  "m", "testAgent2");
-		BindingSymbol   g4  = new BindingSymbol  (4,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m5  = new StructureSymbol(5,  "m", "testAgent2");
-		BindingSymbol   g6  = new BindingSymbol  (6,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m7  = new StructureSymbol(7,  "m", "testAgent2");
-		BindingSymbol   g8  = new BindingSymbol  (8,  "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m9  = new StructureSymbol(9,  "m", "testAgent2");
-		BindingSymbol   g10 = new BindingSymbol  (10, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m11 = new StructureSymbol(11, "m", "testAgent2");
-		BindingSymbol   g12 = new BindingSymbol  (12, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m13 = new StructureSymbol(13, "m", "testAgent2");
-		BindingSymbol   g14 = new BindingSymbol  (14, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m15 = new StructureSymbol(15, "m", "testAgent2");
-		BindingSymbol   g16 = new BindingSymbol  (16, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m17 = new StructureSymbol(17, "m", "testAgent2");
-		BindingSymbol   g18 = new BindingSymbol  (18, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m19 = new StructureSymbol(19, "m", "testAgent2");
-		BindingSymbol   g20 = new BindingSymbol  (20, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m21 = new StructureSymbol(21, "m", "testAgent2");
-		BindingSymbol   g22 = new BindingSymbol  (22, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol m23 = new StructureSymbol(23, "m", "testAgent2");
-		BindingSymbol   g24 = new BindingSymbol  (24, "g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-
-		state.Add (g0);
-		state.Add (m1);
-		state.Add (g2);
-		state.Add (m3);
-		state.Add (g4);
-		state.Add (m5);
-		state.Add (g6);
-		state.Add (m7);
-		state.Add (g8);
-		state.Add (m9);
-		state.Add (g10);
-		state.Add (m11);
-		state.Add (g12);
-		state.Add (m13);
-		state.Add (g14);
-		state.Add (m15);
-		state.Add (g16);
-		state.Add (m17);
-		state.Add (g18);
-		state.Add (m19);
-		state.Add (g20);
-		state.Add (m21);
-		state.Add (g22);
-		state.Add (m23);
-		state.Add (g24);
-
-	}
-	/*
 	void setTestRules()
 	{
-		Symbol A = new Symbol("A");
-		A.id = symbolIdCounter;
-		symbolIdCounter++;
+		ISymbol R1P = new ISymbol("A");
+		
+		CommunicationSymbol R1S1 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		List<ISymbol> R1S = new List<ISymbol> ();
+		R1S.Add (R1S1);
+		
+		Rule R1 = new Rule (R1P, R1S, 1.0f);
+		
+		///////////////////////////////////////////////////////////////////////
+		
+		CommunicationSymbol R2P = new CommunicationSymbol ("C");
+		R2P.operationIdentifier = "G";
 
-		CommunicationSymbol ACG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
-		List<ISymbol> ARS = new List<ISymbol> ();
-		ARS.Add (ACG);
+		BindingSymbol       R2S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol     R2S2 = new StructureSymbol("m", "testAgent2");
+		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
 
-		Rule P1 = new Rule (A, ARS, 1.0f);
+		List<ISymbol> R2S = new List<ISymbol> ();
+		R2S.Add (R2S1);
+		R2S.Add (R2S2);
+		R2S.Add (R2S3);
+		
+		CommunicationCondition R2C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R2 = new Rule (R2P, R2S, R2C, 0.97f);
 
 		///////////////////////////////////////////////////////////////////////
-
-		CommunicationSymbol C1 = new CommunicationSymbol ("C");
-		C1.operationIdentifier = "G";
-
-		Symbol m = new Symbol("m");
-
-		CommunicationSymbol C1CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
-		List<ISymbol> C1RS = new List<ISymbol> ();
-		C1RS.Add (m);
-		C1RS.Add (C1CG);
-
-		CommunicationCondition C1C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
-
-		Rule P2 = new Rule (C1, C1RS, C1C, 0.5f);
-
-		////////////////////////////////////////////////////////////////////////
 		
-		CommunicationSymbol C2CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
-		CommunicationSymbol C2CB = new CommunicationSymbol ("C", "B", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
-
-		List<ISymbol> C2RS = new List<ISymbol> ();
-		C2RS.Add (m);
-		C2RS.Add (C2CG);
-		C2RS.Add (C2CB);
+		CommunicationSymbol R3P = new CommunicationSymbol ("C");
+		R3P.operationIdentifier = "G";
 		
-		Rule P3 = new Rule (C1, C2RS, C1C, 0.5f);
-
-		/////////////////////////////////////////////////////////////////////////
-
-		CommunicationSymbol C2 = new CommunicationSymbol ("C");
-		C2.operationIdentifier = "B";
+		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
+		StructureSymbol     R3S2 = new StructureSymbol("m", "testAgent2");
+		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "B", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		EndSymbol           R3S4 = new EndSymbol("e");
+		CommunicationSymbol R3S5 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
 		
-		Symbol b = new Symbol("b");
+		List<ISymbol> R3S = new List<ISymbol> ();
+		R3S.Add (R3S1);
+		R3S.Add (R3S2);
+		R3S.Add (R3S3);
+		R3S.Add (R3S4);
+		R3S.Add (R3S5);
 		
-		CommunicationSymbol C3CG = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
-		List<ISymbol> C3RS = new List<ISymbol> ();
-		C3RS.Add (b);
-		C3RS.Add (C3CG);
+		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule P4 = new Rule (C2, C3RS, C1C, 1.0f);
+		Rule R3 = new Rule (R3P, R3S, R3C, 0.03f);
+		
+		///////////////////////////////////////////////////////////////////////
+		
+		CommunicationSymbol R4P = new CommunicationSymbol ("C");
+		R4P.operationIdentifier = "B";
 
-		/////////////////////////////////////////////////////////////////////////
-
-		rules.Add (P1);
-		rules.Add (P2);
-		rules.Add (P3);
-		rules.Add (P4);
+		BindingSymbol       R4S1 = new BindingSymbol  ("b", new Vector3(1.3871f, 0.7653f, 0.0029f), new Vector3(0, 0, 298.3136f), true);
+		StructureSymbol     R4S2 = new StructureSymbol("m", "testAgent2");
+		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		
+		List<ISymbol> R4S = new List<ISymbol> ();
+		R4S.Add (R4S1);
+		R4S.Add (R4S2);
+		R4S.Add (R4S3);
+		
+		CommunicationCondition R4C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
+		
+		/////////////////////////////////////////////////////////////
+		
+		rules.Add (R1);
+		rules.Add (R2);
+		rules.Add (R3);
+		rules.Add (R4);
 	}
-	*/
+	
 	void derive ()
 	{
 		List<ISymbol> newState = new List<ISymbol> ();
@@ -180,25 +132,30 @@ public class LSystem : MonoBehaviour
 				for(int i = 0; i < newSymbols.Count; i++)
 				{
 					ISymbol newSymbol = null;
+					newSymbol.id = symbolIdCounter;
+					symbolIdCounter++;
 
 					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
 					{
 						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
+						((CommunicationSymbol)newSymbol).operationResult = new GameObject("test");
+
+						communicationQueryObject.GetComponent<CommunicationQueryList> ().Add(createQuery((CommunicationSymbol)newSymbol));
 					}
-					else
+					else if(newSymbols[i].GetType() == typeof(BindingSymbol))
+					{
+						newSymbol = new BindingSymbol((BindingSymbol)newSymbols[i]);
+					}
+					else if(newSymbols[i].GetType() == typeof(StructureSymbol))
 					{
 						newSymbol = new StructureSymbol((StructureSymbol)newSymbols[i]);
 					}
-
-					newSymbol.id = symbolIdCounter;
-					symbolIdCounter++;
+					else if(newSymbols[i].GetType() == typeof(EndSymbol))
+					{
+						newSymbol = new EndSymbol((EndSymbol)newSymbols[i]);
+					}
 
 					newState.Add(newSymbol);
-
-					if(newSymbol.GetType() == typeof(CommunicationSymbol))
-					{
-						communicationQueryObject.GetComponent<CommunicationQueryList> ().Add(createQuery((CommunicationSymbol)newSymbol));
-					}
 				}
 
 				communicationQueryObject.GetComponent<CommunicationQueryList> ().Remove(state[j].id);
@@ -219,11 +176,11 @@ public class LSystem : MonoBehaviour
 			if(state[i].GetType() == typeof(CommunicationSymbol))
 			{
 				CommunicationSymbol cs = state[i] as CommunicationSymbol;
-				strState += cs.name + "{" + cs.id + "}" + "(" + cs.operationIdentifier + ")";
+				strState += cs.name + "(" + cs.operationIdentifier + ")";
 			}
 			else
 			{
-				strState += state[i].name + "{" + state[i].id + "}";
+				strState += state[i].name;
 			}
 		}
 		print (strState);
@@ -304,6 +261,8 @@ public class LSystem : MonoBehaviour
 
 		if (mol.GetComponent<BoundaryBounce> ())
 			Destroy (mol.GetComponent<BoundaryBounce> ());
+
+		mol.transform.parent = transform;
 	}
 
 	void updateTurtle(ref Turtle turtle, Vector3 positionDelta, Vector3 orientationDelta)
@@ -318,6 +277,7 @@ public class LSystem : MonoBehaviour
 		
 		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
 		Stack<Turtle> stack = new Stack<Turtle> ();
+		stack.Push(current);
 		
 		for (int i = 0; i < state.Count; i++)
 		{
@@ -329,16 +289,35 @@ public class LSystem : MonoBehaviour
 			}
 			else if(symbol.GetType() == typeof(BindingSymbol))
 			{
+				if(((BindingSymbol)symbol).isBranching)
+				{
+					stack.Push(current);
+					current = new Turtle (current);
+				}
+
 				updateTurtle(ref current, ((BindingSymbol)symbol).bindingPosition, ((BindingSymbol)symbol).bindingOrientation);
 			}
+			else if(symbol.GetType() == typeof(EndSymbol))
+			{
+				current = stack.Pop ();
+			}
+			else if(symbol.GetType() == typeof(CommunicationSymbol))
+			{
+				((CommunicationSymbol)symbol).fillTurtleValues(current);
+			}
 		}
+	}
+
+	void postEnviromentStep()
+	{
 	}
 
 	private void TimeStep()
 	{
 		preEnviromentStep ();
-		derive();
+		derive ();
 		interpret ();
+		postEnviromentStep ();
 
 		// debug
 		printState ();
@@ -346,15 +325,14 @@ public class LSystem : MonoBehaviour
 	
 	void Update()
 	{
-		/*
+
 		timer += Time.deltaTime;
 
-		if (timer > 3.0f)
+		if (timer > 1.0f)
 		{
 			TimeStep ();
 			timer = 0.0f;
 			counter++;
 		}
-		*/
 	}
 }
