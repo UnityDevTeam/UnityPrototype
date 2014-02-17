@@ -20,7 +20,7 @@ public class GlobalBindingQuery : AgentTriggerNary
 			CommunicationQuery query = queries.queries[i].query;
 			Vector3 pos = transform.position - query.position;
 			
-			if(pos.magnitude < bindingRadius)
+			if(pos.magnitude < NewAgentSystem.agentScale * bindingRadius)
 			{
 
 				query.result = transform.gameObject;

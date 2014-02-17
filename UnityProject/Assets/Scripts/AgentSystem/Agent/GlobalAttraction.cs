@@ -20,7 +20,7 @@ public class GlobalAttraction : AgentBehaviourNary
 			CommunicationQuery query = queries.queries[i].query;
 			Vector3 pos = transform.position - query.position;
 
-			if(pos.magnitude < attractionRadius)
+			if(pos.magnitude < /*NewAgentSystem.agentScale **/ attractionRadius)
 			{
 				rigidbody.velocity = -pos.normalized * RandomMove.speed;
 				rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;

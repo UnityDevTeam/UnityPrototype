@@ -199,11 +199,12 @@ public class LSystem : MonoBehaviour
 		mol.rigidbody.isKinematic = true;
 
 		mol.transform.parent = transform;
+		mol.transform.localScale = NewAgentSystem.agentScale * mol.transform.localScale;
 	}
 
 	void updateTurtle(ref Turtle turtle, Vector3 positionDelta, Vector3 orientationDelta)
 	{
-		turtle.position  = turtle.position + turtle.direction * positionDelta;
+		turtle.position  = turtle.position + turtle.direction * (NewAgentSystem.agentScale * positionDelta);
 		turtle.direction = turtle.direction * Quaternion.Euler (orientationDelta.x, orientationDelta.y, orientationDelta.z);
 	}
 
