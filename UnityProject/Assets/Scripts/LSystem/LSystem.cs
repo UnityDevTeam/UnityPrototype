@@ -149,6 +149,11 @@ public class LSystem : MonoBehaviour
 					newState.Add(newSymbol);
 				}
 
+				if(state[j].GetType() == typeof(CommunicationSymbol))
+				{
+					Destroy(((CommunicationSymbol)state[j]).operationResult);
+				}
+
 				communicationSymbols.Remove(state[j].id);
 				communicationQueryObject.GetComponent<CommunicationManager> ().Remove(state[j].id);
 			}
@@ -234,6 +239,13 @@ public class LSystem : MonoBehaviour
 			}
 			else if(symbol.GetType() == typeof(CommunicationSymbol))
 			{
+				// uff :(
+				if(((CommunicationSymbol)symbol).operationIdentifier == "B")
+				{
+					stack.Push(current);
+					current = new Turtle (current);
+				}
+
 				((CommunicationSymbol)symbol).fillTurtleValues(current);
 			}
 		}
@@ -274,5 +286,23 @@ public class LSystem : MonoBehaviour
 	void Update()
 	{
 		TimeStep ();
+
+		debugPrint ();
+	}
+
+	void debugPrint()
+	{
+		string output = "";
+		for (int i = 0; i < state.Count; i++)
+		{
+			output += state[i].name;
+
+			if(state[i].GetType() == typeof(CommunicationSymbol))
+			{
+				output += "(" + ((CommunicationSymbol)state[i]).operationIdentifier + ")";
+			}
+		}
+
+		print (output);
 	}
 }

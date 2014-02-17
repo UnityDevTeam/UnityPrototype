@@ -45,12 +45,6 @@ public class CommunicationCondition
 					break;
 			}
 
-			if(result && (symbol.operationResult != null))
-			{
-				UnityEngine.Object.Destroy(symbol.operationResult);
-				symbol.operationResult = null;
-			}
-
 			return result;
 		}
 		else if (param == CommParameters.time)
