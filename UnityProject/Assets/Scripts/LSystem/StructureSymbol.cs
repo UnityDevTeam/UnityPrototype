@@ -7,23 +7,29 @@ public class StructureSymbol : ISymbol
 
 	public StructureSymbol()
 	{
-		id                  = 0;
+		id                  = idCounter;
 		name                = "";
 		structurePrefabName = "";
+
+		idCounter++;
 	}
 	
 	public StructureSymbol( string nName )
 	{
-		id                  = 0;
+		id                  = idCounter;
 		name                = nName;
 		structurePrefabName = "";
+
+		idCounter++;
 	}
 
 	public StructureSymbol( string nName, string nStructurePrefabName )
 	{
-		id                  = 0;
+		id                  = idCounter;
 		name                = nName;
 		structurePrefabName = nStructurePrefabName;
+
+		idCounter++;
 	}
 	
 	public StructureSymbol( int nId, string nName, string nStructurePrefabName )
@@ -35,9 +41,11 @@ public class StructureSymbol : ISymbol
 	
 	public StructureSymbol( StructureSymbol nSymbol )
 	{
-		id                  = nSymbol.id;
+		id                  = idCounter;
 		name                = nSymbol.name;
 		structurePrefabName = nSymbol.structurePrefabName;
+
+		idCounter++;
 	}
 	
 	public static bool operator ==(StructureSymbol x, StructureSymbol y) 

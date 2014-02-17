@@ -22,7 +22,9 @@ public class GlobalAttraction : AgentBehaviourNary
 
 			if(pos.magnitude < attractionRadius)
 			{
-				rigidbody.AddForce(-pos * attractionPower);
+				rigidbody.velocity = Vector3.Lerp (rigidbody.velocity, -pos, Time.deltaTime * attractionPower );
+				rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
+
 				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
 			}
 		}

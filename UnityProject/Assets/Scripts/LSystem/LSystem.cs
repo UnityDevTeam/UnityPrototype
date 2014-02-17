@@ -3,30 +3,24 @@ using System;
 using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
-{	
-	private int symbolIdCounter = 1;
+{
 	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
 
 	private Rules rules = new Rules ();
-
-	public string strState;
-
-	int counter = 0;
-
-	float timer = 0.0f;
 	
 	private GameObject communicationQueryObject = null;
+	private Dictionary<int, CommunicationSymbol> communicationSymbols = new Dictionary<int, CommunicationSymbol> ();
 	
 	void Awake()
 	{
 		if (!communicationQueryObject)
 		{
-			communicationQueryObject = GameObject.Find("Communication Query");
+			communicationQueryObject = GameObject.Find("Communication Manager");
 			if(!communicationQueryObject)
 			{
-				communicationQueryObject = new GameObject("Communication Query");
-				communicationQueryObject.AddComponent<CommunicationQueryList>();
+				communicationQueryObject = new GameObject("Communication Manager");
+				communicationQueryObject.AddComponent<CommunicationManager>();
 			}
 		}
 
@@ -52,7 +46,7 @@ public class LSystem : MonoBehaviour
 
 		BindingSymbol       R2S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
 		StructureSymbol     R2S2 = new StructureSymbol("m", "testAgent2");
-		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", null);
 
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
@@ -70,9 +64,9 @@ public class LSystem : MonoBehaviour
 		
 		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
 		StructureSymbol     R3S2 = new StructureSymbol("m", "testAgent2");
-		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "B", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "m", null);
 		EndSymbol           R3S4 = new EndSymbol("e");
-		CommunicationSymbol R3S5 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		CommunicationSymbol R3S5 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", null);
 		
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
@@ -92,7 +86,7 @@ public class LSystem : MonoBehaviour
 
 		BindingSymbol       R4S1 = new BindingSymbol  ("b", new Vector3(1.3871f, 0.7653f, 0.0029f), new Vector3(0, 0, 298.3136f), true);
 		StructureSymbol     R4S2 = new StructureSymbol("m", "testAgent2");
-		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
+		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", null);
 		
 		List<ISymbol> R4S = new List<ISymbol> ();
 		R4S.Add (R4S1);
@@ -132,15 +126,12 @@ public class LSystem : MonoBehaviour
 				for(int i = 0; i < newSymbols.Count; i++)
 				{
 					ISymbol newSymbol = null;
-					newSymbol.id = symbolIdCounter;
-					symbolIdCounter++;
 
 					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
 					{
 						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
-						((CommunicationSymbol)newSymbol).operationResult = new GameObject("test");
 
-						communicationQueryObject.GetComponent<CommunicationQueryList> ().Add(createQuery((CommunicationSymbol)newSymbol));
+						communicationSymbols.Add(newSymbol.id, (CommunicationSymbol)newSymbol);
 					}
 					else if(newSymbols[i].GetType() == typeof(BindingSymbol))
 					{
@@ -158,7 +149,8 @@ public class LSystem : MonoBehaviour
 					newState.Add(newSymbol);
 				}
 
-				communicationQueryObject.GetComponent<CommunicationQueryList> ().Remove(state[j].id);
+				communicationSymbols.Remove(state[j].id);
+				communicationQueryObject.GetComponent<CommunicationManager> ().Remove(state[j].id);
 			}
 			else
 			{
@@ -166,69 +158,6 @@ public class LSystem : MonoBehaviour
 			}
 		}
 		state = newState;
-	}
-
-	void printState()
-	{
-		strState = "";
-		for (int i = 0; i < state.Count; i++)
-		{
-			if(state[i].GetType() == typeof(CommunicationSymbol))
-			{
-				CommunicationSymbol cs = state[i] as CommunicationSymbol;
-				strState += cs.name + "(" + cs.operationIdentifier + ")";
-			}
-			else
-			{
-				strState += state[i].name;
-			}
-		}
-		print (strState);
-	}
-
-	public List<CommunicationQuery> sendCommunicationQuerries()
-	{
-		List<CommunicationQuery> queries = new List<CommunicationQuery> ();
-		
-		for(int i = 0; i < state.Count; i++)
-		{
-			if(state[i].GetType() == typeof(CommunicationSymbol))
-			{
-				CommunicationSymbol cs = state[i] as CommunicationSymbol;
-				CommunicationQuery newQuery = new CommunicationQuery(cs.id, 0, cs.operationPosition, cs.operationOrientation, cs.operationResultType, cs.operationTimer);
-				queries.Add(newQuery);
-			}
-		}
-		
-		return queries;
-	}
-
-	private CommunicationQuery createQuery(CommunicationSymbol symbol)
-	{
-		return new CommunicationQuery(symbol.id, 0, symbol.operationPosition, symbol.operationOrientation, symbol.operationResultType, symbol.operationTimer);
-	}
-	
-	private void preEnviromentStep()
-	{
-		List<CommunicationQuery> queries = communicationQueryObject.GetComponent<CommunicationQueryList> ().getQueries ();
-
-		for(int i = 0; i < state.Count; i++)
-		{
-			if(state[i].GetType() == typeof(CommunicationSymbol))
-			{
-				CommunicationSymbol cs = state[i] as CommunicationSymbol;
-
-				for(int j = 0; j < queries.Count; j++)
-				{
-					if(queries[j].symbolId == cs.id)
-					{
-						cs.operationTimer  = queries[j].time;
-						cs.operationResult = queries[j].result;
-						break;
-					}
-				}
-			}
-		}
 	}
 	
 	void DestroyOld()
@@ -261,6 +190,8 @@ public class LSystem : MonoBehaviour
 
 		if (mol.GetComponent<BoundaryBounce> ())
 			Destroy (mol.GetComponent<BoundaryBounce> ());
+
+		mol.rigidbody.isKinematic = true;
 
 		mol.transform.parent = transform;
 	}
@@ -307,9 +238,29 @@ public class LSystem : MonoBehaviour
 			}
 		}
 	}
+	
+	private void preEnviromentStep()
+	{
+		List<CommunicationQuery> queries = communicationQueryObject.GetComponent<CommunicationManager> ().getQueries ();
+		
+		for(int i = 0; i < queries.Count; i++)
+		{
+			if(communicationSymbols.ContainsKey(queries[i].symbolId))
+			{
+				communicationSymbols[queries[i].symbolId].operationTimer  = queries[i].time;
+				communicationSymbols[queries[i].symbolId].operationResult = queries[i].result;
+			}
+		}
+	}
 
 	void postEnviromentStep()
 	{
+		CommunicationManager cql = communicationQueryObject.GetComponent<CommunicationManager> ();
+
+		foreach(KeyValuePair<int, CommunicationSymbol> symbol in communicationSymbols)
+		{
+			cql.Add(symbol.Value);
+		}
 	}
 
 	private void TimeStep()
@@ -318,21 +269,10 @@ public class LSystem : MonoBehaviour
 		derive ();
 		interpret ();
 		postEnviromentStep ();
-
-		// debug
-		printState ();
 	}
 	
 	void Update()
 	{
-
-		timer += Time.deltaTime;
-
-		if (timer > 1.0f)
-		{
-			TimeStep ();
-			timer = 0.0f;
-			counter++;
-		}
+		TimeStep ();
 	}
 }

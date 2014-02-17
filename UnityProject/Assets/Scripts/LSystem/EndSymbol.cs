@@ -5,14 +5,18 @@ public class EndSymbol : ISymbol
 {
 	public EndSymbol()
 	{
-		id   = 0;
+		id   = idCounter;
 		name = "";
+
+		idCounter++;
 	}
 
 	public EndSymbol(string nName)
 	{
-		id   = 0;
+		id   = idCounter;
 		name = nName;
+
+		idCounter++;
 	}
 
 	public EndSymbol(int nId, string nName)
@@ -23,8 +27,10 @@ public class EndSymbol : ISymbol
 
 	public EndSymbol(EndSymbol nSymbol)
 	{
-		id   = nSymbol.id;
+		id   = idCounter;
 		name = nSymbol.name;
+
+		idCounter++;
 	}
 
 	public override bool Equals(System.Object obj)

@@ -2,19 +2,24 @@
 
 public class ISymbol
 {
+	public static int idCounter = 0;
 	public string name;
 	public int id;
 
 	public ISymbol()
 	{
-		id   = 0;
+		id   = idCounter;
 		name = "";
+
+		idCounter++;
 	}
 
 	public ISymbol(string nName)
 	{
-		id   = 0;
+		id   = idCounter;
 		name = nName;
+
+		idCounter++;
 	}
 
 	public ISymbol(int nId, string nName)

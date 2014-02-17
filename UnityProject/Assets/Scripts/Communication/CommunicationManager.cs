@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CommunicationQueryList : MonoBehaviour
+public class CommunicationManager : MonoBehaviour
 {
 	public Dictionary<int, CommunicationQuery> queries = new Dictionary<int, CommunicationQuery>();
 
@@ -13,9 +13,18 @@ public class CommunicationQueryList : MonoBehaviour
 		return new List<CommunicationQuery> (queries.Values);
 	}
 
-	public void Add(CommunicationQuery query)
+	public void Add(CommunicationSymbol symbol)
 	{
-		queries.Add (query.symbolId, query);
+		CommunicationQuery query = new CommunicationQuery(symbol.id, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer);
+
+		if (queries.ContainsKey (query.symbolId))
+		{
+			queries [query.symbolId] = query;
+		}
+		else
+		{
+			queries.Add (query.symbolId, query);
+		}
 	}
 
 	public void Remove(int symbolId)
@@ -32,15 +41,5 @@ public class CommunicationQueryList : MonoBehaviour
 				queries[updatedQueries[i].symbolId].result = updatedQueries[i].result;
 			}
 		}
-	}
-
-	void Start ()
-	{
-	
-	}
-
-	void Update ()
-	{
-
 	}
 }

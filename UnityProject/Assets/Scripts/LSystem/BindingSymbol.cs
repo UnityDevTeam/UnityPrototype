@@ -9,29 +9,35 @@ public class BindingSymbol : ISymbol
 	
 	public BindingSymbol()
 	{
-		id                 = 0;
+		id                 = idCounter;
 		name               = "";
 		bindingPosition    = Vector3.zero;
 		bindingOrientation = Vector3.zero;
 		isBranching        = false;
+
+		idCounter++;
 	}
 	
 	public BindingSymbol( string nName )
 	{
-		id                 = 0;
+		id                 = idCounter;
 		name               = nName;
 		bindingPosition    = Vector3.zero;
 		bindingOrientation = Vector3.zero;
 		isBranching        = false;
+
+		idCounter++;
 	}
 
 	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation )
 	{
-		id                 = 0;
+		id                 = idCounter;
 		name               = nName;
 		bindingPosition    = nPosition;
 		bindingOrientation = nOrientation;
 		isBranching        = false;
+
+		idCounter++;
 	}
 
 	public BindingSymbol( int nId, string nName, Vector3 nPosition, Vector3 nOrientation )
@@ -45,11 +51,13 @@ public class BindingSymbol : ISymbol
 
 	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
 	{
-		id                 = 0;
+		id                 = idCounter;
 		name               = nName;
 		bindingPosition    = nPosition;
 		bindingOrientation = nOrientation;
 		isBranching        = nIsBranching;
+
+		idCounter++;
 	}
 
 	public BindingSymbol( int nId, string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
@@ -63,11 +71,13 @@ public class BindingSymbol : ISymbol
 	
 	public BindingSymbol( BindingSymbol nSymbol )
 	{
-		id                 = nSymbol.id;
+		id                 = idCounter;
 		name               = nSymbol.name;
 		bindingPosition    = nSymbol.bindingPosition;
 		bindingOrientation = nSymbol.bindingOrientation;
 		isBranching        = nSymbol.isBranching;
+
+		idCounter++;
 	}
 	
 	public static bool operator ==(BindingSymbol x, BindingSymbol y) 

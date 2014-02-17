@@ -33,14 +33,25 @@ public class CommunicationCondition
 		if (param == CommParameters.result)
 		{
 			GameObject go = value as GameObject;
+			bool result = false;
 
 			switch(operation)
 			{
 				case CommOperation.notEqual:
-					return symbol.operationResult != go;
+					result = symbol.operationResult != go;
+					break;
 				default:
-					return false;
+					result = false;
+					break;
 			}
+
+			if(result && (symbol.operationResult != null))
+			{
+				UnityEngine.Object.Destroy(symbol.operationResult);
+				symbol.operationResult = null;
+			}
+
+			return result;
 		}
 		else if (param == CommParameters.time)
 		{

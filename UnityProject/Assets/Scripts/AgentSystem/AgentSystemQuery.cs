@@ -12,6 +12,12 @@ public struct CommunicationQueryPair
 		query   = nQuery;
 		changed = false;
 	}
+
+	public CommunicationQueryPair(CommunicationQuery nQuery, bool nChanged)
+	{
+		query   = nQuery;
+		changed = nChanged;
+	}
 }
 
 public class AgentSystemQuery

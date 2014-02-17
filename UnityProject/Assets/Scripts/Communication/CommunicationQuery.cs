@@ -4,7 +4,6 @@ using System.Collections;
 public class CommunicationQuery
 {
 	private int _symbolId  = 0;
-	private int _processId = 0;
 
 	private Vector3    _position    = Vector3.zero;
 	private Quaternion _orientation = Quaternion.identity;
@@ -16,12 +15,6 @@ public class CommunicationQuery
 	public int symbolId {
 		get {
 			return this._symbolId;
-		}
-	}
-
-	public int processId {
-		get {
-			return this._processId;
 		}
 	}
 
@@ -43,10 +36,9 @@ public class CommunicationQuery
 		}
 	}
 
-	public CommunicationQuery( int nSymbolId, int nProcessId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime)
+	public CommunicationQuery( int nSymbolId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime)
 	{
 		_symbolId  = nSymbolId;
-		_processId = nProcessId;
 
 		_position    = nPosition;
 		_orientation = nOrientation;

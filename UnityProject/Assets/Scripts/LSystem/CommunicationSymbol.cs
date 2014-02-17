@@ -3,15 +3,23 @@ using System.Collections.Generic;
 
 public class CommunicationSymbol : ISymbol
 {
+	// filled by rules
 	private KeyValuePair<string,     bool> _operationIdentifier;
 	private KeyValuePair<Vector3,    bool> _operationPosition;
 	private KeyValuePair<Quaternion, bool> _operationOrientation;
-	private KeyValuePair<float,      bool> _operationTimer;
 	private KeyValuePair<string,     bool> _operationResultType;
-	private KeyValuePair<GameObject, bool> _operationResult;
 
+	// filled by interpret
 	private Vector3    _turtlePosition    = Vector3.zero;
 	private Quaternion _turtleOrientation = Quaternion.identity;
+
+	// filled by enviroment
+	private KeyValuePair<float,      bool> _operationTimer;
+	private KeyValuePair<GameObject, bool> _operationResult;
+
+	// total private
+	private Vector3    _globalPosition    = Vector3.zero;
+	private Quaternion _globalOrientation = Quaternion.identity;
 
 	public string operationIdentifier
 	{
@@ -42,7 +50,17 @@ public class CommunicationSymbol : ISymbol
 		get { return this._operationOrientation.Key; }
 		set { this._operationOrientation = new KeyValuePair<Quaternion, bool>(value, true); }
 	}
+
+	public Vector3 globalPosition
+	{
+		get { return this._globalPosition; }
+	}
 	
+	public Quaternion globalOrientation
+	{
+		get { return this._globalOrientation; }
+	}
+
 	public bool operationOrientationVar
 	{
 		get { return this._operationOrientation.Value; }
@@ -87,16 +105,23 @@ public class CommunicationSymbol : ISymbol
 
 	public CommunicationSymbol()
 	{
+		id = idCounter;
 		name = "";
+
+		idCounter++;
 	}
 
 	public CommunicationSymbol( string nName)
 	{
+		id = idCounter;
 		name = nName;
+
+		idCounter++;
 	}
 
 	public CommunicationSymbol( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
 	{
+		id                   = idCounter;
 		name                 = nName;
 		operationIdentifier  = nOperationIdentifier;
 		operationPosition    = nOperationPosition;
@@ -104,11 +129,13 @@ public class CommunicationSymbol : ISymbol
 		operationTimer       = nOperationTimer;
 		operationResultType  = nOperationResultType;
 		operationResult      = nOperationResult;
+
+		idCounter++;
 	}
 
 	public CommunicationSymbol( CommunicationSymbol nSymbol )
 	{
-		id   = nSymbol.id;
+		id   = idCounter;
 		name = nSymbol.name;
 
 		_operationIdentifier  = new KeyValuePair<string,     bool>(nSymbol.operationIdentifier,  nSymbol.operationIdentifierVar);
@@ -117,6 +144,8 @@ public class CommunicationSymbol : ISymbol
 		_operationTimer       = new KeyValuePair<float,      bool>(nSymbol.operationTimer,       nSymbol.operationTimerVar);
 		_operationResultType  = new KeyValuePair<string,     bool>(nSymbol.operationResultType,  nSymbol.operationResultTypeVar);
 		_operationResult      = new KeyValuePair<GameObject, bool>(nSymbol.operationResult,      nSymbol.operationResultVar);
+
+		idCounter++;
 	}
 
 	public static bool operator ==(CommunicationSymbol x, CommunicationSymbol y) 
@@ -222,19 +251,16 @@ public class CommunicationSymbol : ISymbol
 	
 	public override int GetHashCode()
 	{
-		return name.GetHashCode() ^
-			_operationIdentifier.GetHashCode() ^
-			_operationPosition.GetHashCode() ^
-			_operationOrientation.GetHashCode() ^
-			_operationTimer.GetHashCode() ^
-			_operationResultType.GetHashCode() ^
-			_operationResult.GetHashCode();
+		return name.GetHashCode () ^ _operationIdentifier.GetHashCode ();
 	}
 
 	public void fillTurtleValues(Turtle turtle)
 	{
 		_turtlePosition    = turtle.position;
 		_turtleOrientation = turtle.direction;
+
+		_globalPosition    = _turtlePosition + _turtleOrientation * operationPosition;
+		_globalOrientation = _turtleOrientation * operationOrientation;
 	}
 }
 

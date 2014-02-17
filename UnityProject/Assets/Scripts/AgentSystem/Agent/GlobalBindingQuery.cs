@@ -22,9 +22,11 @@ public class GlobalBindingQuery : AgentTriggerNary
 			
 			if(pos.magnitude < bindingRadius)
 			{
-				bool tempBool = queries.queries[i].changed;
-				tempBool = true;
+
 				query.result = transform.gameObject;
+
+				queries.queries[i] = new CommunicationQueryPair(query, true);
+
 			}
 		}
 	}

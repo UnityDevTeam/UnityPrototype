@@ -30,18 +30,21 @@ public class RandomMove : BehaviourUnary
 
 	void Update ()
 	{
-		timer += Time.deltaTime;
-
-		if (timer > randomTime)
+		if (!rigidbody.isKinematic)
 		{
-			randomDirection = speed * randomNormalVector ();
-
-			randomTime = Random.Range (0.5f, 2.0f);
-			timer = 0.0f;
+			timer += Time.deltaTime;
+			
+			if (timer > randomTime)
+			{
+				randomDirection = speed * randomNormalVector ();
+				
+				randomTime = Random.Range (0.5f, 2.0f);
+				timer = 0.0f;
+			}
+			
+			rigidbody.velocity = Vector3.Lerp (rigidbody.velocity, randomDirection, Time.deltaTime );
+			rigidbody.velocity = rigidbody.velocity.normalized * speed;
 		}
-
-		rigidbody.velocity = Vector3.Lerp (rigidbody.velocity, randomDirection, Time.deltaTime );
-		rigidbody.velocity = rigidbody.velocity.normalized * speed;
 	}
 
 	private Vector3 randomNormalVector()

@@ -94,7 +94,7 @@ public class NewAgentSystem : MonoBehaviour
 
 	public void getCommunicationQuerries()
 	{
-		Dictionary<int, CommunicationQuery> commQueries = communicationQueryObject.GetComponent<CommunicationQueryList>().queries;
+		Dictionary<int, CommunicationQuery> commQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
 		List<CommunicationQueryPair> queries = new List<CommunicationQueryPair>();
 
 
@@ -128,7 +128,7 @@ public class NewAgentSystem : MonoBehaviour
 			}
 		}
 
-		communicationQueryObject.GetComponent<CommunicationQueryList>().updateFromAgents (updatedQueries);
+		communicationQueryObject.GetComponent<CommunicationManager>().updateFromAgents (updatedQueries);
 	}
 
 	void Awake()
@@ -137,11 +137,11 @@ public class NewAgentSystem : MonoBehaviour
 
 		if (!communicationQueryObject)
 		{
-			communicationQueryObject = GameObject.Find("Communication Query");
+			communicationQueryObject = GameObject.Find("Communication Manager");
 			if(!communicationQueryObject)
 			{
-				communicationQueryObject = new GameObject("Communication Query");
-				communicationQueryObject.AddComponent<CommunicationQueryList>();
+				communicationQueryObject = new GameObject("Communication Manager");
+				communicationQueryObject.AddComponent<CommunicationManager>();
 			}
 		}
 	}
