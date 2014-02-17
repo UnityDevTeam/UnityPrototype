@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {
+	public bool useDerive    = true;
+	public bool useInterpret = true;
+	public bool useInterpretDeleteAdd = true;
+
 	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
 
@@ -210,7 +214,8 @@ public class LSystem : MonoBehaviour
 
 	private void interpret ()
 	{
-		DestroyOld();
+		if(useInterpretDeleteAdd)
+			DestroyOld();
 		
 		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
 		Stack<Turtle> stack = new Stack<Turtle> ();
@@ -222,7 +227,8 @@ public class LSystem : MonoBehaviour
 
 			if(symbol.GetType() == typeof(StructureSymbol))
 			{
-				addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
+				if(useInterpretDeleteAdd)
+					addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
 			}
 			else if(symbol.GetType() == typeof(BindingSymbol))
 			{
@@ -279,8 +285,10 @@ public class LSystem : MonoBehaviour
 	private void TimeStep()
 	{
 		preEnviromentStep ();
-		derive ();
-		interpret ();
+
+		if(useDerive) derive ();
+		if(useInterpret) interpret ();
+
 		postEnviromentStep ();
 	}
 	
@@ -288,7 +296,7 @@ public class LSystem : MonoBehaviour
 	{
 		TimeStep ();
 
-		debugPrint ();
+		//debugPrint ();
 	}
 
 	void debugPrint()

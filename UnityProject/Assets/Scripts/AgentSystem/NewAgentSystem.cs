@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class NewAgentSystem : MonoBehaviour
 {
-	public static float agentScale = 5.0f;
+	public static float agentScale = 1.0f;
 
 	public Vector3 systemSize = new Vector3(100, 100, 100);	
 
