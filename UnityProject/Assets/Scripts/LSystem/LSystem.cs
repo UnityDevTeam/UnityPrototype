@@ -6,7 +6,7 @@ public class LSystem : MonoBehaviour
 {
 	public bool useDerive    = true;
 	public bool useInterpret = true;
-	public bool useInterpretDeleteAdd = true;
+	public bool useInterpretDeleteAdd = false;
 
 	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
@@ -15,6 +15,8 @@ public class LSystem : MonoBehaviour
 	
 	private GameObject communicationQueryObject = null;
 	private Dictionary<int, CommunicationSymbol> communicationSymbols = new Dictionary<int, CommunicationSymbol> ();
+
+	private SortedDictionary<int, CommunicationSymbol> activeSymbols = new SortedDictionary<int, CommunicationSymbol> ();
 	
 	void Awake()
 	{
@@ -28,13 +30,17 @@ public class LSystem : MonoBehaviour
 			}
 		}
 
-		state.Add(axiom);
+		//state.Add(axiom);
+		CommunicationSymbol ax = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", new GameObject("start"));
+		state.Add (ax);
+		activeSymbols.Add (0, ax);
 
 		setTestRules ();
 	}
 
 	void setTestRules()
 	{
+		/*
 		ISymbol R1P = new ISymbol("A");
 		
 		CommunicationSymbol R1S1 = new CommunicationSymbol ("C", "G", Vector3.zero, Quaternion.identity, 0.0f, "m", null);
@@ -42,6 +48,8 @@ public class LSystem : MonoBehaviour
 		R1S.Add (R1S1);
 		
 		Rule R1 = new Rule (R1P, R1S, 1.0f);
+		*/
+
 		
 		///////////////////////////////////////////////////////////////////////
 		
@@ -103,7 +111,7 @@ public class LSystem : MonoBehaviour
 		
 		/////////////////////////////////////////////////////////////
 		
-		rules.Add (R1);
+		//rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
@@ -179,7 +187,7 @@ public class LSystem : MonoBehaviour
 		}
 	}
 
-	void addObject(ref Turtle turtle, string prefabName)
+	GameObject addObject(ref Turtle turtle, string prefabName)
 	{
 		GameObject prefab = Resources.Load(prefabName) as GameObject;
 		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
@@ -204,6 +212,8 @@ public class LSystem : MonoBehaviour
 
 		mol.transform.parent = transform;
 		mol.transform.localScale = NewAgentSystem.agentScale * mol.transform.localScale;
+
+		return mol;
 	}
 
 	void updateTurtle(ref Turtle turtle, Vector3 positionDelta, Vector3 orientationDelta)
@@ -257,7 +267,119 @@ public class LSystem : MonoBehaviour
 			}
 		}
 	}
-	
+
+	void newStart()
+	{
+
+	}
+
+	void newDerive()
+	{
+		List<int> toRemove = new List<int>();
+		Dictionary<int, CommunicationSymbol> toAdd = new Dictionary<int, CommunicationSymbol>();
+
+		int indexOffset = 0;
+		foreach (KeyValuePair<int, CommunicationSymbol> activeSymbol in activeSymbols)
+		{
+			CommunicationSymbol symbol = (CommunicationSymbol)state[activeSymbol.Key + indexOffset];
+
+			Rule rule = rules.Get (symbol);
+			if(rule != null)
+			{
+				state.RemoveAt(activeSymbol.Key + indexOffset);
+				toRemove.Add(activeSymbol.Key);
+
+				List<ISymbol> newSymbols = rule.successor;
+
+				for(int i = 0; i < newSymbols.Count; i++)
+				{
+					int newIndex = activeSymbol.Key + indexOffset + i;
+
+					ISymbol newSymbol = null;
+
+					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
+					{
+						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
+						((CommunicationSymbol)newSymbol).operationResult = new GameObject("test");
+						
+						toAdd.Add(newIndex, (CommunicationSymbol)newSymbol);
+					}
+					else if(newSymbols[i].GetType() == typeof(BindingSymbol))
+					{
+						newSymbol = new BindingSymbol((BindingSymbol)newSymbols[i]);
+					}
+					else if(newSymbols[i].GetType() == typeof(StructureSymbol))
+					{
+						newSymbol = new StructureSymbol((StructureSymbol)newSymbols[i]);
+					}
+					else if(newSymbols[i].GetType() == typeof(EndSymbol))
+					{
+						newSymbol = new EndSymbol((EndSymbol)newSymbols[i]);
+					}
+					
+					state.Insert( newIndex, newSymbol );
+				}
+
+				indexOffset += newSymbols.Count - 1;
+			}
+		}
+
+		foreach (int indexRemove in toRemove)
+		{
+			activeSymbols.Remove(indexRemove);
+		}
+
+		foreach (KeyValuePair<int, CommunicationSymbol> newSymbol in toAdd)
+		{
+			activeSymbols.Add(newSymbol.Key, newSymbol.Value);
+		}
+	}
+
+	private void newInterpret ()
+	{
+		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
+		Stack<Turtle> stack = new Stack<Turtle> ();
+		stack.Push(current);
+		
+		for (int i = 0; i < state.Count; i++)
+		{
+			ISymbol symbol = state[i];
+			
+			if(symbol.GetType() == typeof(StructureSymbol))
+			{
+				if(((StructureSymbol)symbol).structureObject == null)
+				{
+					((StructureSymbol)state[i]).structureObject = addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
+				}
+			}
+			else if(symbol.GetType() == typeof(BindingSymbol))
+			{
+				if(((BindingSymbol)symbol).isBranching)
+				{
+					stack.Push(current);
+					current = new Turtle (current);
+				}
+				
+				updateTurtle(ref current, ((BindingSymbol)symbol).bindingPosition, ((BindingSymbol)symbol).bindingOrientation);
+			}
+			else if(symbol.GetType() == typeof(EndSymbol))
+			{
+				current = stack.Pop ();
+			}
+			else if(symbol.GetType() == typeof(CommunicationSymbol))
+			{
+				// uff :(
+				if(((CommunicationSymbol)symbol).operationIdentifier == "B")
+				{
+					stack.Push(current);
+					current = new Turtle (current);
+				}
+				
+				//((CommunicationSymbol)symbol).fillTurtleValues(current);
+			}
+		}
+	}
+
 	private void preEnviromentStep()
 	{
 		List<CommunicationQuery> queries = communicationQueryObject.GetComponent<CommunicationManager> ().getQueries ();
@@ -284,12 +406,15 @@ public class LSystem : MonoBehaviour
 
 	private void TimeStep()
 	{
-		preEnviromentStep ();
-
+		//preEnviromentStep ();
+		newDerive ();
+		newInterpret ();
+		/*
 		if(useDerive) derive ();
 		if(useInterpret) interpret ();
+*/
 
-		postEnviromentStep ();
+		//postEnviromentStep ();
 	}
 	
 	void Update()

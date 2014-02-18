@@ -4,12 +4,14 @@ using System.Collections;
 public class StructureSymbol : ISymbol
 {
 	public string structurePrefabName = "";
+	public GameObject structureObject = null;
 
 	public StructureSymbol()
 	{
 		id                  = idCounter;
 		name                = "";
 		structurePrefabName = "";
+		structureObject     = null;
 
 		idCounter++;
 	}
@@ -19,6 +21,7 @@ public class StructureSymbol : ISymbol
 		id                  = idCounter;
 		name                = nName;
 		structurePrefabName = "";
+		structureObject     = null;
 
 		idCounter++;
 	}
@@ -28,6 +31,7 @@ public class StructureSymbol : ISymbol
 		id                  = idCounter;
 		name                = nName;
 		structurePrefabName = nStructurePrefabName;
+		structureObject     = null;
 
 		idCounter++;
 	}
@@ -37,6 +41,7 @@ public class StructureSymbol : ISymbol
 		id                  = nId;
 		name                = nName;
 		structurePrefabName = nStructurePrefabName;
+		structureObject     = null;
 	}
 	
 	public StructureSymbol( StructureSymbol nSymbol )
@@ -44,6 +49,7 @@ public class StructureSymbol : ISymbol
 		id                  = idCounter;
 		name                = nSymbol.name;
 		structurePrefabName = nSymbol.structurePrefabName;
+		structureObject     = nSymbol.structureObject;
 
 		idCounter++;
 	}
