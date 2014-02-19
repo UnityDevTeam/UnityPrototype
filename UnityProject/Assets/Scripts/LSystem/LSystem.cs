@@ -31,7 +31,7 @@ public class LSystem : MonoBehaviour
 		}
 
 		//state.Add(axiom);
-		CommunicationSymbol ax = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", new GameObject("start"));
+		CommunicationSymbol ax = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", null);
 		state.Add (ax);
 		activeSymbols.Add (0, ax);
 
@@ -277,17 +277,24 @@ public class LSystem : MonoBehaviour
 	{
 		List<int> toRemove = new List<int>();
 		Dictionary<int, CommunicationSymbol> toAdd = new Dictionary<int, CommunicationSymbol>();
+		CommunicationManager cql = communicationQueryObject.GetComponent<CommunicationManager> ();
+
+		SortedDictionary<int, CommunicationSymbol> newActiveSymbols = new SortedDictionary<int, CommunicationSymbol> ();
 
 		int indexOffset = 0;
 		foreach (KeyValuePair<int, CommunicationSymbol> activeSymbol in activeSymbols)
 		{
+			ISymbol deb = state[activeSymbol.Key + indexOffset];
 			CommunicationSymbol symbol = (CommunicationSymbol)state[activeSymbol.Key + indexOffset];
+
+			cql.Remove(activeSymbol.Key);
 
 			Rule rule = rules.Get (symbol);
 			if(rule != null)
 			{
+				Destroy(symbol.operationResult);
 				state.RemoveAt(activeSymbol.Key + indexOffset);
-				toRemove.Add(activeSymbol.Key);
+				//toRemove.Add(activeSymbol.Key);
 
 				List<ISymbol> newSymbols = rule.successor;
 
@@ -300,9 +307,9 @@ public class LSystem : MonoBehaviour
 					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
 					{
 						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
-						((CommunicationSymbol)newSymbol).operationResult = new GameObject("test");
 						
-						toAdd.Add(newIndex, (CommunicationSymbol)newSymbol);
+						//toAdd.Add(newIndex, (CommunicationSymbol)newSymbol);
+						newActiveSymbols.Add(newIndex, symbol);
 					}
 					else if(newSymbols[i].GetType() == typeof(BindingSymbol))
 					{
@@ -322,8 +329,12 @@ public class LSystem : MonoBehaviour
 
 				indexOffset += newSymbols.Count - 1;
 			}
+			else
+			{
+				newActiveSymbols.Add(activeSymbol.Key + indexOffset, symbol);
+			}
 		}
-
+/*
 		foreach (int indexRemove in toRemove)
 		{
 			activeSymbols.Remove(indexRemove);
@@ -333,6 +344,9 @@ public class LSystem : MonoBehaviour
 		{
 			activeSymbols.Add(newSymbol.Key, newSymbol.Value);
 		}
+*/
+		activeSymbols = newActiveSymbols;
+		//debugPrint ();
 	}
 
 	private void newInterpret ()
@@ -375,7 +389,7 @@ public class LSystem : MonoBehaviour
 					current = new Turtle (current);
 				}
 				
-				//((CommunicationSymbol)symbol).fillTurtleValues(current);
+				((CommunicationSymbol)symbol).fillTurtleValues(current);
 			}
 		}
 	}
@@ -386,10 +400,13 @@ public class LSystem : MonoBehaviour
 		
 		for(int i = 0; i < queries.Count; i++)
 		{
-			if(communicationSymbols.ContainsKey(queries[i].symbolId))
+			if(queries[i].changed)
 			{
-				communicationSymbols[queries[i].symbolId].operationTimer  = queries[i].time;
-				communicationSymbols[queries[i].symbolId].operationResult = queries[i].result;
+				if(activeSymbols.ContainsKey(queries[i].stateId))
+				{
+					activeSymbols[queries[i].stateId].operationTimer  = queries[i].time;
+					activeSymbols[queries[i].stateId].operationResult = queries[i].result;
+				}
 			}
 		}
 	}
@@ -398,30 +415,25 @@ public class LSystem : MonoBehaviour
 	{
 		CommunicationManager cql = communicationQueryObject.GetComponent<CommunicationManager> ();
 
-		foreach(KeyValuePair<int, CommunicationSymbol> symbol in communicationSymbols)
+		foreach(KeyValuePair<int, CommunicationSymbol> symbol in activeSymbols)
 		{
-			cql.Add(symbol.Value);
+			cql.Add(symbol.Key, symbol.Value);
 		}
 	}
 
 	private void TimeStep()
 	{
-		//preEnviromentStep ();
+		preEnviromentStep ();
+
 		newDerive ();
 		newInterpret ();
-		/*
-		if(useDerive) derive ();
-		if(useInterpret) interpret ();
-*/
 
-		//postEnviromentStep ();
+		postEnviromentStep ();
 	}
 	
 	void Update()
 	{
 		TimeStep ();
-
-		//debugPrint ();
 	}
 
 	void debugPrint()

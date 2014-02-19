@@ -11,7 +11,10 @@ public class NewAgentSystem : MonoBehaviour
 	[HideInInspector] public int agentsCount = 0;
 	[HideInInspector] public float time      = 0.0f;
 	
-	[HideInInspector] public AgentSystemQuery agentQueries;
+	//[HideInInspector] public AgentSystemQuery agentQueries;
+
+	[HideInInspector] public Dictionary<int, CommunicationQuery> agentQueries;
+
 	private GameObject communicationQueryObject = null;
 
 	private float oldAgentScale = 1.0f;
@@ -87,14 +90,21 @@ public class NewAgentSystem : MonoBehaviour
 		mol.transform.localPosition = position;
 		
 		if (mol.GetComponent<GlobalAttraction> ())
-			mol.GetComponent<GlobalAttraction> ().queries   = agentQueries;
+		{
+
+			mol.GetComponent<GlobalAttraction> ().agentSystemScr = this;
+		}
 		
 		if (mol.GetComponent<GlobalBindingQuery> ())
-			mol.GetComponent<GlobalBindingQuery> ().queries = agentQueries;
+		{
+			mol.GetComponent<GlobalBindingQuery> ().agentSystemScr = this;
+		}
+			
 	}
 
 	public void getCommunicationQuerries()
 	{
+		/*
 		Dictionary<int, CommunicationQuery> commQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
 		List<CommunicationQueryPair> queries = new List<CommunicationQueryPair>();
 
@@ -103,7 +113,7 @@ public class NewAgentSystem : MonoBehaviour
 		{
 			for(int i = 0; i < agentQueries.queries.Count; i++)
 			{
-				if(commQuery.Key == agentQueries.queries[i].query.symbolId)
+				if(commQuery.Key == agentQueries.queries[i].query.stateId)
 				{
 					queries.Add(agentQueries.queries[i]);
 					break;
@@ -114,12 +124,14 @@ public class NewAgentSystem : MonoBehaviour
 		}
 		
 		agentQueries.queries = queries;
+		*/
+		agentQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
 	}
 
 	public void updateCommunicationQuerries()
 	{
+		/*
 		List<CommunicationQuery> updatedQueries = new List<CommunicationQuery> ();
-
 
 		for (int i = 0; i < agentQueries.queries.Count; i++)
 		{
@@ -130,11 +142,12 @@ public class NewAgentSystem : MonoBehaviour
 		}
 
 		communicationQueryObject.GetComponent<CommunicationManager>().updateFromAgents (updatedQueries);
+		*/
 	}
 
 	void Awake()
 	{
-		agentQueries = new AgentSystemQuery();
+		agentQueries = new Dictionary<int, CommunicationQuery>();
 
 		if (!communicationQueryObject)
 		{

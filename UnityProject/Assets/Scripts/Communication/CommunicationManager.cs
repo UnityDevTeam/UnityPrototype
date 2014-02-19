@@ -13,23 +13,23 @@ public class CommunicationManager : MonoBehaviour
 		return new List<CommunicationQuery> (queries.Values);
 	}
 
-	public void Add(CommunicationSymbol symbol)
+	public void Add(int stateId, CommunicationSymbol symbol)
 	{
-		CommunicationQuery query = new CommunicationQuery(symbol.id, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer);
+		CommunicationQuery query = new CommunicationQuery(symbol.id, stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer);
 
-		if (queries.ContainsKey (query.symbolId))
+		if (queries.ContainsKey (query.stateId))
 		{
 			queries [query.symbolId] = query;
 		}
 		else
 		{
-			queries.Add (query.symbolId, query);
+			queries.Add (query.stateId, query);
 		}
 	}
 
-	public void Remove(int symbolId)
+	public void Remove(int stateId)
 	{
-		queries.Remove (symbolId);
+		queries.Remove (stateId);
 	}
 
 	public void updateFromAgents (List<CommunicationQuery> updatedQueries)

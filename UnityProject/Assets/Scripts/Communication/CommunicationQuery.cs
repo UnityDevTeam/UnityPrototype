@@ -4,6 +4,7 @@ using System.Collections;
 public class CommunicationQuery
 {
 	private int _symbolId  = 0;
+	private int _stateId   = 0;
 
 	private Vector3    _position    = Vector3.zero;
 	private Quaternion _orientation = Quaternion.identity;
@@ -12,7 +13,15 @@ public class CommunicationQuery
 	public float      time   = 0.0f;
 	public GameObject result = null;
 
+	public bool changed = false;
+
 	public int symbolId {
+		get {
+			return this._symbolId;
+		}
+	}
+
+	public int stateId {
 		get {
 			return this._symbolId;
 		}
@@ -36,15 +45,17 @@ public class CommunicationQuery
 		}
 	}
 
-	public CommunicationQuery( int nSymbolId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime)
+	public CommunicationQuery( int nSymbolId, int nStateId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime)
 	{
 		_symbolId  = nSymbolId;
+		_symbolId  = nStateId;
 
 		_position    = nPosition;
 		_orientation = nOrientation;
 		_type        = nType;
 
-		time   = nTime;
-		result = null;
+		time    = nTime;
+		result  = null;
+		changed = false;
 	}
 }
