@@ -126,6 +126,14 @@ public class NewAgentSystem : MonoBehaviour
 		agentQueries.queries = queries;
 		*/
 		agentQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
+
+		if (agentQueries != null)
+		{
+			foreach(KeyValuePair<int, CommunicationQuery> query in agentQueries)
+			{
+				agentQueries[query.Key].time += Time.deltaTime;
+			}
+		}
 	}
 
 	public void updateCommunicationQuerries()

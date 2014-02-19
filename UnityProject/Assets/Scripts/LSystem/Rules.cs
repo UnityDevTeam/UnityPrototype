@@ -4,10 +4,12 @@ using System;
 
 public class Rules
 {
-	private Dictionary<ISymbol, List<Rule>> _lookupTable = new Dictionary<ISymbol, List<Rule>> (new ISymbol.EqualityComparer ());
+	//private Dictionary<ISymbol, List<Rule>> _lookupTable = new Dictionary<ISymbol, List<Rule>> (new ISymbol.EqualityComparer ());
+	private List<Rule> _lookupTable = new List<Rule> (/*new ISymbol.EqualityComparer ()*/);
 	
 	public void Add (Rule rule)
 	{
+		/*
 		List<Rule> list;
 		if (!_lookupTable.ContainsKey (rule.predecessor))
 		{
@@ -18,8 +20,11 @@ public class Rules
 		{
 			list = _lookupTable [rule.predecessor];
 		}
+
 		
 		list.Add(rule);
+		*/
+		_lookupTable.Add (rule);
 	}
 	
 	public void Clear()
@@ -29,7 +34,7 @@ public class Rules
 	
 	public bool Contains (ISymbol module)
 	{
-		return _lookupTable.ContainsKey(module);
+		return false;//_lookupTable.ContainsKey(module);
 	}
 
 	private List<Rule> conditioning(ISymbol module, List<Rule> rules)
@@ -47,12 +52,21 @@ public class Rules
 	
 	public Rule Get (ISymbol module)
 	{
+		List<Rule> list = new List<Rule> ();
+		foreach (Rule row in _lookupTable)
+		{
+			if((CommunicationSymbol)module == (CommunicationSymbol)row.predecessor)
+				list.Add(row);
+		}
+		/*
 		if (!_lookupTable.ContainsKey (module))
 		{
 			return null;
 		}
+		*/
 		
-		List<Rule> list = conditioning(module, _lookupTable [module]);
+		//List<Rule> list = conditioning(module, _lookupTable [module]);
+		list = conditioning(module, list);
 
 		
 		if (list.Count == 1)
@@ -74,7 +88,7 @@ public class Rules
 		
 		return null;
 	}
-	
+	/*
 	public bool CheckProbabilities ()
 	{
 		foreach (List<Rule> list in _lookupTable.Values)
@@ -99,5 +113,6 @@ public class Rules
 		
 		return true;
 	}
+	*/
 	
 }

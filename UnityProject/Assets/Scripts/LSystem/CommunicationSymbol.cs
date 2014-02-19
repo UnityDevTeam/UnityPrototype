@@ -251,7 +251,7 @@ public class CommunicationSymbol : ISymbol
 	
 	public override int GetHashCode()
 	{
-		return name.GetHashCode () ^ _operationIdentifier.GetHashCode ();
+		return name.GetHashCode ();
 	}
 
 	public void fillTurtleValues(Turtle turtle)

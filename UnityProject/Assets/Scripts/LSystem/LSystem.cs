@@ -77,14 +77,14 @@ public class LSystem : MonoBehaviour
 		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
 		StructureSymbol     R3S2 = new StructureSymbol("m", "testAgent2");
 		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "m", null);
-		EndSymbol           R3S4 = new EndSymbol("e");
+		//EndSymbol           R3S4 = new EndSymbol("e");
 		CommunicationSymbol R3S5 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "m", null);
 		
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
 		R3S.Add (R3S2);
 		R3S.Add (R3S3);
-		R3S.Add (R3S4);
+		//R3S.Add (R3S4);
 		R3S.Add (R3S5);
 		
 		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
@@ -110,11 +110,25 @@ public class LSystem : MonoBehaviour
 		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
 		
 		/////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R5P = new CommunicationSymbol ("C");
 		
+		EndSymbol R5S1 = new EndSymbol("e");
+		
+		List<ISymbol> R5S = new List<ISymbol> ();
+		R5S.Add (R5S1);
+		
+		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 3.0f);
+		
+		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
+
+		/////////////////////////////////////////////////////////////
+
 		//rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
+		rules.Add (R5);
 	}
 	
 	void derive ()
@@ -400,7 +414,7 @@ public class LSystem : MonoBehaviour
 		
 		for(int i = 0; i < queries.Count; i++)
 		{
-			if(queries[i].changed)
+			//if(queries[i].changed)
 			{
 				if(activeSymbols.ContainsKey(queries[i].stateId))
 				{
@@ -429,6 +443,8 @@ public class LSystem : MonoBehaviour
 		newInterpret ();
 
 		postEnviromentStep ();
+
+		debugPrint ();
 	}
 	
 	void Update()

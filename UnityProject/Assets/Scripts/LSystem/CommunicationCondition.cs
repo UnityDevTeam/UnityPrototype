@@ -21,7 +21,7 @@ public class CommunicationCondition
 	private CommOperation operation;
 	private System.Object value;
 
-	public CommunicationCondition(CommParameters nParam, CommOperation nOperation, Object nValue)
+	public CommunicationCondition(CommParameters nParam, CommOperation nOperation, System.Object nValue)
 	{
 		param     = nParam;
 		operation = nOperation;
