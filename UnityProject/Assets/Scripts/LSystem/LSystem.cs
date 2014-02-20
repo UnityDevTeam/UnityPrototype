@@ -453,6 +453,8 @@ public class LSystem : MonoBehaviour
 		newInterpret ();
 
 		postEnviromentStep ();
+
+		//debugPrint ();
 	}
 	
 	void Update()

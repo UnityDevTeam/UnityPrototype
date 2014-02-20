@@ -12,6 +12,8 @@ public class GlobalAttraction : AgentBehaviourNary
 	public float attractionRadius = 5.0f;
 	public float attractionPower  = 10.0f;
 
+	public int queryId = -1;
+
 	void Start ()
 	{
 	
@@ -23,18 +25,41 @@ public class GlobalAttraction : AgentBehaviourNary
 
 		if (queries != null && RandomMove.speed < 30)
 		{
-			foreach (KeyValuePair<int, CommunicationQuery> query in queries)
+			if(queryId > -1 && queries.ContainsKey(queryId))
 			{
-				Vector3 pos = transform.position - query.Value.position;
+				Vector3 pos = transform.position - queries[queryId].position;
 				
 				if(pos.magnitude < attractionRadius)
-				{	
+				{
+					int objIndex = transform.gameObject.GetInstanceID();
+					int index = GetInstanceID();
+					
 					rigidbody.velocity = -pos.normalized * RandomMove.speed;
 					rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 					
-					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
+					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, queries[queryId].orientation, (attractionRadius - pos.magnitude) / attractionRadius);
+				}
+			}
+			else
+			{
+				foreach (KeyValuePair<int, CommunicationQuery> query in queries)
+				{
+					Vector3 pos = transform.position - query.Value.position;
+					
+					if(pos.magnitude < attractionRadius)
+					{
+						int objIndex = transform.gameObject.GetInstanceID();
+						int index = GetInstanceID();
+						
+						rigidbody.velocity = -pos.normalized * RandomMove.speed;
+						rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
+						
+						rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
 
-					return;
+						queryId = query.Key;
+
+						return;
+					}
 				}
 			}
 		}

@@ -91,7 +91,6 @@ public class NewAgentSystem : MonoBehaviour
 		
 		if (mol.GetComponent<GlobalAttraction> ())
 		{
-
 			mol.GetComponent<GlobalAttraction> ().agentSystemScr = this;
 		}
 		
