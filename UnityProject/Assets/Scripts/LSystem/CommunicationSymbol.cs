@@ -9,17 +9,19 @@ public class CommunicationSymbol : ISymbol
 	private KeyValuePair<Quaternion, bool> _operationOrientation;
 	private KeyValuePair<string,     bool> _operationResultType;
 
-	// filled by interpret
-	private Vector3    _turtlePosition    = Vector3.zero;
-	private Quaternion _turtleOrientation = Quaternion.identity;
-
 	// filled by enviroment
 	private KeyValuePair<float,      bool> _operationTimer;
 	private KeyValuePair<GameObject, bool> _operationResult;
 
-	// total private
+	// filled by interpret
+	private Vector3    _turtlePosition    = Vector3.zero;
+	private Quaternion _turtleOrientation = Quaternion.identity;
+
+	// operationPosition and operationOrientation transformed to global
 	private Vector3    _globalPosition    = Vector3.zero;
 	private Quaternion _globalOrientation = Quaternion.identity;
+
+	private AnimationCurve _probabilityFunction = AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
 
 	public string operationIdentifier
 	{
@@ -101,6 +103,12 @@ public class CommunicationSymbol : ISymbol
 	{
 		get { return this._operationResult.Value; }
 		set { this._operationResult = new KeyValuePair<GameObject, bool>(this._operationResult.Key, value ); }
+	}
+
+	public AnimationCurve probability
+	{
+		get { return this._probabilityFunction; }
+		set { this._probabilityFunction = value; }
 	}
 
 	public CommunicationSymbol()

@@ -192,13 +192,22 @@ public class NewAgentSystem : MonoBehaviour
 	void Update ()
 	{
 		time += Time.deltaTime;
-		checkAgentsCounts (time);
 
 		if (agentScale != oldAgentScale)
 		{
 			scaleAgents ();
 		}
 
+		if (RandomMove.speed == 30)
+		{
+			transform.GetChild (0).gameObject.SetActive (false);
+		}
+		else
+		{
+			transform.GetChild (0).gameObject.SetActive (true);
+		}
+
+		checkAgentsCounts (time);
 		updateCommunicationQuerries ();
 		getCommunicationQuerries ();
 	}

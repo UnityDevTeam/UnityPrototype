@@ -13,7 +13,7 @@ public class CommunicationQuery
 	public float      time   = 0.0f;
 	public GameObject result = null;
 
-	public bool changed = false;
+	public AnimationCurve probability;
 
 	public int symbolId {
 		get {
@@ -45,7 +45,7 @@ public class CommunicationQuery
 		}
 	}
 
-	public CommunicationQuery( int nSymbolId, int nStateId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime)
+	public CommunicationQuery( int nSymbolId, int nStateId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime, AnimationCurve nProbability)
 	{
 		_symbolId  = nSymbolId;
 		_symbolId  = nStateId;
@@ -54,8 +54,8 @@ public class CommunicationQuery
 		_orientation = nOrientation;
 		_type        = nType;
 
-		time    = nTime;
-		result  = null;
-		changed = false;
+		probability = nProbability;
+		time        = nTime;
+		result      = null;
 	}
 }

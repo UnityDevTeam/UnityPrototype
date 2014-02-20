@@ -20,7 +20,7 @@ public class GlobalBindingQuery : AgentTriggerNary
 	{
 		Dictionary<int, CommunicationQuery> queries = agentSystemScr.agentQueries;
 
-		if (queries != null)
+		if (queries != null && RandomMove.speed < 30)
 		{
 			foreach(KeyValuePair<int, CommunicationQuery> query in queries)
 			{
@@ -29,26 +29,9 @@ public class GlobalBindingQuery : AgentTriggerNary
 				if(pos.magnitude < NewAgentSystem.agentScale * bindingRadius)
 				{	
 					queries[query.Key].result  = transform.gameObject;
-					queries[query.Key].changed = true;
 					return;
 				}
 			}
 		}
-		/*
-		for (int i = 0; i < queries.queries.Count; i++)
-		{
-			CommunicationQuery query = queries.queries[i].query;
-			Vector3 pos = transform.position - query.position;
-			
-			if(pos.magnitude < NewAgentSystem.agentScale * bindingRadius)
-			{
-
-				query.result = transform.gameObject;
-
-				queries.queries[i] = new CommunicationQueryPair(query, true);
-
-			}
-		}
-		*/
 	}
 }

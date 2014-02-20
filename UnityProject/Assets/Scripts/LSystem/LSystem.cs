@@ -108,8 +108,9 @@ public class LSystem : MonoBehaviour
 		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
 		
 		/////////////////////////////////////////////////////////////
-		/*
+
 		CommunicationSymbol R5P = new CommunicationSymbol ("C");
+		R5P.operationIdentifier = "G";
 		
 		EndSymbol R5S1 = new EndSymbol("e");
 		
@@ -119,14 +120,26 @@ public class LSystem : MonoBehaviour
 		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
 		
 		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
-*/
+
+		/////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R6P = new CommunicationSymbol ("C");
+		R6P.operationIdentifier = "B";
+		
+		List<ISymbol> R6S = new List<ISymbol> ();
+		
+		CommunicationCondition R6C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
+		
+		Rule R6 = new Rule (R6P, R6S, R6C, 1.0f);
+		
 		/////////////////////////////////////////////////////////////
 
 		//rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
-		//rules.Add (R5);
+		rules.Add (R5);
+		rules.Add (R6);
 	}
 	
 	void derive ()
@@ -220,6 +233,10 @@ public class LSystem : MonoBehaviour
 		if (mol.GetComponent<BoundaryBounce> ())
 			Destroy (mol.GetComponent<BoundaryBounce> ());
 
+		if (mol.GetComponent<TimeScaleTransparency> ())
+			Destroy (mol.GetComponent<TimeScaleTransparency> ());
+
+		// will be removed somehow
 		mol.rigidbody.isKinematic = true;
 
 		mol.transform.parent = transform;
@@ -356,7 +373,6 @@ public class LSystem : MonoBehaviour
 		}
 */
 		activeSymbols = newActiveSymbols;
-		//debugPrint ();
 	}
 
 	private void newInterpret ()
@@ -437,8 +453,6 @@ public class LSystem : MonoBehaviour
 		newInterpret ();
 
 		postEnviromentStep ();
-
-		//debugPrint ();
 	}
 	
 	void Update()

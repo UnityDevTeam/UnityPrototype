@@ -21,7 +21,7 @@ public class GlobalAttraction : AgentBehaviourNary
 	{
 		Dictionary<int, CommunicationQuery> queries = agentSystemScr.agentQueries;
 
-		if (queries != null)
+		if (queries != null && RandomMove.speed < 30)
 		{
 			foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 			{
@@ -38,21 +38,5 @@ public class GlobalAttraction : AgentBehaviourNary
 				}
 			}
 		}
-
-		/*
-		for (int i = 0; i < queries.queries.Count; i++)
-		{
-			CommunicationQuery query = queries.queries[i].query;
-			Vector3 pos = transform.position - query.position;
-
-			if(pos.magnitude <  attractionRadius)
-			{
-				rigidbody.velocity = -pos.normalized * RandomMove.speed;
-				rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
-				
-				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
-			}
-		}
-		*/
 	}
 }

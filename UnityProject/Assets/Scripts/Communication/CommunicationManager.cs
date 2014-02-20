@@ -15,7 +15,7 @@ public class CommunicationManager : MonoBehaviour
 
 	public void Add(int stateId, CommunicationSymbol symbol)
 	{
-		CommunicationQuery query = new CommunicationQuery(symbol.id, stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer);
+		CommunicationQuery query = new CommunicationQuery(symbol.id, stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer, symbol.probability);
 
 		if (queries.ContainsKey (query.stateId))
 		{
@@ -39,6 +39,31 @@ public class CommunicationManager : MonoBehaviour
 			if(queries.ContainsKey(updatedQueries[i].symbolId))
 			{
 				queries[updatedQueries[i].symbolId].result = updatedQueries[i].result;
+			}
+		}
+	}
+
+	void Update()
+	{
+
+		if (LSystem.timeDelta > 0.6f)
+		{
+			foreach (KeyValuePair<int, CommunicationQuery> query in queries)
+			{
+				float prob = query.Value.probability.Evaluate(LSystem.timeDelta);
+
+				bool populate = prob == 1.0f;
+
+				if(!populate)
+				{
+					float chance = UnityEngine.Random.value;
+
+					if(chance < prob)
+						populate = true;
+				}
+
+				if(populate)
+					queries[query.Key].result = new GameObject();
 			}
 		}
 	}
