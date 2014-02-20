@@ -33,7 +33,8 @@ public class GlobalAttraction : AgentBehaviourNary
 					rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 					
 					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
-					
+
+					return;
 				}
 			}
 		}

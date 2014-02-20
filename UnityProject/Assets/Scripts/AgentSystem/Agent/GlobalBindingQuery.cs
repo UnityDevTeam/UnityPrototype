@@ -30,7 +30,7 @@ public class GlobalBindingQuery : AgentTriggerNary
 				{	
 					queries[query.Key].result  = transform.gameObject;
 					queries[query.Key].changed = true;
-					
+					return;
 				}
 			}
 		}

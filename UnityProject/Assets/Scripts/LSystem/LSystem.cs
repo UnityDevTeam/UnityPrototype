@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {
-	public bool useDerive    = true;
-	public bool useInterpret = true;
-	public bool useInterpretDeleteAdd = false;
+	[HideInInspector] public static float timeDelta = 0.02f;
 
 	public ISymbol       axiom = new ISymbol ( 0, "A" );
 	public List<ISymbol> state = new List<ISymbol>();
@@ -110,7 +108,7 @@ public class LSystem : MonoBehaviour
 		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
 		
 		/////////////////////////////////////////////////////////////
-
+		/*
 		CommunicationSymbol R5P = new CommunicationSymbol ("C");
 		
 		EndSymbol R5S1 = new EndSymbol("e");
@@ -118,17 +116,17 @@ public class LSystem : MonoBehaviour
 		List<ISymbol> R5S = new List<ISymbol> ();
 		R5S.Add (R5S1);
 		
-		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 3.0f);
+		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
 		
 		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
-
+*/
 		/////////////////////////////////////////////////////////////
 
 		//rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
-		rules.Add (R5);
+		//rules.Add (R5);
 	}
 	
 	void derive ()
@@ -238,8 +236,7 @@ public class LSystem : MonoBehaviour
 
 	private void interpret ()
 	{
-		if(useInterpretDeleteAdd)
-			DestroyOld();
+		DestroyOld();
 		
 		Turtle current = new Turtle (Quaternion.identity, Vector3.zero);
 		Stack<Turtle> stack = new Stack<Turtle> ();
@@ -251,8 +248,7 @@ public class LSystem : MonoBehaviour
 
 			if(symbol.GetType() == typeof(StructureSymbol))
 			{
-				if(useInterpretDeleteAdd)
-					addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
+				addObject(ref current, ((StructureSymbol)symbol).structurePrefabName);
 			}
 			else if(symbol.GetType() == typeof(BindingSymbol))
 			{
@@ -396,14 +392,12 @@ public class LSystem : MonoBehaviour
 			}
 			else if(symbol.GetType() == typeof(CommunicationSymbol))
 			{
-				// uff :(
-				if(((CommunicationSymbol)symbol).operationIdentifier == "B")
-				{
-					stack.Push(current);
-					current = new Turtle (current);
-				}
-				
 				((CommunicationSymbol)symbol).fillTurtleValues(current);
+
+				if(((CommunicationSymbol)symbol).operationIdentifier == "G")
+				{
+					current = stack.Pop();
+				}
 			}
 		}
 	}
@@ -444,7 +438,7 @@ public class LSystem : MonoBehaviour
 
 		postEnviromentStep ();
 
-		debugPrint ();
+		//debugPrint ();
 	}
 	
 	void Update()
