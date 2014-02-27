@@ -6,6 +6,7 @@ public class LSystem : MonoBehaviour
 {
 	[HideInInspector] public static float timeDelta = 0.1f;
 
+	public List<ISymbol> alphabet = new List<ISymbol>();
 	public ISymbol       axiom;
 	public List<ISymbol> state = new List<ISymbol>();
 
@@ -350,8 +351,6 @@ public class LSystem : MonoBehaviour
 		GameObject prefab = Resources.Load(prefabName) as GameObject;
 		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
 
-
-
 		if (polymerExample == 2 && prefabName == "molecule")
 		{
 			mol.renderer.material = diffTransBlue;
@@ -400,7 +399,6 @@ public class LSystem : MonoBehaviour
 		int indexOffset = 0;
 		foreach (KeyValuePair<int, CommunicationSymbol> activeSymbol in activeSymbols)
 		{
-			ISymbol deb = state[activeSymbol.Key + indexOffset];
 			CommunicationSymbol symbol = (CommunicationSymbol)state[activeSymbol.Key + indexOffset];
 
 			cql.Remove(activeSymbol.Key);
@@ -408,7 +406,7 @@ public class LSystem : MonoBehaviour
 			Rule rule = rules.Get (symbol);
 			if(rule != null)
 			{
-				Destroy(symbol.operationResult);
+				DestroyImmediate(symbol.operationResult);
 				state.RemoveAt(activeSymbol.Key + indexOffset);
 
 				List<ISymbol> newSymbols = rule.successor;
@@ -504,15 +502,12 @@ public class LSystem : MonoBehaviour
 		
 		for(int i = 0; i < queries.Count; i++)
 		{
-			//if(queries[i].changed)
+			if(activeSymbols.ContainsKey(queries[i].stateId))
 			{
-				if(activeSymbols.ContainsKey(queries[i].stateId))
-				{
-					activeSymbols[queries[i].stateId].operationTimer  = queries[i].time;
+				activeSymbols[queries[i].stateId].operationTimer  = queries[i].time;
 
-					if(monomerCounting < monomerCountingStop)
-						activeSymbols[queries[i].stateId].operationResult = queries[i].result;
-				}
+				if(monomerCounting < monomerCountingStop)
+					activeSymbols[queries[i].stateId].operationResult = queries[i].result;
 			}
 		}
 	}

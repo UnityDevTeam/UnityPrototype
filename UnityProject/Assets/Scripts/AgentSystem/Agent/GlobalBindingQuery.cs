@@ -5,8 +5,6 @@ using System.Collections.Generic;
 [AddComponentMenu("Agent/Trigger/GlobalBindingQuery")]
 public class GlobalBindingQuery : AgentTriggerNary
 {
-	//public AgentSystemQuery queries;
-	//public Dictionary<int, CommunicationQuery> queries;
 	public NewAgentSystem agentSystemScr;
 
 	public float bindingRadius = 0.4f;

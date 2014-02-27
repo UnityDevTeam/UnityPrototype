@@ -29,9 +29,6 @@ public class GlobalAttraction : AgentBehaviourNary
 				
 				if(pos.magnitude < attractionRadius)
 				{
-					int objIndex = transform.gameObject.GetInstanceID();
-					int index = GetInstanceID();
-					
 					rigidbody.velocity = -pos.normalized * RandomMove.speed;
 					rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 					
@@ -48,9 +45,6 @@ public class GlobalAttraction : AgentBehaviourNary
 						
 						if(pos.magnitude < attractionRadius)
 						{
-							int objIndex = transform.gameObject.GetInstanceID();
-							int index = GetInstanceID();
-							
 							rigidbody.velocity = -pos.normalized * RandomMove.speed;
 							rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 							

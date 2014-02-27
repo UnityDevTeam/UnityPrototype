@@ -10,8 +10,6 @@ public class NewAgentSystem : MonoBehaviour
 
 	[HideInInspector] public int agentsCount = 0;
 	[HideInInspector] public float time      = 0.0f;
-	
-	//[HideInInspector] public AgentSystemQuery agentQueries;
 
 	[HideInInspector] public Dictionary<int, CommunicationQuery> agentQueries;
 
@@ -103,27 +101,6 @@ public class NewAgentSystem : MonoBehaviour
 
 	public void getCommunicationQuerries()
 	{
-		/*
-		Dictionary<int, CommunicationQuery> commQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
-		List<CommunicationQueryPair> queries = new List<CommunicationQueryPair>();
-
-
-		foreach (KeyValuePair<int, CommunicationQuery> commQuery in commQueries)
-		{
-			for(int i = 0; i < agentQueries.queries.Count; i++)
-			{
-				if(commQuery.Key == agentQueries.queries[i].query.stateId)
-				{
-					queries.Add(agentQueries.queries[i]);
-					break;
-				}
-			}
-
-			queries.Add(new CommunicationQueryPair(commQuery.Value));
-		}
-		
-		agentQueries.queries = queries;
-		*/
 		agentQueries = communicationQueryObject.GetComponent<CommunicationManager>().queries;
 
 		if (agentQueries != null)
@@ -133,23 +110,6 @@ public class NewAgentSystem : MonoBehaviour
 				agentQueries[query.Key].time += Time.deltaTime;
 			}
 		}
-	}
-
-	public void updateCommunicationQuerries()
-	{
-		/*
-		List<CommunicationQuery> updatedQueries = new List<CommunicationQuery> ();
-
-		for (int i = 0; i < agentQueries.queries.Count; i++)
-		{
-			if(agentQueries.queries[i].changed)
-			{
-				updatedQueries.Add(agentQueries.queries[i].query);
-			}
-		}
-
-		communicationQueryObject.GetComponent<CommunicationManager>().updateFromAgents (updatedQueries);
-		*/
 	}
 
 	void Awake()
@@ -207,7 +167,6 @@ public class NewAgentSystem : MonoBehaviour
 		}
 
 		checkAgentsCounts (time);
-		updateCommunicationQuerries ();
 		getCommunicationQuerries ();
 	}
 }

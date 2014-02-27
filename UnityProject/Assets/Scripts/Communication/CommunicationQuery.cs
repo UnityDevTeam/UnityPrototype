@@ -3,7 +3,6 @@ using System.Collections;
 
 public class CommunicationQuery
 {
-	private int _symbolId  = 0;
 	private int _stateId   = 0;
 
 	private Vector3    _position    = Vector3.zero;
@@ -15,15 +14,9 @@ public class CommunicationQuery
 
 	public AnimationCurve probability;
 
-	public int symbolId {
-		get {
-			return this._symbolId;
-		}
-	}
-
 	public int stateId {
 		get {
-			return this._symbolId;
+			return this._stateId;
 		}
 	}
 
@@ -45,10 +38,9 @@ public class CommunicationQuery
 		}
 	}
 
-	public CommunicationQuery( int nSymbolId, int nStateId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime, AnimationCurve nProbability)
+	public CommunicationQuery( int nStateId, Vector3 nPosition, Quaternion nOrientation, string nType, float nTime, AnimationCurve nProbability)
 	{
-		_symbolId  = nSymbolId;
-		_symbolId  = nStateId;
+		_stateId  = nStateId;
 
 		_position    = nPosition;
 		_orientation = nOrientation;

@@ -6,8 +6,6 @@ public class CommunicationManager : MonoBehaviour
 {
 	public Dictionary<int, CommunicationQuery> queries = new Dictionary<int, CommunicationQuery>();
 
-	private float timer = 0.0f;
-
 	public List<CommunicationQuery> getQueries()
 	{
 		return new List<CommunicationQuery> (queries.Values);
@@ -15,11 +13,11 @@ public class CommunicationManager : MonoBehaviour
 
 	public void Add(int stateId, CommunicationSymbol symbol)
 	{
-		CommunicationQuery query = new CommunicationQuery(symbol.id, stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer, symbol.probability);
+		CommunicationQuery query = new CommunicationQuery(stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer, symbol.probability);
 
 		if (queries.ContainsKey (query.stateId))
 		{
-			queries [query.symbolId] = query;
+			queries [query.stateId] = query;
 		}
 		else
 		{
@@ -30,17 +28,6 @@ public class CommunicationManager : MonoBehaviour
 	public void Remove(int stateId)
 	{
 		queries.Remove (stateId);
-	}
-
-	public void updateFromAgents (List<CommunicationQuery> updatedQueries)
-	{
-		for (int i = 0; i < updatedQueries.Count; i++)
-		{
-			if(queries.ContainsKey(updatedQueries[i].symbolId))
-			{
-				queries[updatedQueries[i].symbolId].result = updatedQueries[i].result;
-			}
-		}
 	}
 
 	void Update()
@@ -63,7 +50,10 @@ public class CommunicationManager : MonoBehaviour
 				}
 
 				if(populate)
-					queries[query.Key].result = new GameObject();
+				{
+					//GameObject go = Instantiate(Resources.Load(queries[query.Key].type)) as GameObject;
+					queries[query.Key].result = new GameObject("temporary");
+				}
 			}
 		}
 	}
