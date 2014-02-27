@@ -24,12 +24,15 @@ public class GlobalBindingQuery : AgentTriggerNary
 		{
 			foreach(KeyValuePair<int, CommunicationQuery> query in queries)
 			{
-				Vector3 pos = transform.position - query.Value.position;
-				
-				if(pos.magnitude < NewAgentSystem.agentScale * bindingRadius)
-				{	
-					queries[query.Key].result  = transform.gameObject;
-					return;
+				if(query.Value.type == transform.parent.gameObject.name)
+				{
+					Vector3 pos = transform.position - query.Value.position;
+					
+					if(pos.magnitude < NewAgentSystem.agentScale * bindingRadius)
+					{	
+						queries[query.Key].result  = transform.gameObject;
+						return;
+					}
 				}
 			}
 		}

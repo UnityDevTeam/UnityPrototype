@@ -6,7 +6,7 @@ using System.Collections.Generic;
 [CustomEditor(typeof(NewAgentSystem))]
 public class NewAgentSystemEditor : Editor
 {
-	private string[] allOptions = {"testAgent", "testAgent2"};
+	private string[] allOptions = {"adpRibose", "molecule"};
 	private int index = 0;
 
 	public override void OnInspectorGUI()

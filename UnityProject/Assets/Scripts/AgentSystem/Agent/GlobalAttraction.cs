@@ -5,8 +5,6 @@ using System.Collections.Generic;
 [AddComponentMenu("Agent/Behaviour/GlobalAttraction")]
 public class GlobalAttraction : AgentBehaviourNary
 {
-	//public AgentSystemQuery queries;
-	//public Dictionary<int, CommunicationQuery> queries;
 	public NewAgentSystem agentSystemScr;
 
 	public float attractionRadius = 5.0f;
@@ -44,21 +42,24 @@ public class GlobalAttraction : AgentBehaviourNary
 			{
 				foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 				{
-					Vector3 pos = transform.position - query.Value.position;
-					
-					if(pos.magnitude < attractionRadius)
+					if(query.Value.type == transform.parent.gameObject.name)
 					{
-						int objIndex = transform.gameObject.GetInstanceID();
-						int index = GetInstanceID();
+						Vector3 pos = transform.position - query.Value.position;
 						
-						rigidbody.velocity = -pos.normalized * RandomMove.speed;
-						rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
-						
-						rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
-
-						queryId = query.Key;
-
-						return;
+						if(pos.magnitude < attractionRadius)
+						{
+							int objIndex = transform.gameObject.GetInstanceID();
+							int index = GetInstanceID();
+							
+							rigidbody.velocity = -pos.normalized * RandomMove.speed;
+							rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
+							
+							rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
+							
+							queryId = query.Key;
+							
+							return;
+						}
 					}
 				}
 			}
