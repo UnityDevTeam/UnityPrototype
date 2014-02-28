@@ -14,8 +14,21 @@ public class LSystemEditor : Editor
 		SimulationTab
 	};
 
-	private tabType lastFocusedTab = tabType.SimulationTab;
+
+	private tabType lastFocusedTab = tabType.AlphabetTab;
 	private LSystem lSystem;
+	
+	private int    symbolTypeindex = 0;
+	private string symbolName = "";
+
+	private int structureIndex = 0;
+
+	private Vector3 bindingPosition = Vector3.zero;
+	private Vector3 bindingRotation = Vector3.zero;
+
+	private string communicationIdentifier = "";
+
+	private bool addNewLetter = false;
 
 	void OnEnable ()
 	{
@@ -75,6 +88,58 @@ public class LSystemEditor : Editor
 	private void showAlphabetMenu()
 	{
 		EditorGUILayout.LabelField("LSystem alphabet", EditorStyles.boldLabel);
+
+		EditorGUILayout.Separator ();
+		EditorGUILayout.LabelField("Existing letters");
+
+		//foreach () ...
+
+		GUILayout.Box("", new GUILayoutOption[]{GUILayout.ExpandWidth(true), GUILayout.Height(1)});
+
+
+		addNewLetter = EditorGUILayout.Toggle("Add new letter ", addNewLetter);
+
+		if (addNewLetter)
+		{
+			ISymbol newSymbol;
+			symbolTypeindex = EditorGUILayout.Popup (symbolTypeindex, GlobalLists.symbolTypes);
+
+			switch(symbolTypeindex)
+			{
+			case 0:
+				EditorGUILayout.LabelField("Chcem pridat ISymbol");
+
+				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
+
+				break;
+			case 1:
+				EditorGUILayout.LabelField("Chcem pridat StructureSymbol");
+
+				symbolName    = EditorGUILayout.TextField("Symbol name : ", symbolName);
+				structureIndex = EditorGUILayout.Popup ("Structure type : ", structureIndex, GlobalLists.monomerTypes);
+
+				break;
+			case 2:
+				EditorGUILayout.LabelField("Chcem pridat BindingSymbol");
+
+				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
+				bindingPosition = EditorGUILayout.Vector3Field("Binding position : ", bindingPosition);
+				bindingRotation = EditorGUILayout.Vector3Field("Binding orientation : ", bindingRotation);
+
+				break;
+			case 3:
+				EditorGUILayout.LabelField("Chcem pridat CommunicationSymbol");
+
+				communicationIdentifier = EditorGUILayout.TextField("Process identifier : ", communicationIdentifier);
+
+				break;
+			}
+			
+			if(GUILayout.Button("Add letter"))
+			{
+				lSystem.alphabet.Add(newSymbol);
+			}
+		}
 	}
 	
 	private void showAxiomMenu()
