@@ -6,7 +6,7 @@ public class LSystem : MonoBehaviour
 {
 	[HideInInspector] public static float timeDelta = 0.1f;
 
-	public List<ISymbol> alphabet = new List<ISymbol>();
+	[SerializeField] public List<ISymbol> alphabet = new List<ISymbol>();
 	public ISymbol       axiom;
 	public List<ISymbol> state = new List<ISymbol>();
 
@@ -38,16 +38,19 @@ public class LSystem : MonoBehaviour
 			}
 		}
 
+		// fuj
 		RenderSettings.haloStrength = 1.0f;
-
 		communications = new GameObject("Communications");
 
+		// fuj
 		diffWhite     = (Material)Resources.Load("Materials/diffWhite", typeof(Material));
 		diffTransBlue = (Material)Resources.Load("Materials/diffTransBlue", typeof(Material));
 
 		if (polymerExample == 0)
 		{
-			CommunicationSymbol ax = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
+			ax.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 			state.Add (ax);
 			activeSymbols.Add (0, ax);
 
@@ -55,7 +58,8 @@ public class LSystem : MonoBehaviour
 		}
 		else if (polymerExample == 1)
 		{
-			CommunicationSymbol ax = new CommunicationSymbol ("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
+			ax.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
 			state.Add (ax);
 			activeSymbols.Add (0, ax);
 
@@ -63,7 +67,8 @@ public class LSystem : MonoBehaviour
 		}
 		else if (polymerExample == 2)
 		{
-			CommunicationSymbol ax = new CommunicationSymbol ("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
+			ax.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
 			state.Add (ax);
 			activeSymbols.Add (0, ax);
 			
@@ -74,182 +79,240 @@ public class LSystem : MonoBehaviour
 	void setTestRules()
 	{
 		///////////////////////////////////////////////////////////////////////
-		
-		CommunicationSymbol R2P = new CommunicationSymbol ("C");
-		R2P.operationIdentifier = "G";
 
-		BindingSymbol       R2S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R2S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		CommunicationSymbol R1P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R1P.init ("C", "G");
+
+		BindingSymbol       R1S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R1S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R1S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R1S2.init("m", "adpRibose", null);
+		R1S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
+		List<ISymbol> R1S = new List<ISymbol> ();
+		R1S.Add (R1S1);
+		R1S.Add (R1S2);
+		R1S.Add (R1S3);
+
+		CommunicationCondition R1C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R1 = new Rule (R1P, R1S, R1C, 0.97f);
+
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R2P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R2P.init("C", "G");
+
+		BindingSymbol       R2S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R2S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R2S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		CommunicationSymbol R2S4 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R2S2.init("m", "adpRibose", null);
+		R2S3.init("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "adpRibose", null);
+		R2S4.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
 
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
 		R2S.Add (R2S2);
 		R2S.Add (R2S3);
-		
+		R2S.Add (R2S4);
+
 		CommunicationCondition R2C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R2 = new Rule (R2P, R2S, R2C, 0.97f);
+		Rule R2 = new Rule (R2P, R2S, R2C, 0.03f);
 
 		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R3P = ScriptableObject.CreateInstance<CommunicationSymbol>();
+		R3P.init("C", "B");
 		
-		CommunicationSymbol R3P = new CommunicationSymbol ("C");
-		R3P.operationIdentifier = "G";
-		
-		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R3S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "adpRibose", null);
-		CommunicationSymbol R3S4 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-		
+		BindingSymbol       R3S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R3S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R3S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R3S1.init("b", new Vector3(1.3871f, 0.7653f, 0.0029f), new Vector3(0, 0, 298.3136f), true);
+		R3S2.init("m", "adpRibose", null);
+		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
 		R3S.Add (R3S2);
 		R3S.Add (R3S3);
-		R3S.Add (R3S4);
 		
 		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R3 = new Rule (R3P, R3S, R3C, 0.03f);
-		
-		///////////////////////////////////////////////////////////////////////
-		
-		CommunicationSymbol R4P = new CommunicationSymbol ("C");
-		R4P.operationIdentifier = "B";
+		Rule R3 = new Rule (R3P, R3S, R3C, 1.0f);
 
-		BindingSymbol       R4S1 = new BindingSymbol  ("b", new Vector3(1.3871f, 0.7653f, 0.0029f), new Vector3(0, 0, 298.3136f), true);
-		StructureSymbol     R4S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R4P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R4P.init("C", "G");
+		
+		EndSymbol R4S1 = ScriptableObject.CreateInstance<EndSymbol> ();
+		R4S1.init("e");
 		
 		List<ISymbol> R4S = new List<ISymbol> ();
 		R4S.Add (R4S1);
-		R4S.Add (R4S2);
-		R4S.Add (R4S3);
 		
-		CommunicationCondition R4C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		CommunicationCondition R4C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
 		
 		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
-		
-		/////////////////////////////////////////////////////////////
 
-		CommunicationSymbol R5P = new CommunicationSymbol ("C");
-		R5P.operationIdentifier = "G";
-		
-		EndSymbol R5S1 = new EndSymbol("e");
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R5P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R5P.init("C", "B");
 		
 		List<ISymbol> R5S = new List<ISymbol> ();
-		R5S.Add (R5S1);
 		
 		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
 		
 		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
 
 		/////////////////////////////////////////////////////////////
-
-		CommunicationSymbol R6P = new CommunicationSymbol ("C");
-		R6P.operationIdentifier = "B";
 		
-		List<ISymbol> R6S = new List<ISymbol> ();
-		
-		CommunicationCondition R6C = new CommunicationCondition (CommunicationCondition.CommParameters.time, CommunicationCondition.CommOperation.more, 5.0f);
-		
-		Rule R6 = new Rule (R6P, R6S, R6C, 1.0f);
-		
-		/////////////////////////////////////////////////////////////
-
+		rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
 		rules.Add (R5);
-		rules.Add (R6);
 	}
 
 	void setTestRules2()
 	{
 		///////////////////////////////////////////////////////////////////////
 		
-		CommunicationSymbol R2P = new CommunicationSymbol ("C");
-		R2P.operationIdentifier = "F";
+		CommunicationSymbol R1P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R1P.init("C", "F");
 		
-		BindingSymbol       R2S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R2S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		BindingSymbol       R1S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R1S2 = ScriptableObject.CreateInstance<StructureSymbol> (); 
+		CommunicationSymbol R1S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R1S2.init("m", "adpRibose", null);
+		R1S3.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
+		List<ISymbol> R1S = new List<ISymbol> ();
+		R1S.Add (R1S1);
+		R1S.Add (R1S2);
+		R1S.Add (R1S3);
 		
+		CommunicationCondition R1C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R1 = new Rule (R1P, R1S, R1C, 0.9f);
+		
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R2P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R2P.init ("C", "F");
+		
+		BindingSymbol       R2S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R2S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R2S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		CommunicationSymbol R2S4 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		CommunicationSymbol R2S5 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R2S2.init("m", "adpRibose", null);
+		R2S3.init("C", "A", new Vector3(0.67309f, 0.52365f, 0.83809f), Quaternion.Euler(new Vector3(-45.8616f, -50.1757f, -86.2943f)), 0.0f, "adpRibose", null);
+		R2S4.init("C", "B", new Vector3(-0.94228f, 0.3053f, 0.9473f), Quaternion.Euler(new Vector3(48.033f, -112.99f, -89.888f)), 0.0f, "adpRibose", null);
+		R2S5.init("C", "C", new Vector3(-0.2270f, 0.6361f, -0.9190f), Quaternion.Euler(new Vector3(-72.7191f, 34.9005f, -37.05637f)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
 		R2S.Add (R2S2);
 		R2S.Add (R2S3);
+		R2S.Add (R2S4);
+		R2S.Add (R2S5);
 		
 		CommunicationCondition R2C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R2 = new Rule (R2P, R2S, R2C, 0.9f);
+		Rule R2 = new Rule (R2P, R2S, R2C, 0.1f);
 		
 		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R3P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R3P.init ("C", "A");
 		
-		CommunicationSymbol R3P = new CommunicationSymbol ("C");
-		R3P.operationIdentifier = "F";
-		
-		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R3S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "A", new Vector3(0.67309f, 0.52365f, 0.83809f), Quaternion.Euler(new Vector3(-45.8616f, -50.1757f, -86.2943f)), 0.0f, "adpRibose", null);
-		CommunicationSymbol R3S4 = new CommunicationSymbol ("C", "B", new Vector3(-0.94228f, 0.3053f, 0.9473f), Quaternion.Euler(new Vector3(48.033f, -112.99f, -89.888f)), 0.0f, "adpRibose", null);
-		CommunicationSymbol R3S5 = new CommunicationSymbol ("C", "C", new Vector3(-0.2270f, 0.6361f, -0.9190f), Quaternion.Euler(new Vector3(-72.7191f, 34.9005f, -37.05637f)), 0.0f, "adpRibose", null);
-		
+		BindingSymbol       R3S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R3S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R3S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R3S1.init("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
+		R3S2.init("m", "adpRibose", null);
+		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
 		R3S.Add (R3S2);
 		R3S.Add (R3S3);
-		R3S.Add (R3S4);
-		R3S.Add (R3S5);
 		
 		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R3 = new Rule (R3P, R3S, R3C, 0.1f);
+		Rule R3 = new Rule (R3P, R3S, R3C, 1.0f);
 		
 		///////////////////////////////////////////////////////////////////////
-		
-		CommunicationSymbol R4P = new CommunicationSymbol ("C");
-		R4P.operationIdentifier = "A";
-		
-		BindingSymbol       R4S1 = new BindingSymbol  ("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
-		StructureSymbol     R4S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-		
+       
+		CommunicationSymbol R4P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R4P.init("C", "B");
+       
+		BindingSymbol       R4S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R4S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R4S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R4S1.init("b", new Vector3(-0.94228f, 0.3053f, 0.9473f), new Vector3(48.033f, -112.99f, -89.888f), true);
+		R4S2.init("m", "adpRibose", null);
+		R4S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R4S = new List<ISymbol> ();
 		R4S.Add (R4S1);
 		R4S.Add (R4S2);
 		R4S.Add (R4S3);
-		
+       
 		CommunicationCondition R4C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
-		
+       
 		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
-		
-       ///////////////////////////////////////////////////////////////////////
-       
-       CommunicationSymbol R5P = new CommunicationSymbol ("C");
-       R5P.operationIdentifier = "B";
-       
-		BindingSymbol      R5S1 = new BindingSymbol  ("b", new Vector3(-0.94228f, 0.3053f, 0.9473f), new Vector3(48.033f, -112.99f, -89.888f), true);
-		StructureSymbol     R5S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R5S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-       
-       List<ISymbol> R5S = new List<ISymbol> ();
-       R5S.Add (R5S1);
-       R5S.Add (R5S2);
-       R5S.Add (R5S3);
-       
-       CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
-       
-		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
 
 		///////////////////////////////////////////////////////////////////////
 		
-		CommunicationSymbol R6P = new CommunicationSymbol ("C");
-		R6P.operationIdentifier = "C";
+		CommunicationSymbol R5P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R5P.init ("C", "C");
 		
-		BindingSymbol      R6S1 = new BindingSymbol  ("c", new Vector3(-0.2270f, 0.6361f, -0.9190f), new Vector3(-72.7191f, 34.9005f, -37.05637f), true);
-		StructureSymbol     R6S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R6S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		BindingSymbol       R5S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R5S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R5S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R5S1.init("c", new Vector3(-0.2270f, 0.6361f, -0.9190f), new Vector3(-72.7191f, 34.9005f, -37.05637f), true);
+		R5S2.init("m", "adpRibose", null);
+		R5S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
+		List<ISymbol> R5S = new List<ISymbol> ();
+		R5S.Add (R5S1);
+		R5S.Add (R5S2);
+		R5S.Add (R5S3);
 		
+		CommunicationCondition R5C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R5 = new Rule (R5P, R5S, R5C, 1.0f);
+
+		///////////////////////////////////////////////////////////////////////
+
+		CommunicationSymbol R6P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R6P.init("C", "G");
+		
+		BindingSymbol       R6S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R6S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R6S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R6S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R6S2.init("m", "adpRibose", null);
+		R6S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R6S = new List<ISymbol> ();
 		R6S.Add (R6S1);
 		R6S.Add (R6S2);
@@ -259,42 +322,50 @@ public class LSystem : MonoBehaviour
 		
 		Rule R6 = new Rule (R6P, R6S, R6C, 1.0f);
 
-		///////////////////////////////////////////////////////////////////////
-
-		CommunicationSymbol R7P = new CommunicationSymbol ("C");
-		R7P.operationIdentifier = "G";
-		
-		BindingSymbol       R7S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R7S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R7S3 = new CommunicationSymbol ("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-		
-		List<ISymbol> R7S = new List<ISymbol> ();
-		R7S.Add (R7S1);
-		R7S.Add (R7S2);
-		R7S.Add (R7S3);
-		
-		CommunicationCondition R7C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
-		
-		Rule R7 = new Rule (R7P, R7S, R7C, 1.0f);
-
+		rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
 		rules.Add (R4);
 		rules.Add (R5);
 		rules.Add (R6);
-		rules.Add (R7);
 	}
 
 	void setTestRules3()
 	{
 		///////////////////////////////////////////////////////////////////////
 		
-		CommunicationSymbol R2P = new CommunicationSymbol ("C");
-		R2P.operationIdentifier = "M";
+		CommunicationSymbol R1P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R1P.init("C", "M");
 		
-		BindingSymbol       R2S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R2S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R2S3 = new CommunicationSymbol ("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		BindingSymbol       R1S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R1S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R1S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R1S2.init("m", "adpRibose", null);
+		R1S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
+		List<ISymbol> R1S = new List<ISymbol> ();
+		R1S.Add (R1S1);
+		R1S.Add (R1S2);
+		R1S.Add (R1S3);
+		
+		CommunicationCondition R1C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		Rule R1 = new Rule (R1P, R1S, R1C, 0.9f);
+		
+		///////////////////////////////////////////////////////////////////////
+		
+		CommunicationSymbol R2P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R2P.init("C", "M");
+		
+		BindingSymbol       R2S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R2S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R2S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
+		R2S2.init("m", "adpRibose", null);
+		R2S3.init("C", "N", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "molecule", null);
 		
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
@@ -303,17 +374,21 @@ public class LSystem : MonoBehaviour
 		
 		CommunicationCondition R2C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R2 = new Rule (R2P, R2S, R2C, 0.9f);
+		Rule R2 = new Rule (R2P, R2S, R2C, 0.1f);
 		
 		///////////////////////////////////////////////////////////////////////
 		
-		CommunicationSymbol R3P = new CommunicationSymbol ("C");
-		R3P.operationIdentifier = "M";
+		CommunicationSymbol R3P = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		R3P.init("C", "N");
 		
-		BindingSymbol       R3S1 = new BindingSymbol  ("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0));
-		StructureSymbol     R3S2 = new StructureSymbol("m", "adpRibose");
-		CommunicationSymbol R3S3 = new CommunicationSymbol ("C", "N", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "molecule", null);
-		
+		BindingSymbol       R3S1 = ScriptableObject.CreateInstance<BindingSymbol> ();
+		StructureSymbol     R3S2 = ScriptableObject.CreateInstance<StructureSymbol> ();
+		CommunicationSymbol R3S3 = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+
+		R3S1.init("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
+		R3S2.init("n", "molecule", null);
+		R3S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
 		R3S.Add (R3S2);
@@ -321,29 +396,11 @@ public class LSystem : MonoBehaviour
 		
 		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R3 = new Rule (R3P, R3S, R3C, 0.1f);
-		
-		///////////////////////////////////////////////////////////////////////
-		
-		CommunicationSymbol R4P = new CommunicationSymbol ("C");
-		R4P.operationIdentifier = "N";
-		
-		BindingSymbol       R4S1 = new BindingSymbol  ("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
-		StructureSymbol     R4S2 = new StructureSymbol("n", "molecule");
-		CommunicationSymbol R4S3 = new CommunicationSymbol ("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-		
-		List<ISymbol> R4S = new List<ISymbol> ();
-		R4S.Add (R4S1);
-		R4S.Add (R4S2);
-		R4S.Add (R4S3);
-		
-		CommunicationCondition R4C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
-		
-		Rule R4 = new Rule (R4P, R4S, R4C, 1.0f);
+		Rule R3 = new Rule (R2P, R3S, R3C, 1.0f);
 
+		rules.Add (R1);
 		rules.Add (R2);
 		rules.Add (R3);
-		rules.Add (R4);
 	}
 
 	GameObject addObject(ref Turtle turtle, string prefabName)
@@ -419,21 +476,25 @@ public class LSystem : MonoBehaviour
 
 					if(newSymbols[i].GetType() == typeof(CommunicationSymbol))
 					{
-						newSymbol = new CommunicationSymbol((CommunicationSymbol)newSymbols[i]);
+						newSymbol = ScriptableObject.CreateInstance<CommunicationSymbol>();
+						((CommunicationSymbol)newSymbol).init((CommunicationSymbol)newSymbols[i]);
 
 						newActiveSymbols.Add(newIndex, symbol);
 					}
 					else if(newSymbols[i].GetType() == typeof(BindingSymbol))
 					{
-						newSymbol = new BindingSymbol((BindingSymbol)newSymbols[i]);
+						newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
+						((BindingSymbol)newSymbol).init((BindingSymbol)newSymbols[i]);
 					}
 					else if(newSymbols[i].GetType() == typeof(StructureSymbol))
 					{
-						newSymbol = new StructureSymbol((StructureSymbol)newSymbols[i]);
+						newSymbol = ScriptableObject.CreateInstance<StructureSymbol> ();
+						((StructureSymbol)newSymbol).init((StructureSymbol)newSymbols[i]);
 					}
 					else if(newSymbols[i].GetType() == typeof(EndSymbol))
 					{
-						newSymbol = new EndSymbol((EndSymbol)newSymbols[i]);
+						newSymbol = ScriptableObject.CreateInstance<EndSymbol> ();
+						((EndSymbol)newSymbol).init((EndSymbol)newSymbols[i]);
 					}
 					
 					state.Insert( newIndex, newSymbol );
@@ -541,11 +602,39 @@ public class LSystem : MonoBehaviour
 		Interpret ();
 
 		postEnviromentStep ();
+
+		debugPrint ();
 	}
 	
 	void Update()
 	{
 		TimeStep ();
+	}
+
+	void debugAxioms()
+	{
+		string output = "";
+		for (int i = 0; i < alphabet.Count; i++)
+		{
+			if(alphabet[i].GetType() == typeof(StructureSymbol))
+			{
+				output += "StructureSymbol(" + alphabet[i].name + ")";
+			}
+			else if(alphabet[i].GetType() == typeof(BindingSymbol))
+			{
+				output += "BindingSymbol(" + alphabet[i].name + ")";
+			}
+			else if(alphabet[i].GetType() == typeof(CommunicationSymbol))
+			{
+				output += "Communication(" + ((CommunicationSymbol)alphabet[i]).operationIdentifier + ")";
+			}
+			else if(alphabet[i].GetType() == typeof(ISymbol))
+			{
+				output += "ISymbol(" + alphabet[i].name + ")";
+			}
+		}
+		
+		print (output);
 	}
 
 	void debugPrint()

@@ -1,36 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
+[Serializable]
 public class EndSymbol : ISymbol
 {
 	public EndSymbol()
 	{
-		id   = idCounter;
-		name = "";
-
-		idCounter++;
+		init ("");
 	}
 
 	public EndSymbol(string nName)
 	{
-		id   = idCounter;
-		name = nName;
-
-		idCounter++;
-	}
-
-	public EndSymbol(int nId, string nName)
-	{
-		id   = nId;
-		name = nName;
+		init (nName);
 	}
 
 	public EndSymbol(EndSymbol nSymbol)
 	{
-		id   = idCounter;
-		name = nSymbol.name;
+		init (nSymbol);
+	}
 
-		idCounter++;
+	public void init(EndSymbol nSymbol)
+	{
+		init (nSymbol.name);
 	}
 
 	public override bool Equals(System.Object obj)

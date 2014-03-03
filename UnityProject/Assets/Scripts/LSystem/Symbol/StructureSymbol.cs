@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
+[Serializable]
 public class StructureSymbol : ISymbol
 {
 	public string structurePrefabName = "";
@@ -8,50 +10,37 @@ public class StructureSymbol : ISymbol
 
 	public StructureSymbol()
 	{
-		id                  = idCounter;
-		name                = "";
-		structurePrefabName = "";
-		structureObject     = null;
-
-		idCounter++;
+		init ("", "", null);
 	}
 	
 	public StructureSymbol( string nName )
 	{
-		id                  = idCounter;
-		name                = nName;
-		structurePrefabName = "";
-		structureObject     = null;
-
-		idCounter++;
+		init (nName, "", null);
 	}
 
 	public StructureSymbol( string nName, string nStructurePrefabName )
 	{
-		id                  = idCounter;
-		name                = nName;
-		structurePrefabName = nStructurePrefabName;
-		structureObject     = null;
-
-		idCounter++;
-	}
-	
-	public StructureSymbol( int nId, string nName, string nStructurePrefabName )
-	{
-		id                  = nId;
-		name                = nName;
-		structurePrefabName = nStructurePrefabName;
-		structureObject     = null;
+		init (nName, nStructurePrefabName, null);
 	}
 	
 	public StructureSymbol( StructureSymbol nSymbol )
 	{
-		id                  = idCounter;
-		name                = nSymbol.name;
-		structurePrefabName = nSymbol.structurePrefabName;
-		structureObject     = nSymbol.structureObject;
+		init (nSymbol);
+	}
 
+	public void init(string nName, string nStructurePrefabName, GameObject nStructureObject)
+	{
+		id                  = idCounter;
+		name                = nName;
+		structurePrefabName = nStructurePrefabName;
+		structureObject     = nStructureObject;
+		
 		idCounter++;
+	}
+
+	public void init(StructureSymbol nSymbol)
+	{
+		init (nSymbol.name, nSymbol.structurePrefabName, nSymbol.structureObject);
 	}
 	
 	public static bool operator ==(StructureSymbol x, StructureSymbol y) 

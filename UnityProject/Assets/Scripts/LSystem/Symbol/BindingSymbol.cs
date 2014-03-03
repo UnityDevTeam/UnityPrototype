@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
+[Serializable]
 public class BindingSymbol : ISymbol
 {
 	public Vector3 bindingPosition    = Vector3.zero;
@@ -9,75 +11,43 @@ public class BindingSymbol : ISymbol
 	
 	public BindingSymbol()
 	{
-		id                 = idCounter;
-		name               = "";
-		bindingPosition    = Vector3.zero;
-		bindingOrientation = Vector3.zero;
-		isBranching        = false;
-
-		idCounter++;
+		init ("", Vector3.zero, Vector3.zero, false);
 	}
 	
 	public BindingSymbol( string nName )
 	{
-		id                 = idCounter;
-		name               = nName;
-		bindingPosition    = Vector3.zero;
-		bindingOrientation = Vector3.zero;
-		isBranching        = false;
-
-		idCounter++;
+		init (nName, Vector3.zero, Vector3.zero, false);
 	}
 
 	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation )
 	{
-		id                 = idCounter;
-		name               = nName;
-		bindingPosition    = nPosition;
-		bindingOrientation = nOrientation;
-		isBranching        = false;
-
-		idCounter++;
-	}
-
-	public BindingSymbol( int nId, string nName, Vector3 nPosition, Vector3 nOrientation )
-	{
-		id                 = nId;
-		name               = nName;
-		bindingPosition    = nPosition;
-		bindingOrientation = nOrientation;
-		isBranching        = false;
+		init (nName, nPosition, nOrientation, false);
 	}
 
 	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
 	{
-		id                 = idCounter;
-		name               = nName;
-		bindingPosition    = nPosition;
-		bindingOrientation = nOrientation;
-		isBranching        = nIsBranching;
-
-		idCounter++;
+		init (nName, nPosition, nOrientation, nIsBranching);
 	}
 
-	public BindingSymbol( int nId, string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
-	{
-		id                 = nId;
-		name               = nName;
-		bindingPosition    = nPosition;
-		bindingOrientation = nOrientation;
-		isBranching        = nIsBranching;
-	}
-	
 	public BindingSymbol( BindingSymbol nSymbol )
 	{
-		id                 = idCounter;
-		name               = nSymbol.name;
-		bindingPosition    = nSymbol.bindingPosition;
-		bindingOrientation = nSymbol.bindingOrientation;
-		isBranching        = nSymbol.isBranching;
+		init (nSymbol);
+	}
 
+	public void init( string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
+	{
+		id                 = idCounter;
+		name               = nName;
+		bindingPosition    = nPosition;
+		bindingOrientation = nOrientation;
+		isBranching        = nIsBranching;
+		
 		idCounter++;
+	}
+
+	public void init( BindingSymbol nSymbol )
+	{
+		init (nSymbol.name, nSymbol.bindingPosition, nSymbol.bindingOrientation, nSymbol.isBranching);
 	}
 	
 	public static bool operator ==(BindingSymbol x, BindingSymbol y) 

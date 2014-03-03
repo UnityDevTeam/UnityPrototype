@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
+[Serializable]
 public class CommunicationSymbol : ISymbol
 {
 	// filled by rules
@@ -113,21 +115,56 @@ public class CommunicationSymbol : ISymbol
 
 	public CommunicationSymbol()
 	{
-		id = idCounter;
-		name = "";
-
-		idCounter++;
+		init ("C", "", Vector3.zero, Quaternion.identity, 0, "", null);
+		operationIdentifierVar  = false;
+		operationPositionVar    = false;
+		operationOrientationVar = false;
+		operationTimerVar       = false;
+		operationResultTypeVar  = false;
+		operationResultVar      = false;
 	}
 
 	public CommunicationSymbol( string nName)
 	{
-		id = idCounter;
-		name = nName;
+		init (nName, "", Vector3.zero, Quaternion.identity, 0, "", null);
+		operationIdentifierVar  = false;
+		operationPositionVar    = false;
+		operationOrientationVar = false;
+		operationTimerVar       = false;
+		operationResultTypeVar  = false;
+		operationResultVar      = false;
+	}
 
-		idCounter++;
+	public CommunicationSymbol( string nName, string nOperationIdentifier)
+	{
+		init (nName, nOperationIdentifier, Vector3.zero, Quaternion.identity, 0, "", null);
+		operationPositionVar    = false;
+		operationOrientationVar = false;
+		operationTimerVar       = false;
+		operationResultTypeVar  = false;
+		operationResultVar      = false;
 	}
 
 	public CommunicationSymbol( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
+	{
+		init (nName, nOperationIdentifier, nOperationPosition, nOperationOrientation, nOperationTimer, nOperationResultType, nOperationResult);
+	}
+
+	public CommunicationSymbol( CommunicationSymbol nSymbol )
+	{
+		init (nSymbol);
+	}
+
+	public void init( string nName, string nOperationIdentifier)
+	{
+		id                   = idCounter;
+		name                 = nName;
+		operationIdentifier  = nOperationIdentifier;
+		
+		idCounter++;
+	}
+
+	public void init( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
 	{
 		id                   = idCounter;
 		name                 = nName;
@@ -137,22 +174,22 @@ public class CommunicationSymbol : ISymbol
 		operationTimer       = nOperationTimer;
 		operationResultType  = nOperationResultType;
 		operationResult      = nOperationResult;
-
+		
 		idCounter++;
 	}
 
-	public CommunicationSymbol( CommunicationSymbol nSymbol )
+	public void init( CommunicationSymbol nSymbol )
 	{
 		id   = idCounter;
 		name = nSymbol.name;
-
+		
 		_operationIdentifier  = new KeyValuePair<string,     bool>(nSymbol.operationIdentifier,  nSymbol.operationIdentifierVar);
 		_operationPosition    = new KeyValuePair<Vector3,    bool>(nSymbol.operationPosition,    nSymbol.operationPositionVar);
 		_operationOrientation = new KeyValuePair<Quaternion, bool>(nSymbol.operationOrientation, nSymbol.operationOrientationVar);
 		_operationTimer       = new KeyValuePair<float,      bool>(nSymbol.operationTimer,       nSymbol.operationTimerVar);
 		_operationResultType  = new KeyValuePair<string,     bool>(nSymbol.operationResultType,  nSymbol.operationResultTypeVar);
 		_operationResult      = new KeyValuePair<GameObject, bool>(nSymbol.operationResult,      nSymbol.operationResultVar);
-
+		
 		idCounter++;
 	}
 

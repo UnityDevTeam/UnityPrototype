@@ -1,31 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+using System.Collections.Generic;
 
-public class ISymbol
+[Serializable]
+public class ISymbol : ScriptableObject
 {
 	public static int idCounter = 0;
-	public string name;
 	public int id;
 
 	public ISymbol()
 	{
-		id   = idCounter;
-		name = "";
-
-		idCounter++;
+		init ("");
 	}
 
 	public ISymbol(string nName)
 	{
-		id   = idCounter;
-		name = nName;
-
-		idCounter++;
+		init (nName);
 	}
 
-	public ISymbol(int nId, string nName)
+	public void init(string nName)
 	{
-		id   = nId;
+		id   = idCounter;
 		name = nName;
+		
+		idCounter++;
 	}
 
 	public override bool Equals(System.Object obj)

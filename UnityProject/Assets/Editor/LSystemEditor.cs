@@ -101,7 +101,6 @@ public class LSystemEditor : Editor
 
 		if (addNewLetter)
 		{
-			ISymbol newSymbol;
 			symbolTypeindex = EditorGUILayout.Popup (symbolTypeindex, GlobalLists.symbolTypes);
 
 			switch(symbolTypeindex)
@@ -137,6 +136,24 @@ public class LSystemEditor : Editor
 			
 			if(GUILayout.Button("Add letter"))
 			{
+				ISymbol newSymbol = ScriptableObject.CreateInstance<ISymbol>();
+				switch(symbolTypeindex)
+				{
+				case 0:
+					newSymbol = ScriptableObject.CreateInstance<ISymbol>();
+					newSymbol.name = symbolName;
+					break;
+				case 1:
+					newSymbol = ScriptableObject.CreateInstance<StructureSymbol>();new StructureSymbol(symbolName, GlobalLists.monomerTypes[structureIndex]);
+					break;
+				case 2:
+					newSymbol = new BindingSymbol(symbolName, bindingPosition, bindingRotation);
+					break;
+				case 3:
+					newSymbol = new CommunicationSymbol(symbolName, communicationIdentifier);
+					break;
+				}
+
 				lSystem.alphabet.Add(newSymbol);
 			}
 		}
