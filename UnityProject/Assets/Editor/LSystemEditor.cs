@@ -90,14 +90,77 @@ public class LSystemEditor : Editor
 		EditorGUILayout.LabelField("LSystem alphabet", EditorStyles.boldLabel);
 
 		EditorGUILayout.Separator ();
-		EditorGUILayout.LabelField("Existing letters");
+		EditorGUILayout.LabelField("Existing letters : ");
 
-		//foreach () ...
+		int toDelete = -1;
+
+		for (int i = 0; i < lSystem.alphabet.Count; i++)
+		{
+			ISymbol symbol = lSystem.alphabet[i];
+
+			EditorGUILayout.BeginHorizontal ();
+
+			if(symbol.GetType() == typeof(ISymbol))
+			{
+				EditorGUILayout.LabelField("ISymbol"                           , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]", GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
+			}
+			else if(symbol.GetType() == typeof(EndSymbol))
+			{
+				EditorGUILayout.LabelField("EndSymbol"                         , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]", GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
+			}
+			else if(symbol.GetType() == typeof(StructureSymbol))
+			{
+				EditorGUILayout.LabelField("StructureSymbol"                                         , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                      , GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField(((StructureSymbol)lSystem.alphabet[i]).structurePrefabName, GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField(""                                                        , GUILayout.MaxWidth(180));
+			}
+			else if(symbol.GetType() == typeof(BindingSymbol))
+			{
+				EditorGUILayout.LabelField("BindingSymbol"                                                                  , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                             , GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField("[position - " + ((BindingSymbol)lSystem.alphabet[i]).bindingPosition + "]"      , GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField("[orientation - " + ((BindingSymbol)lSystem.alphabet[i]).bindingOrientation + "]", GUILayout.MaxWidth(180));
+			}
+			else if(symbol.GetType() == typeof(CommunicationSymbol))
+			{
+				EditorGUILayout.LabelField("CommunicationSymbol"                                                   , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                    , GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField("[process - " + ((CommunicationSymbol)lSystem.alphabet[i]).process + "]", GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField(""                                                                      , GUILayout.MaxWidth(180));
+			}
+
+
+			
+			if(GUILayout.Button("D"))
+			{
+				toDelete = i;
+			}
+
+			EditorGUILayout.EndHorizontal ();
+		}
+
+		if (toDelete > -1)
+		{
+			lSystem.alphabet.RemoveAt(toDelete);
+		}
 
 		GUILayout.Box("", new GUILayoutOption[]{GUILayout.ExpandWidth(true), GUILayout.Height(1)});
 
 
-		addNewLetter = EditorGUILayout.Toggle("Add new letter ", addNewLetter);
+		if (!addNewLetter)
+		{
+			if (GUILayout.Button ("Add letter"))
+			{
+				addNewLetter = true;
+			}
+		}
 
 		if (addNewLetter)
 		{
@@ -160,7 +223,7 @@ public class LSystemEditor : Editor
 				}
 
 				lSystem.alphabet.Add(newSymbol);
-				lSystem.debugAxioms();
+				addNewLetter = false;
 			}
 		}
 	}
