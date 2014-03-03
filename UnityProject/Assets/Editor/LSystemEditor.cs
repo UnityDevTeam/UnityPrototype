@@ -30,6 +30,9 @@ public class LSystemEditor : Editor
 
 	private bool addNewLetter = false;
 
+	private bool changeAxiom = false;
+	private int axiomTypeIndex = 0;
+
 	void OnEnable ()
 	{
 		lSystem = (LSystem)target;
@@ -136,8 +139,6 @@ public class LSystemEditor : Editor
 				EditorGUILayout.LabelField(""                                                                      , GUILayout.MaxWidth(180));
 			}
 
-
-			
 			if(GUILayout.Button("D"))
 			{
 				toDelete = i;
@@ -152,7 +153,6 @@ public class LSystemEditor : Editor
 		}
 
 		GUILayout.Box("", new GUILayoutOption[]{GUILayout.ExpandWidth(true), GUILayout.Height(1)});
-
 
 		if (!addNewLetter)
 		{
@@ -230,7 +230,128 @@ public class LSystemEditor : Editor
 	
 	private void showAxiomMenu()
 	{
-		EditorGUILayout.LabelField("LSystem axiom", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Current axiom :", EditorStyles.boldLabel);
+		EditorGUILayout.Separator ();
+
+		ISymbol axiom = lSystem.axiom;
+
+		if (axiom != null)
+		{
+			if(axiom.GetType() == typeof(ISymbol))
+			{
+				EditorGUILayout.LabelField("ISymbol");
+				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+			}
+			else if(axiom.GetType() == typeof(EndSymbol))
+			{
+				EditorGUILayout.LabelField("EndSymbol");
+				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+			}
+			else if(axiom.GetType() == typeof(StructureSymbol))
+			{
+				EditorGUILayout.LabelField("StructureSymbol");
+				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+				EditorGUILayout.LabelField("Prefab : " + ((StructureSymbol)lSystem.axiom).name);
+			}
+			else if(axiom.GetType() == typeof(BindingSymbol))
+			{
+				EditorGUILayout.LabelField("BindingSymbol");
+				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+				EditorGUILayout.LabelField("Binding position : "    + ((BindingSymbol)lSystem.axiom).bindingPosition);
+				EditorGUILayout.LabelField("Binding orientation : " + ((BindingSymbol)lSystem.axiom).bindingOrientation);
+			}
+			else if(axiom.GetType() == typeof(CommunicationSymbol))
+			{
+				Vector3 eulerAngles = ((CommunicationSymbol)lSystem.axiom).orientation.eulerAngles;
+
+				EditorGUILayout.LabelField("CommunicationSymbol");
+				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+				EditorGUILayout.LabelField("Process : " + ((CommunicationSymbol)lSystem.axiom).process);
+
+				((CommunicationSymbol)lSystem.axiom).position    = EditorGUILayout.Vector3Field("Position : ",        ((CommunicationSymbol)lSystem.axiom).position);
+				eulerAngles                                      = EditorGUILayout.Vector3Field("Orientation : ",     eulerAngles);
+				((CommunicationSymbol)lSystem.axiom).resultType  = EditorGUILayout.TextField("Result type : ",        ((CommunicationSymbol)lSystem.axiom).resultType);
+
+				((CommunicationSymbol)lSystem.axiom).orientation.eulerAngles = eulerAngles;
+			}
+		}
+
+		GUILayout.Box("", new GUILayoutOption[]{GUILayout.ExpandWidth(true), GUILayout.Height(1)});
+		
+		if (!changeAxiom)
+		{
+			if (GUILayout.Button ("Change axiom"))
+			{
+				changeAxiom = true;
+			}
+		}
+
+		if(changeAxiom)
+		{
+			List<string> lSystemAlphabet = new List<string>();
+
+			foreach(ISymbol symbol in lSystem.alphabet)
+			{
+				string symbolStr = "";
+				if(symbol.GetType() == typeof(ISymbol))
+				{
+					symbolStr += "ISymbol(" + symbol.name + ")";
+				}
+				else if(symbol.GetType() == typeof(EndSymbol))
+				{
+					symbolStr += "EndSymbol(" + symbol.name + ")";
+				}
+				else if(symbol.GetType() == typeof(StructureSymbol))
+				{
+					symbolStr += "StructureSymbol(" + symbol.name + ")";
+				}
+				else if(symbol.GetType() == typeof(BindingSymbol))
+				{
+					symbolStr += "BindingSymbol(" + symbol.name + ")";
+				}
+				else if(symbol.GetType() == typeof(CommunicationSymbol))
+				{
+					symbolStr += "CommunicationSymbol(" + symbol.name + ", " + ((CommunicationSymbol)symbol).process + ")";
+				}
+				lSystemAlphabet.Add(symbolStr);
+			}
+
+			axiomTypeIndex = EditorGUILayout.Popup ("Axiom : ", axiomTypeIndex, lSystemAlphabet.ToArray());
+
+			if (GUILayout.Button ("Add / Change"))
+			{
+				ISymbol symbol = null;
+
+				if(lSystem.alphabet[axiomTypeIndex].GetType() == typeof(ISymbol))
+				{
+					symbol = ScriptableObject.CreateInstance<ISymbol> ();
+					symbol.init(lSystem.alphabet[axiomTypeIndex].name);
+				}
+				else if(lSystem.alphabet[axiomTypeIndex].GetType() == typeof(EndSymbol))
+				{
+					symbol = ScriptableObject.CreateInstance<EndSymbol> ();
+					((EndSymbol)symbol).init((EndSymbol)lSystem.alphabet[axiomTypeIndex]);
+				}
+				else if(lSystem.alphabet[axiomTypeIndex].GetType() == typeof(StructureSymbol))
+				{
+					symbol = ScriptableObject.CreateInstance<StructureSymbol> ();
+					((StructureSymbol)symbol).init((StructureSymbol)lSystem.alphabet[axiomTypeIndex]);
+				}
+				else if(lSystem.alphabet[axiomTypeIndex].GetType() == typeof(BindingSymbol))
+				{
+					symbol = ScriptableObject.CreateInstance<BindingSymbol> ();
+					((BindingSymbol)symbol).init((BindingSymbol)lSystem.alphabet[axiomTypeIndex]);
+				}
+				else if(lSystem.alphabet[axiomTypeIndex].GetType() == typeof(CommunicationSymbol))
+				{
+					symbol = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+					((CommunicationSymbol)symbol).init((CommunicationSymbol)lSystem.alphabet[axiomTypeIndex]);
+				}
+
+				lSystem.axiom = symbol;
+				changeAxiom = false;
+			}
+		}
 	}
 
 	private void showRulesMenu()
