@@ -13,7 +13,7 @@ public class CommunicationManager : MonoBehaviour
 
 	public void Add(int stateId, CommunicationSymbol symbol)
 	{
-		CommunicationQuery query = new CommunicationQuery(stateId, symbol.globalPosition, symbol.globalOrientation, symbol.operationResultType, symbol.operationTimer, symbol.probability);
+		CommunicationQuery query = new CommunicationQuery(stateId, symbol.globalPosition, symbol.globalOrientation, symbol.resultType, symbol.timer, symbol.probability);
 
 		if (queries.ContainsKey (query.stateId))
 		{

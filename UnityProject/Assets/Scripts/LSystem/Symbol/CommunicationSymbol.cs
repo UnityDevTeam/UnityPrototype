@@ -5,15 +5,20 @@ using System.Collections.Generic;
 [Serializable]
 public class CommunicationSymbol : ISymbol
 {
-	// filled by rules
-	private KeyValuePair<string,     bool> _operationIdentifier;
-	private KeyValuePair<Vector3,    bool> _operationPosition;
-	private KeyValuePair<Quaternion, bool> _operationOrientation;
-	private KeyValuePair<string,     bool> _operationResultType;
+	// this need more inteligent solution
+	public string     process;
+	public bool       processVar;
+	public Vector3    position;
+	public bool       positionVar;
+	public Quaternion orientation;
+	public bool       orientationVar;
+	public string     resultType;
+	public bool       resultTypeVar;
+	
 
 	// filled by enviroment
-	private KeyValuePair<float,      bool> _operationTimer;
-	private KeyValuePair<GameObject, bool> _operationResult;
+	[SerializeField] private KeyValuePair<float,      bool> _timer;
+	[SerializeField] private KeyValuePair<GameObject, bool> _result;
 
 	// filled by interpret
 	private Vector3    _turtlePosition    = Vector3.zero;
@@ -22,38 +27,8 @@ public class CommunicationSymbol : ISymbol
 	// operationPosition and operationOrientation transformed to global
 	private Vector3    _globalPosition    = Vector3.zero;
 	private Quaternion _globalOrientation = Quaternion.identity;
-
-	private AnimationCurve _probabilityFunction = AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
-
-	public string operationIdentifier
-	{
-		get { return this._operationIdentifier.Key; }
-		set { this._operationIdentifier = new KeyValuePair<string, bool>(value, true); }
-	}
-
-	public bool operationIdentifierVar
-	{
-		get { return this._operationIdentifier.Value; }
-		set { this._operationIdentifier = new KeyValuePair<string, bool>(this._operationIdentifier.Key, value ); }
-	}
-
-	public Vector3 operationPosition
-	{
-		get { return this._operationPosition.Key; }
-		set { this._operationPosition = new KeyValuePair<Vector3, bool>(value, true); }
-	}
 	
-	public bool operationPositionVar
-	{
-		get { return this._operationPosition.Value; }
-		set { this._operationPosition = new KeyValuePair<Vector3, bool>(this._operationPosition.Key, value ); }
-	}
-
-	public Quaternion operationOrientation
-	{
-		get { return this._operationOrientation.Key; }
-		set { this._operationOrientation = new KeyValuePair<Quaternion, bool>(value, true); }
-	}
+	private AnimationCurve _probabilityFunction = AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
 
 	public Vector3 globalPosition
 	{
@@ -64,47 +39,30 @@ public class CommunicationSymbol : ISymbol
 	{
 		get { return this._globalOrientation; }
 	}
-
-	public bool operationOrientationVar
+	
+	public float timer
 	{
-		get { return this._operationOrientation.Value; }
-		set { this._operationOrientation = new KeyValuePair<Quaternion, bool>(this._operationOrientation.Key, value ); }
-	}
-
-	public float operationTimer
-	{
-		get { return this._operationTimer.Key; }
-		set { this._operationTimer = new KeyValuePair<float, bool>(value, true); }
+		get { return this._timer.Key; }
+		set { this._timer = new KeyValuePair<float, bool>(value, true); }
 	}
 	
-	public bool operationTimerVar
+	public bool timerVar
 	{
-		get { return this._operationTimer.Value; }
-		set { this._operationTimer = new KeyValuePair<float, bool>(this._operationTimer.Key, value ); }
+		get { return this._timer.Value; }
+		set { this._timer = new KeyValuePair<float, bool>(this._timer.Key, value ); }
 	}
 
-	public string operationResultType
-	{
-		get { return this._operationResultType.Key; }
-		set { this._operationResultType = new KeyValuePair<string, bool>(value, true); }
-	}
-	
-	public bool operationResultTypeVar
-	{
-		get { return this._operationResultType.Value; }
-		set { this._operationResultType = new KeyValuePair<string, bool>(this._operationResultType.Key, value ); }
-	}
 
-	public GameObject operationResult
+	public GameObject result
 	{
-		get { return this._operationResult.Key; }
-		set { this._operationResult = new KeyValuePair<GameObject, bool>(value, true); }
+		get { return this._result.Key; }
+		set { this._result = new KeyValuePair<GameObject, bool>(value, true); }
 	}
 	
-	public bool operationResultVar
+	public bool resultVar
 	{
-		get { return this._operationResult.Value; }
-		set { this._operationResult = new KeyValuePair<GameObject, bool>(this._operationResult.Key, value ); }
+		get { return this._result.Value; }
+		set { this._result = new KeyValuePair<GameObject, bool>(this._result.Key, value ); }
 	}
 
 	public AnimationCurve probability
@@ -116,38 +74,38 @@ public class CommunicationSymbol : ISymbol
 	public CommunicationSymbol()
 	{
 		init ("C", "", Vector3.zero, Quaternion.identity, 0, "", null);
-		operationIdentifierVar  = false;
-		operationPositionVar    = false;
-		operationOrientationVar = false;
-		operationTimerVar       = false;
-		operationResultTypeVar  = false;
-		operationResultVar      = false;
+		processVar     = false;
+		positionVar    = false;
+		orientationVar = false;
+		timerVar       = false;
+		resultTypeVar  = false;
+		resultVar      = false;
 	}
 
 	public CommunicationSymbol( string nName)
 	{
 		init (nName, "", Vector3.zero, Quaternion.identity, 0, "", null);
-		operationIdentifierVar  = false;
-		operationPositionVar    = false;
-		operationOrientationVar = false;
-		operationTimerVar       = false;
-		operationResultTypeVar  = false;
-		operationResultVar      = false;
+		processVar     = false;
+		positionVar    = false;
+		orientationVar = false;
+		timerVar       = false;
+		resultTypeVar  = false;
+		resultVar      = false;
 	}
 
-	public CommunicationSymbol( string nName, string nOperationIdentifier)
+	public CommunicationSymbol( string nName, string nProcess)
 	{
-		init (nName, nOperationIdentifier, Vector3.zero, Quaternion.identity, 0, "", null);
-		operationPositionVar    = false;
-		operationOrientationVar = false;
-		operationTimerVar       = false;
-		operationResultTypeVar  = false;
-		operationResultVar      = false;
+		init (nName, nProcess, Vector3.zero, Quaternion.identity, 0, "", null);
+		positionVar    = false;
+		orientationVar = false;
+		timerVar       = false;
+		resultTypeVar  = false;
+		resultVar      = false;
 	}
 
-	public CommunicationSymbol( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
+	public CommunicationSymbol( string nName, string nProcess, Vector3 nPosition, Quaternion nOrientation, float nTimer, string nResultType, GameObject nResult )
 	{
-		init (nName, nOperationIdentifier, nOperationPosition, nOperationOrientation, nOperationTimer, nOperationResultType, nOperationResult);
+		init (nName, nProcess, nPosition, nOrientation, nTimer, nResultType, nResult);
 	}
 
 	public CommunicationSymbol( CommunicationSymbol nSymbol )
@@ -155,25 +113,32 @@ public class CommunicationSymbol : ISymbol
 		init (nSymbol);
 	}
 
-	public void init( string nName, string nOperationIdentifier)
+	public void init( string nName, string nProcess)
 	{
-		id                   = idCounter;
-		name                 = nName;
-		operationIdentifier  = nOperationIdentifier;
+		id         = idCounter;
+		name       = nName;
+		process    = nProcess;
+		processVar = true;
 		
 		idCounter++;
 	}
 
-	public void init( string nName, string nOperationIdentifier, Vector3 nOperationPosition, Quaternion nOperationOrientation, float nOperationTimer, string nOperationResultType, GameObject nOperationResult )
+	public void init( string nName, string nProcess, Vector3 nPosition, Quaternion nOrientation, float nTimer, string nResultType, GameObject nResult )
 	{
-		id                   = idCounter;
-		name                 = nName;
-		operationIdentifier  = nOperationIdentifier;
-		operationPosition    = nOperationPosition;
-		operationOrientation = nOperationOrientation;
-		operationTimer       = nOperationTimer;
-		operationResultType  = nOperationResultType;
-		operationResult      = nOperationResult;
+		id             = idCounter;
+		name           = nName;
+		process        = nProcess;
+		processVar     = true;
+		position       = nPosition;
+		positionVar    = true;
+		orientation    = nOrientation;
+		orientationVar = true;
+		timer          = nTimer;
+		timerVar       = true;
+		resultType     = nResultType;
+		resultTypeVar  = true;
+		result         = nResult;
+		resultVar      = false;
 		
 		idCounter++;
 	}
@@ -182,13 +147,17 @@ public class CommunicationSymbol : ISymbol
 	{
 		id   = idCounter;
 		name = nSymbol.name;
-		
-		_operationIdentifier  = new KeyValuePair<string,     bool>(nSymbol.operationIdentifier,  nSymbol.operationIdentifierVar);
-		_operationPosition    = new KeyValuePair<Vector3,    bool>(nSymbol.operationPosition,    nSymbol.operationPositionVar);
-		_operationOrientation = new KeyValuePair<Quaternion, bool>(nSymbol.operationOrientation, nSymbol.operationOrientationVar);
-		_operationTimer       = new KeyValuePair<float,      bool>(nSymbol.operationTimer,       nSymbol.operationTimerVar);
-		_operationResultType  = new KeyValuePair<string,     bool>(nSymbol.operationResultType,  nSymbol.operationResultTypeVar);
-		_operationResult      = new KeyValuePair<GameObject, bool>(nSymbol.operationResult,      nSymbol.operationResultVar);
+
+		process        = nSymbol.process;
+		processVar     = nSymbol.processVar;
+		position       = nSymbol.position;
+		positionVar    = nSymbol.positionVar;
+		orientation    = nSymbol.orientation;
+		orientationVar = nSymbol.orientationVar;
+		timer          = nSymbol.timer;
+		resultType     = nSymbol.resultType;
+		result         = nSymbol.result;
+		resultVar      = nSymbol.resultVar;
 		
 		idCounter++;
 	}
@@ -197,24 +166,24 @@ public class CommunicationSymbol : ISymbol
 	{
 		if (x.name == y.name)
 		{
-			if(x.operationIdentifierVar && y.operationIdentifierVar)
-				if(x.operationIdentifier != y.operationIdentifier)
+			if(x.processVar && y.processVar)
+				if(x.process != y.process)
 					return false;
 
-			if(x.operationPositionVar && y.operationPositionVar)
-				if(x.operationPosition != y.operationPosition)
+			if(x.positionVar && y.positionVar)
+				if(x.position != y.position)
 					return false;
 
-			if(x.operationOrientationVar && y.operationOrientationVar)
-				if(x.operationOrientation != y.operationOrientation)
+			if(x.orientationVar && y.orientationVar)
+				if(x.orientation != y.orientation)
 					return false;
 
-			if(x.operationTimerVar && y.operationTimerVar)
-				if(x.operationTimer != y.operationTimer)
+			if(x.timerVar && y.timerVar)
+				if(x.timer != y.timer)
 					return false;
 
-			if(x.operationResultTypeVar && y.operationResultTypeVar)
-				if(x.operationResultType != y.operationResultType)
+			if(x.resultTypeVar && y.resultTypeVar)
+				if(x.resultType != y.resultType)
 					return false;
 
 			return true;
@@ -227,24 +196,24 @@ public class CommunicationSymbol : ISymbol
 	{
 		if (x.name == y.name)
 		{
-			if(x.operationIdentifierVar && y.operationIdentifierVar)
-				if(x.operationIdentifier != y.operationIdentifier)
+			if(x.processVar && y.processVar)
+				if(x.process != y.process)
 					return true;
 			
-			if(x.operationPositionVar && y.operationPositionVar)
-				if(x.operationPosition != y.operationPosition)
+			if(x.positionVar && y.positionVar)
+				if(x.position != y.position)
 					return true;
 			
-			if(x.operationOrientationVar && y.operationOrientationVar)
-				if(x.operationOrientation != y.operationOrientation)
+			if(x.orientationVar && y.orientationVar)
+				if(x.orientation != y.orientation)
 					return true;
 			
-			if(x.operationTimerVar && y.operationTimerVar)
-				if(x.operationTimer != y.operationTimer)
+			if(x.timerVar && y.timerVar)
+				if(x.timer != y.timer)
 					return true;
 
-			if(x.operationResultTypeVar && y.operationResultTypeVar)
-				if(x.operationResultType != y.operationResultType)
+			if(x.resultTypeVar && y.resultTypeVar)
+				if(x.resultType != y.resultType)
 					return true;
 
 			return false;
@@ -268,24 +237,24 @@ public class CommunicationSymbol : ISymbol
 		
 		if (name == p.name)
 		{
-			if(operationIdentifierVar && p.operationIdentifierVar)
-				if(operationIdentifier != p.operationIdentifier)
+			if(processVar && p.processVar)
+				if(process != p.process)
 					return false;
 			
-			if(operationPositionVar && p.operationPositionVar)
-				if(operationPosition != p.operationPosition)
+			if(positionVar && p.positionVar)
+				if(position != p.position)
 					return false;
 			
-			if(operationOrientationVar && p.operationOrientationVar)
-				if(operationOrientation != p.operationOrientation)
+			if(orientationVar && p.orientationVar)
+				if(orientation != p.orientation)
 					return false;
 			
-			if(operationTimerVar && p.operationTimerVar)
-				if(operationTimer != p.operationTimer)
+			if(timerVar && p.timerVar)
+				if(timer != p.timer)
 					return false;
 
-			if(operationResultTypeVar && p.operationResultTypeVar)
-				if(operationResultType != p.operationResultType)
+			if(resultTypeVar && p.resultTypeVar)
+				if(resultType != p.resultType)
 					return false;
 			
 			return true;
@@ -304,8 +273,8 @@ public class CommunicationSymbol : ISymbol
 		_turtlePosition    = turtle.position;
 		_turtleOrientation = turtle.direction;
 
-		_globalPosition    = _turtlePosition + _turtleOrientation * operationPosition;
-		_globalOrientation = _turtleOrientation * operationOrientation;
+		_globalPosition    = _turtlePosition + _turtleOrientation * position;
+		_globalOrientation = _turtleOrientation * orientation;
 	}
 }
 

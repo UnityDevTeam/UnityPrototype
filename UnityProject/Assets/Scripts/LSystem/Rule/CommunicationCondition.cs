@@ -38,7 +38,7 @@ public class CommunicationCondition
 			switch(operation)
 			{
 				case CommOperation.notEqual:
-					result = symbol.operationResult != go;
+					result = symbol.result != go;
 					break;
 				default:
 					result = false;
@@ -54,19 +54,19 @@ public class CommunicationCondition
 			{
 				case CommOperation.notEqual:
 				{
-					return symbol.operationTimer != valueTime;
+					return symbol.timer != valueTime;
 				}
 				case CommOperation.equal:
 				{
-					return symbol.operationTimer == valueTime;
+					return symbol.timer == valueTime;
 				}
 				case CommOperation.less:
 				{
-					return symbol.operationTimer < valueTime;
+					return symbol.timer < valueTime;
 				}
 				case CommOperation.more:
 				{
-					return symbol.operationTimer > valueTime;
+					return symbol.timer > valueTime;
 				}
 				default:
 					return false;

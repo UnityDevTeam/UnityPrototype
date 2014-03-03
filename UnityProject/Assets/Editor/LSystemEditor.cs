@@ -129,6 +129,7 @@ public class LSystemEditor : Editor
 			case 3:
 				EditorGUILayout.LabelField("Chcem pridat CommunicationSymbol");
 
+				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
 				communicationIdentifier = EditorGUILayout.TextField("Process identifier : ", communicationIdentifier);
 
 				break;
@@ -144,17 +145,22 @@ public class LSystemEditor : Editor
 					newSymbol.name = symbolName;
 					break;
 				case 1:
-					newSymbol = ScriptableObject.CreateInstance<StructureSymbol>();new StructureSymbol(symbolName, GlobalLists.monomerTypes[structureIndex]);
+					newSymbol = ScriptableObject.CreateInstance<StructureSymbol>();
+					((StructureSymbol)newSymbol).init(symbolName, GlobalLists.monomerTypes[structureIndex], null);
 					break;
 				case 2:
-					newSymbol = new BindingSymbol(symbolName, bindingPosition, bindingRotation);
+					// branching ? 
+					newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
+					((BindingSymbol)newSymbol).init(symbolName, bindingPosition, bindingRotation, false);
 					break;
 				case 3:
-					newSymbol = new CommunicationSymbol(symbolName, communicationIdentifier);
+					newSymbol = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+					((CommunicationSymbol)newSymbol).init(symbolName, communicationIdentifier);
 					break;
 				}
 
 				lSystem.alphabet.Add(newSymbol);
+				lSystem.debugAxioms();
 			}
 		}
 	}

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class ISymbol : ScriptableObject
 {
 	public static int idCounter = 0;
+	public string name;
 	public int id;
 
 	public ISymbol()

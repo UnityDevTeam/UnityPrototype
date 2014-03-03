@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {
+	// global variables ?
 	[HideInInspector] public static float timeDelta = 0.1f;
 
-	[SerializeField] public List<ISymbol> alphabet = new List<ISymbol>();
+	[SerializeField] public List<ISymbol> alphabet;
 	public ISymbol       axiom;
 	public List<ISymbol> state = new List<ISymbol>();
-
 	private Rules rules = new Rules ();
 	
 	private GameObject communicationQueryObject = null;
@@ -396,7 +396,7 @@ public class LSystem : MonoBehaviour
 		
 		CommunicationCondition R3C = new CommunicationCondition (CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
 		
-		Rule R3 = new Rule (R2P, R3S, R3C, 1.0f);
+		Rule R3 = new Rule (R3P, R3S, R3C, 1.0f);
 
 		rules.Add (R1);
 		rules.Add (R2);
@@ -408,6 +408,7 @@ public class LSystem : MonoBehaviour
 		GameObject prefab = Resources.Load(prefabName) as GameObject;
 		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
 
+		//fuj
 		if (polymerExample == 2 && prefabName == "molecule")
 		{
 			mol.renderer.material = diffTransBlue;
@@ -463,7 +464,7 @@ public class LSystem : MonoBehaviour
 			Rule rule = rules.Get (symbol);
 			if(rule != null)
 			{
-				DestroyImmediate(symbol.operationResult);
+				DestroyImmediate(symbol.result);
 				state.RemoveAt(activeSymbol.Key + indexOffset);
 
 				List<ISymbol> newSymbols = rule.successor;
@@ -549,7 +550,8 @@ public class LSystem : MonoBehaviour
 			{
 				((CommunicationSymbol)symbol).fillTurtleValues(current);
 
-				if(((CommunicationSymbol)symbol).operationIdentifier == "G")
+				// fuj
+				if(((CommunicationSymbol)symbol).process == "G")
 				{
 					current = stack.Pop();
 				}
@@ -565,10 +567,10 @@ public class LSystem : MonoBehaviour
 		{
 			if(activeSymbols.ContainsKey(queries[i].stateId))
 			{
-				activeSymbols[queries[i].stateId].operationTimer  = queries[i].time;
+				activeSymbols[queries[i].stateId].timer  = queries[i].time;
 
 				if(monomerCounting < monomerCountingStop)
-					activeSymbols[queries[i].stateId].operationResult = queries[i].result;
+					activeSymbols[queries[i].stateId].result = queries[i].result;
 			}
 		}
 	}
@@ -603,7 +605,7 @@ public class LSystem : MonoBehaviour
 
 		postEnviromentStep ();
 
-		debugPrint ();
+		//debugState ();
 	}
 	
 	void Update()
@@ -611,7 +613,7 @@ public class LSystem : MonoBehaviour
 		TimeStep ();
 	}
 
-	void debugAxioms()
+	public void debugAxioms()
 	{
 		string output = "";
 		for (int i = 0; i < alphabet.Count; i++)
@@ -626,7 +628,7 @@ public class LSystem : MonoBehaviour
 			}
 			else if(alphabet[i].GetType() == typeof(CommunicationSymbol))
 			{
-				output += "Communication(" + ((CommunicationSymbol)alphabet[i]).operationIdentifier + ")";
+				output += "Communication(" + ((CommunicationSymbol)alphabet[i]).process + ")";
 			}
 			else if(alphabet[i].GetType() == typeof(ISymbol))
 			{
@@ -637,7 +639,7 @@ public class LSystem : MonoBehaviour
 		print (output);
 	}
 
-	void debugPrint()
+	void debugState()
 	{
 		string output = "";
 		for (int i = 0; i < state.Count; i++)
@@ -646,7 +648,7 @@ public class LSystem : MonoBehaviour
 
 			if(state[i].GetType() == typeof(CommunicationSymbol))
 			{
-				output += "(" + ((CommunicationSymbol)state[i]).operationIdentifier + ")";
+				output += "(" + ((CommunicationSymbol)state[i]).process + ")";
 			}
 		}
 

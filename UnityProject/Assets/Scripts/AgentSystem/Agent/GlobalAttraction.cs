@@ -25,14 +25,21 @@ public class GlobalAttraction : AgentBehaviourNary
 		{
 			if(queryId > -1 && queries.ContainsKey(queryId))
 			{
-				Vector3 pos = transform.position - queries[queryId].position;
-				
-				if(pos.magnitude < attractionRadius)
+				if(queries[queryId].type == transform.parent.gameObject.name)
 				{
-					rigidbody.velocity = -pos.normalized * RandomMove.speed;
-					rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
+					Vector3 pos = transform.position - queries[queryId].position;
 					
-					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, queries[queryId].orientation, (attractionRadius - pos.magnitude) / attractionRadius);
+					if(pos.magnitude < attractionRadius)
+					{
+						rigidbody.velocity = -pos.normalized * RandomMove.speed;
+						rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
+						
+						rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, queries[queryId].orientation, (attractionRadius - pos.magnitude) / attractionRadius);
+					}
+				}
+				else
+				{
+					queryId = -1;
 				}
 			}
 			else
