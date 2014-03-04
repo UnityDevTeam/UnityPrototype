@@ -24,7 +24,8 @@ public class LSystem : MonoBehaviour
 	int monomerCounting = 0;
 	public int monomerCountingStop = 100;
 
-	public int polymerExample = 1;
+	public string[] examples = {"none", "PARP", "Star", "Differ" };
+	public int exampleIndex = 1;
 
 	void Awake()
 	{
@@ -46,31 +47,36 @@ public class LSystem : MonoBehaviour
 		diffWhite     = (Material)Resources.Load("Materials/diffWhite", typeof(Material));
 		diffTransBlue = (Material)Resources.Load("Materials/diffTransBlue", typeof(Material));
 
-		if (polymerExample == 0)
+		if (exampleIndex == 1)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
 			ax.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
 
-			state.Add (ax);
-			activeSymbols.Add (0, ax);
+			axiom = ax;
+			state.Add (axiom);
+			activeSymbols.Add (0, (CommunicationSymbol)axiom);
 
 			setTestRules ();
 		}
-		else if (polymerExample == 1)
+		else if (exampleIndex == 2)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
 			ax.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-			state.Add (ax);
-			activeSymbols.Add (0, ax);
+			axiom = ax;
+
+			state.Add (axiom);
+			activeSymbols.Add (0, (CommunicationSymbol)axiom);
 
 			setTestRules2();
 		}
-		else if (polymerExample == 2)
+		else if (exampleIndex == 3)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
 			ax.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
-			state.Add (ax);
-			activeSymbols.Add (0, ax);
+			axiom = ax;
+
+			state.Add (axiom);
+			activeSymbols.Add (0, (CommunicationSymbol)axiom);
 			
 			setTestRules3();
 		}
@@ -409,7 +415,7 @@ public class LSystem : MonoBehaviour
 		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
 
 		//fuj
-		if (polymerExample == 2 && prefabName == "molecule")
+		if (exampleIndex == 3 && prefabName == "molecule")
 		{
 			mol.renderer.material = diffTransBlue;
 		}
