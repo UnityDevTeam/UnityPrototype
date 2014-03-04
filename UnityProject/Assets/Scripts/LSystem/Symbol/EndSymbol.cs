@@ -5,21 +5,6 @@ using System.Collections;
 [Serializable]
 public class EndSymbol : ISymbol
 {
-	public EndSymbol()
-	{
-		init ("");
-	}
-
-	public EndSymbol(string nName)
-	{
-		init (nName);
-	}
-
-	public EndSymbol(EndSymbol nSymbol)
-	{
-		init (nSymbol);
-	}
-
 	public void init(EndSymbol nSymbol)
 	{
 		init (nSymbol.name);
@@ -44,5 +29,15 @@ public class EndSymbol : ISymbol
 	public override int GetHashCode()
 	{
 		return name.GetHashCode();
+	}
+
+	public override string toString()
+	{
+		return name;
+	}
+
+	public override string toShortString()
+	{
+		return name;
 	}
 }

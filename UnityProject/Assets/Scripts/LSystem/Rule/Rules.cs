@@ -2,39 +2,39 @@
 using System.Collections.Generic;
 using System;
 
-public class Rules
+[Serializable]
+public class Rules : ScriptableObject
 {
-	//private Dictionary<ISymbol, List<Rule>> _lookupTable = new Dictionary<ISymbol, List<Rule>> (new ISymbol.EqualityComparer ());
-	private List<Rule> _lookupTable = new List<Rule> (/*new ISymbol.EqualityComparer ()*/);
-	
+	[SerializeField] public List<Rule> _lookupTable;
+
+	public int getRulesCount()
+	{
+		return _lookupTable.Count;
+	}
+
+	public Rule getRule(int index)
+	{
+		return _lookupTable [index];
+	}
+
+	public void setRule(int index, Rule rule)
+	{
+		_lookupTable [index] = rule;
+	}
+
 	public void Add (Rule rule)
 	{
-		/*
-		List<Rule> list;
-		if (!_lookupTable.ContainsKey (rule.predecessor))
-		{
-			list = new List<Rule> ();
-			_lookupTable [rule.predecessor] = list;
-		}
-		else
-		{
-			list = _lookupTable [rule.predecessor];
-		}
-
-		
-		list.Add(rule);
-		*/
 		_lookupTable.Add (rule);
+	}
+
+	public void Remove (int index)
+	{
+		_lookupTable.RemoveAt(index);
 	}
 	
 	public void Clear()
 	{
 		_lookupTable.Clear ();
-	}
-	
-	public bool Contains (ISymbol module)
-	{
-		return false;//_lookupTable.ContainsKey(module);
 	}
 
 	private List<Rule> conditioning(ISymbol module, List<Rule> rules)
@@ -58,14 +58,7 @@ public class Rules
 			if((CommunicationSymbol)module == (CommunicationSymbol)row.predecessor)
 				list.Add(row);
 		}
-		/*
-		if (!_lookupTable.ContainsKey (module))
-		{
-			return null;
-		}
-		*/
-		
-		//List<Rule> list = conditioning(module, _lookupTable [module]);
+
 		list = conditioning(module, list);
 
 		
@@ -88,6 +81,7 @@ public class Rules
 		
 		return null;
 	}
+
 	/*
 	public bool CheckProbabilities ()
 	{

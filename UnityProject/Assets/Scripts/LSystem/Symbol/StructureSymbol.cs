@@ -8,26 +8,6 @@ public class StructureSymbol : ISymbol
 	public string structurePrefabName = "";
 	public GameObject structureObject = null;
 
-	public StructureSymbol()
-	{
-		init ("", "", null);
-	}
-	
-	public StructureSymbol( string nName )
-	{
-		init (nName, "", null);
-	}
-
-	public StructureSymbol( string nName, string nStructurePrefabName )
-	{
-		init (nName, nStructurePrefabName, null);
-	}
-	
-	public StructureSymbol( StructureSymbol nSymbol )
-	{
-		init (nSymbol);
-	}
-
 	public void init(string nName, string nStructurePrefabName, GameObject nStructureObject)
 	{
 		id                  = idCounter;
@@ -73,4 +53,15 @@ public class StructureSymbol : ISymbol
 	{
 		return name.GetHashCode() ^ structurePrefabName.GetHashCode();
 	}
+
+	public override string toString()
+	{
+		return name + "(" + structurePrefabName + ")";
+	}
+
+	public override string toShortString()
+	{
+		return name;
+	}
+
 }

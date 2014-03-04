@@ -8,31 +8,6 @@ public class BindingSymbol : ISymbol
 	public Vector3 bindingPosition    = Vector3.zero;
 	public Vector3 bindingOrientation = Vector3.zero;
 	public bool    isBranching        = false;
-	
-	public BindingSymbol()
-	{
-		init ("", Vector3.zero, Vector3.zero, false);
-	}
-	
-	public BindingSymbol( string nName )
-	{
-		init (nName, Vector3.zero, Vector3.zero, false);
-	}
-
-	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation )
-	{
-		init (nName, nPosition, nOrientation, false);
-	}
-
-	public BindingSymbol( string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
-	{
-		init (nName, nPosition, nOrientation, nIsBranching);
-	}
-
-	public BindingSymbol( BindingSymbol nSymbol )
-	{
-		init (nSymbol);
-	}
 
 	public void init( string nName, Vector3 nPosition, Vector3 nOrientation, bool nIsBranching )
 	{
@@ -79,5 +54,15 @@ public class BindingSymbol : ISymbol
 	public override int GetHashCode()
 	{
 		return name.GetHashCode() ^ bindingPosition.GetHashCode() ^ bindingOrientation.GetHashCode() ^ isBranching.GetHashCode();
+	}
+
+	public override string toString()
+	{
+		return name  + "(" + bindingPosition.ToString() + ", " + bindingOrientation.ToString() + ")";
+	}
+
+	public override string toShortString()
+	{
+		return name;
 	}
 }

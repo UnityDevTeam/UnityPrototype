@@ -6,19 +6,19 @@ using System.Collections.Generic;
 public class CommunicationSymbol : ISymbol
 {
 	// this need more inteligent solution
-	public string     process;
-	public bool       processVar;
-	public Vector3    position;
-	public bool       positionVar;
-	public Quaternion orientation;
-	public bool       orientationVar;
-	public string     resultType;
-	public bool       resultTypeVar;
-	
+	public string         process;
+	public bool           processVar;
+	public Vector3        position;
+	public bool           positionVar;
+	public Quaternion     orientation;
+	public bool           orientationVar;
+	public string         resultType;
+	public bool           resultTypeVar;
+	[SerializeField] public AnimationCurve probability;
 
 	// filled by enviroment
-	[SerializeField] private KeyValuePair<float,      bool> _timer;
-	[SerializeField] private KeyValuePair<GameObject, bool> _result;
+	private KeyValuePair<float,      bool> _timer;
+	private KeyValuePair<GameObject, bool> _result;
 
 	// filled by interpret
 	private Vector3    _turtlePosition    = Vector3.zero;
@@ -28,7 +28,7 @@ public class CommunicationSymbol : ISymbol
 	private Vector3    _globalPosition    = Vector3.zero;
 	private Quaternion _globalOrientation = Quaternion.identity;
 	
-	private AnimationCurve _probabilityFunction = AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
+
 
 	public Vector3 globalPosition
 	{
@@ -65,54 +65,6 @@ public class CommunicationSymbol : ISymbol
 		set { this._result = new KeyValuePair<GameObject, bool>(this._result.Key, value ); }
 	}
 
-	public AnimationCurve probability
-	{
-		get { return this._probabilityFunction; }
-		set { this._probabilityFunction = value; }
-	}
-
-	public CommunicationSymbol()
-	{
-		init ("C", "", Vector3.zero, Quaternion.identity, 0, "", null);
-		processVar     = false;
-		positionVar    = false;
-		orientationVar = false;
-		timerVar       = false;
-		resultTypeVar  = false;
-		resultVar      = false;
-	}
-
-	public CommunicationSymbol( string nName)
-	{
-		init (nName, "", Vector3.zero, Quaternion.identity, 0, "", null);
-		processVar     = false;
-		positionVar    = false;
-		orientationVar = false;
-		timerVar       = false;
-		resultTypeVar  = false;
-		resultVar      = false;
-	}
-
-	public CommunicationSymbol( string nName, string nProcess)
-	{
-		init (nName, nProcess, Vector3.zero, Quaternion.identity, 0, "", null);
-		positionVar    = false;
-		orientationVar = false;
-		timerVar       = false;
-		resultTypeVar  = false;
-		resultVar      = false;
-	}
-
-	public CommunicationSymbol( string nName, string nProcess, Vector3 nPosition, Quaternion nOrientation, float nTimer, string nResultType, GameObject nResult )
-	{
-		init (nName, nProcess, nPosition, nOrientation, nTimer, nResultType, nResult);
-	}
-
-	public CommunicationSymbol( CommunicationSymbol nSymbol )
-	{
-		init (nSymbol);
-	}
-
 	public void init( string nName, string nProcess)
 	{
 		id         = idCounter;
@@ -123,7 +75,7 @@ public class CommunicationSymbol : ISymbol
 		idCounter++;
 	}
 
-	public void init( string nName, string nProcess, Vector3 nPosition, Quaternion nOrientation, float nTimer, string nResultType, GameObject nResult )
+	public void init( string nName, string nProcess, Vector3 nPosition, Quaternion nOrientation, float nTimer, string nResultType, GameObject nResult, AnimationCurve nProbability )
 	{
 		id             = idCounter;
 		name           = nName;
@@ -139,6 +91,7 @@ public class CommunicationSymbol : ISymbol
 		resultTypeVar  = true;
 		result         = nResult;
 		resultVar      = false;
+		probability    = nProbability;
 		
 		idCounter++;
 	}
@@ -158,6 +111,7 @@ public class CommunicationSymbol : ISymbol
 		resultType     = nSymbol.resultType;
 		result         = nSymbol.result;
 		resultVar      = nSymbol.resultVar;
+		probability    = nSymbol.probability;
 		
 		idCounter++;
 	}
@@ -275,6 +229,16 @@ public class CommunicationSymbol : ISymbol
 
 		_globalPosition    = _turtlePosition + _turtleOrientation * position;
 		_globalOrientation = _turtleOrientation * orientation;
+	}
+
+	public override string toString()
+	{
+		return name + "(" + process + ", " + position.ToString() + ", " + orientation.eulerAngles.ToString() + ", " + resultType + " )";
+	}
+
+	public override string toShortString()
+	{
+		return name + "(" + process + ")";
 	}
 }
 

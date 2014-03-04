@@ -10,16 +10,6 @@ public class ISymbol : ScriptableObject
 	public string name;
 	public int id;
 
-	public ISymbol()
-	{
-		init ("");
-	}
-
-	public ISymbol(string nName)
-	{
-		init (nName);
-	}
-
 	public void init(string nName)
 	{
 		id   = idCounter;
@@ -47,6 +37,16 @@ public class ISymbol : ScriptableObject
 	public override int GetHashCode()
 	{
 		return name.GetHashCode();
+	}
+
+	public virtual string toString()
+	{
+		return name;
+	}
+
+	public virtual string toShortString()
+	{
+		return name;
 	}
 	
 	public class EqualityComparer : IEqualityComparer<ISymbol>

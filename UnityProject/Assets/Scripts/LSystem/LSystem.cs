@@ -8,9 +8,10 @@ public class LSystem : MonoBehaviour
 	[HideInInspector] public static float timeDelta = 0.1f;
 
 	[SerializeField] public List<ISymbol> alphabet;
-	public ISymbol       axiom;
+	[SerializeField] public ISymbol       axiom;
+	[SerializeField] public Rules         rules;
+
 	public List<ISymbol> state = new List<ISymbol>();
-	private Rules rules = new Rules ();
 	
 	private GameObject communicationQueryObject = null;
 
@@ -39,6 +40,17 @@ public class LSystem : MonoBehaviour
 			}
 		}
 
+		if (rules == null)
+		{
+			rules = ScriptableObject.CreateInstance<Rules>();
+		}
+
+		if (axiom != null && axiom.GetType () == typeof(CommunicationSymbol))
+		{
+			state.Add(axiom);
+			activeSymbols.Add(0, (CommunicationSymbol)axiom);
+		}
+
 		// fuj
 		RenderSettings.haloStrength = 1.0f;
 		communications = new GameObject("Communications");
@@ -50,7 +62,7 @@ public class LSystem : MonoBehaviour
 		if (exampleIndex == 1)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
-			ax.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			ax.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 			axiom = ax;
 			state.Add (axiom);
@@ -61,7 +73,7 @@ public class LSystem : MonoBehaviour
 		else if (exampleIndex == 2)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
-			ax.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			ax.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 			axiom = ax;
 
 			state.Add (axiom);
@@ -72,7 +84,7 @@ public class LSystem : MonoBehaviour
 		else if (exampleIndex == 3)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
-			ax.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+			ax.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 			axiom = ax;
 
 			state.Add (axiom);
@@ -95,7 +107,7 @@ public class LSystem : MonoBehaviour
 
 		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R1S2.init("m", "adpRibose", null);
-		R1S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R1S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R1S = new List<ISymbol> ();
 		R1S.Add (R1S1);
@@ -118,8 +130,8 @@ public class LSystem : MonoBehaviour
 
 		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R2S2.init("m", "adpRibose", null);
-		R2S3.init("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "adpRibose", null);
-		R2S4.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R2S3.init("C", "B", new Vector3(1.3871f, 0.7653f, 0.0029f), Quaternion.Euler(new Vector3(0, 0, 298.3136f)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+		R2S4.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
@@ -142,7 +154,7 @@ public class LSystem : MonoBehaviour
 
 		R3S1.init("b", new Vector3(1.3871f, 0.7653f, 0.0029f), new Vector3(0, 0, 298.3136f), true);
 		R3S2.init("m", "adpRibose", null);
-		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
@@ -201,7 +213,7 @@ public class LSystem : MonoBehaviour
 
 		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R1S2.init("m", "adpRibose", null);
-		R1S3.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R1S3.init("C", "F", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R1S = new List<ISymbol> ();
 		R1S.Add (R1S1);
@@ -225,9 +237,9 @@ public class LSystem : MonoBehaviour
 
 		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R2S2.init("m", "adpRibose", null);
-		R2S3.init("C", "A", new Vector3(0.67309f, 0.52365f, 0.83809f), Quaternion.Euler(new Vector3(-45.8616f, -50.1757f, -86.2943f)), 0.0f, "adpRibose", null);
-		R2S4.init("C", "B", new Vector3(-0.94228f, 0.3053f, 0.9473f), Quaternion.Euler(new Vector3(48.033f, -112.99f, -89.888f)), 0.0f, "adpRibose", null);
-		R2S5.init("C", "C", new Vector3(-0.2270f, 0.6361f, -0.9190f), Quaternion.Euler(new Vector3(-72.7191f, 34.9005f, -37.05637f)), 0.0f, "adpRibose", null);
+		R2S3.init("C", "A", new Vector3(0.67309f, 0.52365f, 0.83809f), Quaternion.Euler(new Vector3(-45.8616f, -50.1757f, -86.2943f)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+		R2S4.init("C", "B", new Vector3(-0.94228f, 0.3053f, 0.9473f), Quaternion.Euler(new Vector3(48.033f, -112.99f, -89.888f)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+		R2S5.init("C", "C", new Vector3(-0.2270f, 0.6361f, -0.9190f), Quaternion.Euler(new Vector3(-72.7191f, 34.9005f, -37.05637f)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
@@ -251,7 +263,7 @@ public class LSystem : MonoBehaviour
 
 		R3S1.init("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
 		R3S2.init("m", "adpRibose", null);
-		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R3S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
@@ -273,7 +285,7 @@ public class LSystem : MonoBehaviour
 
 		R4S1.init("b", new Vector3(-0.94228f, 0.3053f, 0.9473f), new Vector3(48.033f, -112.99f, -89.888f), true);
 		R4S2.init("m", "adpRibose", null);
-		R4S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R4S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R4S = new List<ISymbol> ();
 		R4S.Add (R4S1);
@@ -295,7 +307,7 @@ public class LSystem : MonoBehaviour
 
 		R5S1.init("c", new Vector3(-0.2270f, 0.6361f, -0.9190f), new Vector3(-72.7191f, 34.9005f, -37.05637f), true);
 		R5S2.init("m", "adpRibose", null);
-		R5S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R5S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R5S = new List<ISymbol> ();
 		R5S.Add (R5S1);
@@ -317,7 +329,7 @@ public class LSystem : MonoBehaviour
 
 		R6S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R6S2.init("m", "adpRibose", null);
-		R6S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R6S3.init("C", "G", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R6S = new List<ISymbol> ();
 		R6S.Add (R6S1);
@@ -349,7 +361,7 @@ public class LSystem : MonoBehaviour
 
 		R1S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R1S2.init("m", "adpRibose", null);
-		R1S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R1S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R1S = new List<ISymbol> ();
 		R1S.Add (R1S1);
@@ -371,7 +383,7 @@ public class LSystem : MonoBehaviour
 
 		R2S1.init("g", new Vector3(-0.957f, 0.4984f, 1.1267f), new Vector3(0, -61.7598f, 0), false);
 		R2S2.init("m", "adpRibose", null);
-		R2S3.init("C", "N", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "molecule", null);
+		R2S3.init("C", "N", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "molecule", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 		
 		List<ISymbol> R2S = new List<ISymbol> ();
 		R2S.Add (R2S1);
@@ -393,7 +405,7 @@ public class LSystem : MonoBehaviour
 
 		R3S1.init("a", new Vector3(0.67309f, 0.52365f, 0.83809f), new Vector3(-45.8616f, -50.1757f, -86.2943f), true);
 		R3S2.init("n", "molecule", null);
-		R3S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null);
+		R3S3.init("C", "M", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "adpRibose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		List<ISymbol> R3S = new List<ISymbol> ();
 		R3S.Add (R3S1);
@@ -492,6 +504,12 @@ public class LSystem : MonoBehaviour
 					{
 						newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
 						((BindingSymbol)newSymbol).init((BindingSymbol)newSymbols[i]);
+
+						if(!((BindingSymbol)newSymbol).isBranching)
+						{
+							float rand = UnityEngine.Random.Range(-20.0f, 20.0f);
+							((BindingSymbol)newSymbol).bindingOrientation.y += rand;
+						}
 					}
 					else if(newSymbols[i].GetType() == typeof(StructureSymbol))
 					{
@@ -659,5 +677,38 @@ public class LSystem : MonoBehaviour
 		}
 
 		print (output);
+	}
+
+	public string[] alphabetArray()
+	{
+		List<string> lSystemAlphabet = new List<string> ();
+
+		foreach(ISymbol symbol in alphabet)
+		{
+			string symbolStr = "";
+			if(symbol.GetType() == typeof(ISymbol))
+			{
+				symbolStr += "ISymbol(" + symbol.name + ")";
+			}
+			else if(symbol.GetType() == typeof(EndSymbol))
+			{
+				symbolStr += "EndSymbol(" + symbol.name + ")";
+			}
+			else if(symbol.GetType() == typeof(StructureSymbol))
+			{
+				symbolStr += "StructureSymbol(" + symbol.name + ")";
+			}
+			else if(symbol.GetType() == typeof(BindingSymbol))
+			{
+				symbolStr += "BindingSymbol(" + symbol.name + ")";
+			}
+			else if(symbol.GetType() == typeof(CommunicationSymbol))
+			{
+				symbolStr += "CommunicationSymbol(" + symbol.name + ", " + ((CommunicationSymbol)symbol).process + ")";
+			}
+			lSystemAlphabet.Add(symbolStr);
+		}
+
+		return lSystemAlphabet.ToArray ();
 	}
 }

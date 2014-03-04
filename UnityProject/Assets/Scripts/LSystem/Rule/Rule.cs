@@ -1,64 +1,63 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
-public class Rule
+[Serializable]
+public class Rule : ScriptableObject
 {
-	private ISymbol                _predecessor;
-	private List<ISymbol>          _successor;
-	private float                  _probability;
-	private CommunicationCondition _condition;
-	
-	public ISymbol predecessor {
-		get {
-			return this._predecessor;
-		}
-	}
-	
-	public float probability {
-		get {
-			return this._probability;
-		}
-	}
-	
-	public List<ISymbol> successor {
-		get {
-			return this._successor;
-		}
-	}
+	public ISymbol                predecessor;
+	public List<ISymbol>          successor;
+	public float                  probability;
+	public CommunicationCondition condition;
 
-	public CommunicationCondition condition {
-		get {
-			return this._condition;
-		}
-		set {
-			this._condition = value;
-		}
-	}
-
-	public Rule (ISymbol predecessor, List<ISymbol> sucessor, float probability)
+	public Rule ()
 	{
-		_predecessor = predecessor;
-		_successor   = sucessor;
-		_probability = probability;
-		_condition   = null;
+		predecessor = null;
+		probability = 1;
+		successor   = new List<ISymbol> ();
+		condition   = null;
 	}
 
-	public Rule (ISymbol predecessor, List<ISymbol> sucessor, CommunicationCondition condition, float probability)
+	public Rule (ISymbol nPredecessor, List<ISymbol> nSuccessor, float nProbability)
 	{
-		_predecessor = predecessor;
-		_successor   = sucessor;
-		_probability = probability;
-		_condition   = condition;
+		predecessor = nPredecessor;
+		successor   = nSuccessor;
+		probability = nProbability;
+		condition   = null;
+	}
+
+	public Rule (ISymbol nPredecessor, List<ISymbol> nSucessor, CommunicationCondition nCondition, float nProbability)
+	{
+		predecessor = nPredecessor;
+		successor   = nSucessor;
+		probability = nProbability;
+		condition   = nCondition;
+	}
+
+	public void init()
+	{
+		predecessor = null;
+		probability = 1;
+		successor   = new List<ISymbol> ();
+		condition   = null;
+	}
+
+	public void init(ISymbol nPredecessor, List<ISymbol> nSucessor, CommunicationCondition nCondition, float nProbability)
+	{
+		predecessor = nPredecessor;
+		successor   = nSucessor;
+		condition   = nCondition;
+		probability = nProbability;
 	}
 
 	public bool passCondition(ISymbol symbol)
 	{
-		if (_condition == null)
+		if (condition == null)
 			return true;
 
 		if (symbol.GetType () == typeof(CommunicationSymbol))
 		{
-			return _condition.Evaluate ((CommunicationSymbol)symbol);
+			return condition.Evaluate ((CommunicationSymbol)symbol);
 		}
 
 		return false;

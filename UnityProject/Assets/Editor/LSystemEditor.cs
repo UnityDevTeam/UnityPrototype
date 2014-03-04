@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,13 +26,23 @@ public class LSystemEditor : Editor
 
 	private Vector3 bindingPosition = Vector3.zero;
 	private Vector3 bindingRotation = Vector3.zero;
+	private bool isBranching = false;
 
 	private string communicationIdentifier = "";
+	private Vector3 communicationPosition    = Vector3.zero;
+	private Vector3 communicationOrientation = Vector3.zero;
+	private int communicationResultTypeIndex = 0;
+	private AnimationCurve communicationProbability = AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
 
 	private bool addNewLetter = false;
 
 	private bool changeAxiom = false;
 	private int axiomTypeIndex = 0;
+	
+	private Rule newRule = null;
+	private int changeRuleIndex = -1;
+	private int newRuleSuccesorIndex = -1;
+	private int updateRuleSuccessorIndex = -1;
 
 	void OnEnable ()
 	{
@@ -105,35 +116,35 @@ public class LSystemEditor : Editor
 
 			if(symbol.GetType() == typeof(ISymbol))
 			{
-				EditorGUILayout.LabelField("ISymbol"                           , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()         , GUILayout.MaxWidth(140));
 				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]", GUILayout.MaxWidth(30));
 				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
 				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
 			}
 			else if(symbol.GetType() == typeof(EndSymbol))
 			{
-				EditorGUILayout.LabelField("EndSymbol"                         , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()         , GUILayout.MaxWidth(140));
 				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]", GUILayout.MaxWidth(30));
 				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
 				EditorGUILayout.LabelField(""                                  , GUILayout.MaxWidth(180));
 			}
 			else if(symbol.GetType() == typeof(StructureSymbol))
 			{
-				EditorGUILayout.LabelField("StructureSymbol"                                         , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()                               , GUILayout.MaxWidth(140));
 				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                      , GUILayout.MaxWidth(30));
 				EditorGUILayout.LabelField(((StructureSymbol)lSystem.alphabet[i]).structurePrefabName, GUILayout.MaxWidth(180));
 				EditorGUILayout.LabelField(""                                                        , GUILayout.MaxWidth(180));
 			}
 			else if(symbol.GetType() == typeof(BindingSymbol))
 			{
-				EditorGUILayout.LabelField("BindingSymbol"                                                                  , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()                                                      , GUILayout.MaxWidth(140));
 				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                             , GUILayout.MaxWidth(30));
 				EditorGUILayout.LabelField("[position - " + ((BindingSymbol)lSystem.alphabet[i]).bindingPosition + "]"      , GUILayout.MaxWidth(180));
 				EditorGUILayout.LabelField("[orientation - " + ((BindingSymbol)lSystem.alphabet[i]).bindingOrientation + "]", GUILayout.MaxWidth(180));
 			}
 			else if(symbol.GetType() == typeof(CommunicationSymbol))
 			{
-				EditorGUILayout.LabelField("CommunicationSymbol"                                                   , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()                                             , GUILayout.MaxWidth(140));
 				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                    , GUILayout.MaxWidth(30));
 				EditorGUILayout.LabelField("[process - " + ((CommunicationSymbol)lSystem.alphabet[i]).process + "]", GUILayout.MaxWidth(180));
 				EditorGUILayout.LabelField(""                                                                      , GUILayout.MaxWidth(180));
@@ -169,32 +180,32 @@ public class LSystemEditor : Editor
 			switch(symbolTypeindex)
 			{
 			case 0:
-				EditorGUILayout.LabelField("Chcem pridat ISymbol");
-
 				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
 
 				break;
 			case 1:
-				EditorGUILayout.LabelField("Chcem pridat StructureSymbol");
-
 				symbolName    = EditorGUILayout.TextField("Symbol name : ", symbolName);
 				structureIndex = EditorGUILayout.Popup ("Structure type : ", structureIndex, GlobalLists.monomerTypes);
 
 				break;
 			case 2:
-				EditorGUILayout.LabelField("Chcem pridat BindingSymbol");
-
 				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
 				bindingPosition = EditorGUILayout.Vector3Field("Binding position : ", bindingPosition);
 				bindingRotation = EditorGUILayout.Vector3Field("Binding orientation : ", bindingRotation);
-
+				isBranching     = EditorGUILayout.Toggle("Is branching : ", isBranching);
 				break;
 			case 3:
-				EditorGUILayout.LabelField("Chcem pridat CommunicationSymbol");
-
 				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
-				communicationIdentifier = EditorGUILayout.TextField("Process identifier : ", communicationIdentifier);
+				communicationIdentifier       = EditorGUILayout.TextField("Process identifier : ", communicationIdentifier);
+				communicationPosition         = EditorGUILayout.Vector3Field("Process position : ", communicationPosition);
+				communicationOrientation      = EditorGUILayout.Vector3Field("Process orientation : ", communicationOrientation);
+				communicationResultTypeIndex  = EditorGUILayout.Popup("Process result type : ", communicationResultTypeIndex, GlobalLists.monomerTypes);
+				communicationProbability      = EditorGUILayout.CurveField("Process probability function : ", communicationProbability);
 
+				AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
+				break;
+			case 4:
+				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
 				break;
 			}
 			
@@ -212,13 +223,16 @@ public class LSystemEditor : Editor
 					((StructureSymbol)newSymbol).init(symbolName, GlobalLists.monomerTypes[structureIndex], null);
 					break;
 				case 2:
-					// branching ? 
 					newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
-					((BindingSymbol)newSymbol).init(symbolName, bindingPosition, bindingRotation, false);
+					((BindingSymbol)newSymbol).init(symbolName, bindingPosition, bindingRotation, isBranching);
 					break;
 				case 3:
 					newSymbol = ScriptableObject.CreateInstance<CommunicationSymbol> ();
-					((CommunicationSymbol)newSymbol).init(symbolName, communicationIdentifier);
+					((CommunicationSymbol)newSymbol).init(symbolName, communicationIdentifier, communicationPosition, Quaternion.Euler(communicationOrientation), 0, GlobalLists.monomerTypes[communicationResultTypeIndex], null, communicationProbability);
+					break;
+				case 4:
+					newSymbol = ScriptableObject.CreateInstance<EndSymbol> ();
+					((EndSymbol)newSymbol).init(symbolName);
 					break;
 				}
 
@@ -240,39 +254,72 @@ public class LSystemEditor : Editor
 			if(axiom.GetType() == typeof(ISymbol))
 			{
 				EditorGUILayout.LabelField("ISymbol");
-				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Name : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(lSystem.axiom.name);
+				GUILayout.EndHorizontal();
 			}
 			else if(axiom.GetType() == typeof(EndSymbol))
 			{
 				EditorGUILayout.LabelField("EndSymbol");
-				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Name : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(lSystem.axiom.name);
+				GUILayout.EndHorizontal();
 			}
 			else if(axiom.GetType() == typeof(StructureSymbol))
 			{
 				EditorGUILayout.LabelField("StructureSymbol");
-				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
-				EditorGUILayout.LabelField("Prefab : " + ((StructureSymbol)lSystem.axiom).name);
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Name : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(lSystem.axiom.name);
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Prefab : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((StructureSymbol)lSystem.axiom).structurePrefabName);
+				GUILayout.EndHorizontal();
 			}
 			else if(axiom.GetType() == typeof(BindingSymbol))
 			{
 				EditorGUILayout.LabelField("BindingSymbol");
-				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
-				EditorGUILayout.LabelField("Binding position : "    + ((BindingSymbol)lSystem.axiom).bindingPosition);
-				EditorGUILayout.LabelField("Binding orientation : " + ((BindingSymbol)lSystem.axiom).bindingOrientation);
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Name : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(lSystem.axiom.name);
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Binding position : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((BindingSymbol)lSystem.axiom).bindingPosition.ToString());
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Binding orientation : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((BindingSymbol)lSystem.axiom).bindingOrientation.ToString());
+				GUILayout.EndHorizontal();
 			}
 			else if(axiom.GetType() == typeof(CommunicationSymbol))
 			{
-				Vector3 eulerAngles = ((CommunicationSymbol)lSystem.axiom).orientation.eulerAngles;
-
 				EditorGUILayout.LabelField("CommunicationSymbol");
-				EditorGUILayout.LabelField("Name : " + lSystem.axiom.name);
-				EditorGUILayout.LabelField("Process : " + ((CommunicationSymbol)lSystem.axiom).process);
 
-				((CommunicationSymbol)lSystem.axiom).position    = EditorGUILayout.Vector3Field("Position : ",        ((CommunicationSymbol)lSystem.axiom).position);
-				eulerAngles                                      = EditorGUILayout.Vector3Field("Orientation : ",     eulerAngles);
-				((CommunicationSymbol)lSystem.axiom).resultType  = EditorGUILayout.TextField("Result type : ",        ((CommunicationSymbol)lSystem.axiom).resultType);
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Name : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(lSystem.axiom.name);
+				GUILayout.EndHorizontal();
 
-				((CommunicationSymbol)lSystem.axiom).orientation.eulerAngles = eulerAngles;
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Process : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((CommunicationSymbol)lSystem.axiom).process);
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Position : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((CommunicationSymbol)lSystem.axiom).position.ToString());
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Orientation : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((CommunicationSymbol)lSystem.axiom).orientation.eulerAngles.ToString());
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Result type : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((CommunicationSymbol)lSystem.axiom).resultType);
+				GUILayout.EndHorizontal();
+
+				EditorGUILayout.CurveField("Process probability : ", ((CommunicationSymbol)lSystem.axiom).probability);
 			}
 		}
 
@@ -357,6 +404,277 @@ public class LSystemEditor : Editor
 	private void showRulesMenu()
 	{
 		EditorGUILayout.LabelField("LSystem rules", EditorStyles.boldLabel);
+
+		int toDeleteRule = -1;
+		for (int i = 0; i < lSystem.rules.getRulesCount(); i++)
+		{
+			Rule rule = lSystem.rules.getRule(i);
+
+			GUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField(rule.predecessor.toShortString(), GUILayout.MaxWidth(35));
+
+			EditorGUILayout.LabelField("->", GUILayout.MaxWidth(20));
+
+			string conditionString = "";
+
+			conditionString += rule.condition.param.ToString();
+
+			switch(rule.condition.operation)
+			{
+			case CommunicationCondition.CommOperation.equal:
+				conditionString += "==";
+				break;
+			case CommunicationCondition.CommOperation.notEqual:
+				conditionString += "!=";
+				break;
+			case CommunicationCondition.CommOperation.less:
+				conditionString += "<";
+				break;
+			case CommunicationCondition.CommOperation.more:
+				conditionString += ">";
+				break;
+			}
+
+
+			// fuj
+			if(rule.condition.param == CommunicationCondition.CommParameters.time)
+			{
+				conditionString += rule.condition.floatValue.ToString();
+			}
+			else
+			{
+				if(rule.condition.resultValue == null)
+				{
+					conditionString += "null";
+				}
+				else
+				{
+					conditionString += rule.condition.resultValue.name;
+				}
+			}
+
+			EditorGUILayout.LabelField("[" + conditionString + "]", GUILayout.MaxWidth(100));
+
+			string succesor = "";
+			for(int j = 0; j < rule.successor.Count; j++)
+			{
+				succesor += rule.successor[j].toShortString();
+			}
+			EditorGUILayout.LabelField(succesor, GUILayout.MaxWidth(150));
+			EditorGUILayout.LabelField("[ " + rule.probability + " ]");
+
+			if(changeRuleIndex != -1)
+				GUI.enabled = false;
+
+			if(GUILayout.Button ("Change Rule"))
+			{
+				changeRuleIndex = i;
+			}
+
+			if(GUILayout.Button ("Remove Rule"))
+			{
+				toDeleteRule = i;
+			}
+
+			GUI.enabled = true;
+
+			GUILayout.EndHorizontal ();
+
+			if(changeRuleIndex == i)
+			{
+				string[] alphabetStr = lSystem.alphabetArray();
+
+				GUILayout.BeginHorizontal();
+				GUILayout.BeginVertical();
+
+				EditorGUILayout.LabelField("Predecessor ", EditorStyles.boldLabel);
+				int predecessorIndex = lSystem.alphabet.IndexOf(rule.predecessor);
+				predecessorIndex = EditorGUILayout.Popup ("Predecessor : ", predecessorIndex, alphabetStr);
+				
+				if(predecessorIndex != -1)
+				{
+					rule.predecessor = lSystem.alphabet[predecessorIndex];
+					
+					if(rule.predecessor.GetType() == typeof(CommunicationSymbol) && rule.condition == null)
+					{
+						rule.condition = ScriptableObject.CreateInstance<CommunicationCondition> ();
+						rule.condition.init();
+					}
+				}
+				
+				if(rule.predecessor != null && rule.predecessor.GetType() == typeof(CommunicationSymbol))
+				{
+					EditorGUILayout.LabelField("Condition ", EditorStyles.boldLabel);
+					
+					int paramIndex     = (int)(rule.condition).param;
+					int operationIndex = (int)(rule.condition).operation;
+					
+					paramIndex     = EditorGUILayout.Popup(paramIndex,     CommunicationCondition.CommParametersStr);
+					operationIndex = EditorGUILayout.Popup(operationIndex, CommunicationCondition.CommOperationStr);
+					
+					rule.condition.param     = (CommunicationCondition.CommParameters)paramIndex;
+					rule.condition.operation = (CommunicationCondition.CommOperation)operationIndex;
+					
+					if(rule.condition.param == CommunicationCondition.CommParameters.time)
+					{
+						rule.condition.floatValue = EditorGUILayout.FloatField(rule.condition.floatValue);
+					}
+					else
+					{
+						EditorGUILayout.LabelField("null");
+						rule.condition.resultValue = null;
+					}
+				}
+				
+				EditorGUILayout.LabelField("Successors ", EditorStyles.boldLabel);
+				
+				int toDeleteSuccessor = -1;
+				for(int j = 0; j < rule.successor.Count; j++)
+				{
+					GUILayout.BeginHorizontal ();
+					EditorGUILayout.LabelField(rule.successor[j].GetType().ToString() + "(" + rule.successor[j].name + ")");
+					if (GUILayout.Button ("Del"))
+					{
+						toDeleteSuccessor = j;
+					}
+					GUILayout.EndHorizontal ();
+				}
+				if(toDeleteSuccessor != -1)
+					rule.successor.RemoveAt(toDeleteSuccessor);
+				
+				GUILayout.BeginHorizontal ();
+				updateRuleSuccessorIndex = EditorGUILayout.Popup (updateRuleSuccessorIndex, alphabetStr);
+				if (GUILayout.Button ("Add succesor"))
+				{
+					if(updateRuleSuccessorIndex != -1)
+					{
+						rule.successor.Add(lSystem.alphabet[updateRuleSuccessorIndex]);
+						updateRuleSuccessorIndex = -1;
+					}
+				}
+				GUILayout.EndHorizontal ();
+				
+				rule.probability = EditorGUILayout.Slider("Probability ", rule.probability, 0.0f, 1.0f);
+
+				GUILayout.EndVertical();
+
+				if (GUILayout.Button ("Cancel", new GUILayoutOption[] {GUILayout.ExpandHeight(true), GUILayout.MaxHeight(140)}))
+				{
+					if(predecessorIndex != -1)
+					{
+						lSystem.rules.setRule(i,rule);
+						changeRuleIndex = -1;
+					}
+				}
+
+				GUILayout.EndHorizontal();
+			}
+		}
+
+		if (toDeleteRule != -1)
+		{
+			lSystem.rules.Remove(toDeleteRule);
+		}
+
+		GUILayout.Box("", new GUILayoutOption[]{GUILayout.ExpandWidth(true), GUILayout.Height(1)});
+		
+		if (newRule == null)
+		{
+			if (GUILayout.Button ("Add new Rule"))
+			{
+				newRule = ScriptableObject.CreateInstance<Rule>();
+				newRule.init();
+			}
+		}
+
+		if (newRule != null)
+		{
+			string[] alphabetStr = lSystem.alphabetArray();
+
+			EditorGUILayout.LabelField("Predecessor ", EditorStyles.boldLabel);
+			int predecessorIndex = lSystem.alphabet.IndexOf(newRule.predecessor);
+			predecessorIndex = EditorGUILayout.Popup ("Predecessor : ", predecessorIndex, alphabetStr);
+
+			if(predecessorIndex != -1)
+			{
+				newRule.predecessor = lSystem.alphabet[predecessorIndex];
+
+				if(newRule.predecessor.GetType() == typeof(CommunicationSymbol) && newRule.condition == null)
+				{
+					newRule.condition = ScriptableObject.CreateInstance<CommunicationCondition> ();
+					newRule.condition.init();
+				}
+			}
+
+			if(newRule.predecessor != null && newRule.predecessor.GetType() == typeof(CommunicationSymbol))
+			{
+				EditorGUILayout.LabelField("Condition ", EditorStyles.boldLabel);
+
+				int paramIndex     = (int)(newRule.condition).param;
+				int operationIndex = (int)(newRule.condition).operation;
+
+				paramIndex     = EditorGUILayout.Popup(paramIndex,     CommunicationCondition.CommParametersStr);
+				operationIndex = EditorGUILayout.Popup(operationIndex, CommunicationCondition.CommOperationStr);
+
+				newRule.condition.param     = (CommunicationCondition.CommParameters)paramIndex;
+				newRule.condition.operation = (CommunicationCondition.CommOperation)operationIndex;
+
+				if(newRule.condition.param == CommunicationCondition.CommParameters.time)
+				{
+					newRule.condition.floatValue = EditorGUILayout.FloatField(newRule.condition.floatValue);
+				}
+				else
+				{
+					EditorGUILayout.LabelField("null");
+					newRule.condition.resultValue = null;
+				}
+			}
+
+			EditorGUILayout.LabelField("Successors ", EditorStyles.boldLabel);
+
+			int toDeleteSuccessor = -1;
+			for(int j = 0; j < newRule.successor.Count; j++)
+			{
+				GUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField(newRule.successor[j].GetType().ToString() + "(" + newRule.successor[j].name + ")");
+				if (GUILayout.Button ("Del"))
+				{
+					toDeleteSuccessor = j;
+				}
+				GUILayout.EndHorizontal ();
+			}
+			if(toDeleteSuccessor != -1)
+				newRule.successor.RemoveAt(toDeleteSuccessor);
+
+			GUILayout.BeginHorizontal ();
+			newRuleSuccesorIndex = EditorGUILayout.Popup (newRuleSuccesorIndex, alphabetStr);
+			if (GUILayout.Button ("Add succesor"))
+			{
+				if(newRuleSuccesorIndex != -1)
+				{
+					newRule.successor.Add(lSystem.alphabet[newRuleSuccesorIndex]);
+					newRuleSuccesorIndex = -1;
+				}
+			}
+			GUILayout.EndHorizontal ();
+
+			newRule.probability = EditorGUILayout.Slider("Probability ", newRule.probability, 0.0f, 1.0f);
+
+			GUILayout.BeginHorizontal ();
+			if (GUILayout.Button ("Add"))
+			{
+				if(predecessorIndex != -1)
+				{
+					lSystem.rules.Add(newRule);
+					newRule = null;
+				}
+			}
+			if (GUILayout.Button ("Cancel"))
+			{
+				newRule = null;
+			}
+			GUILayout.EndHorizontal ();
+		}
 	}
 
 	private void showSimulationMenu()

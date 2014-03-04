@@ -1,14 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
-public class CommunicationCondition
+[Serializable]
+public class CommunicationCondition : ScriptableObject
 {
 	public enum CommParameters
 	{
 		time,
 		result
 	};
-	
+
 	public enum CommOperation
 	{
 		equal,
@@ -17,28 +19,57 @@ public class CommunicationCondition
 		more
 	};
 
-	private CommParameters param;
-	private CommOperation operation;
-	private System.Object value;
+	public static string[] CommParametersStr = { "time", "result" };
+	public static string[] CommOperationStr  = { "equal", "notEqual", "less", "more" };
 
-	public CommunicationCondition(CommParameters nParam, CommOperation nOperation, System.Object nValue)
+	public CommParameters param;
+	public CommOperation operation;
+	public GameObject resultValue;
+	public float floatValue;
+
+
+	public CommunicationCondition()
 	{
-		param     = nParam;
-		operation = nOperation;
-		value     = nValue;
+		param       = CommParameters.time;
+		operation   = CommOperation.equal;
+		resultValue = null;
+		floatValue  = 0.0f;
+	}
+
+	public CommunicationCondition(CommParameters nParam, CommOperation nOperation, GameObject nValue)
+	{
+		param       = nParam;
+		operation   = nOperation;
+		resultValue = nValue;
+		floatValue  = 0.0f;
+	}
+
+	public CommunicationCondition(CommParameters nParam, CommOperation nOperation, float nValue)
+	{
+		param       = nParam;
+		operation   = nOperation;
+		resultValue = null;
+		floatValue  = nValue;
+	}
+
+	public void init()
+	{
+		param       = CommParameters.time;
+		operation   = CommOperation.equal;
+		resultValue = null;
+		floatValue  = 0.0f;
 	}
 
 	public bool Evaluate(CommunicationSymbol symbol)
 	{
 		if (param == CommParameters.result)
 		{
-			GameObject go = value as GameObject;
 			bool result = false;
 
 			switch(operation)
 			{
 				case CommOperation.notEqual:
-					result = symbol.result != go;
+					result = symbol.result != resultValue;
 					break;
 				default:
 					result = false;
@@ -49,24 +80,23 @@ public class CommunicationCondition
 		}
 		else if (param == CommParameters.time)
 		{
-			float valueTime = (float)value;
 			switch(operation)
 			{
 				case CommOperation.notEqual:
 				{
-					return symbol.timer != valueTime;
+					return symbol.timer != floatValue;
 				}
 				case CommOperation.equal:
 				{
-					return symbol.timer == valueTime;
+					return symbol.timer == floatValue;
 				}
 				case CommOperation.less:
 				{
-					return symbol.timer < valueTime;
+					return symbol.timer < floatValue;
 				}
 				case CommOperation.more:
 				{
-					return symbol.timer > valueTime;
+					return symbol.timer > floatValue;
 				}
 				default:
 					return false;
