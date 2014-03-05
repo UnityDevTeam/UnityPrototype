@@ -6,7 +6,6 @@ using System.Collections.Generic;
 [CustomEditor(typeof(NewAgentSystem))]
 public class NewAgentSystemEditor : Editor
 {
-	private string[] allOptions = {"adpRibose", "molecule"};
 	private int index = 0;
 
 	public override void OnInspectorGUI()
@@ -14,7 +13,7 @@ public class NewAgentSystemEditor : Editor
 		DrawDefaultInspector();
 		NewAgentSystem myAgentSystem = (NewAgentSystem)target;
 		
-		List<string> options = new List<string> (allOptions);
+		List<string> options = new List<string> (GlobalLists.monomerTypes);
 
 		EditorGUILayout.Separator ();
 		EditorGUILayout.LabelField("Agents count : " + myAgentSystem.agentsCount);

@@ -39,13 +39,13 @@ public class LSystem : MonoBehaviour
 				communicationQueryObject.AddComponent<CommunicationManager>();
 			}
 		}
-
+		/*
 		if (rules == null)
 		{
 			rules = ScriptableObject.CreateInstance<Rules>();
 		}
 
-		if (axiom != null && axiom.GetType () == typeof(CommunicationSymbol))
+		if (exampleIndex == 0 && axiom != null && axiom.GetType () == typeof(CommunicationSymbol))
 		{
 			state.Add(axiom);
 			activeSymbols.Add(0, (CommunicationSymbol)axiom);
@@ -92,6 +92,58 @@ public class LSystem : MonoBehaviour
 			
 			setTestRules3();
 		}
+		*/
+
+		testState ();
+	}
+
+	void testState()
+	{
+		StructureSymbol bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		BindingSymbol bin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		bin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), false);
+		state.Add (bin);
+
+		bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		bin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		bin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), false);
+		state.Add (bin);
+		
+		bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		bin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		bin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), false);
+		state.Add (bin);
+		
+		bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		bin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		bin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), false);
+		state.Add (bin);
+		
+		bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		bin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		bin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), false);
+		state.Add (bin);
+		
+		bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
+		bDGlucose.init ("g", "b-D-glucose", null);
+		state.Add (bDGlucose);
+
+		TimeStep ();
 	}
 	
 	void setTestRules()
@@ -433,7 +485,10 @@ public class LSystem : MonoBehaviour
 		}
 		else
 		{
-			mol.renderer.material = diffWhite;
+			if(prefabName == "adpRibose")
+			{
+				mol.renderer.material = diffWhite;
+			}
 		}
 
 		// remove agents components
@@ -622,19 +677,20 @@ public class LSystem : MonoBehaviour
 
 	private void TimeStep()
 	{
-		preEnviromentStep ();
+
+		//preEnviromentStep ();
 
 		Derive ();
 		Interpret ();
 
-		postEnviromentStep ();
+		//postEnviromentStep ();
 
 		//debugState ();
 	}
 	
 	void Update()
 	{
-		TimeStep ();
+		//TimeStep ();
 	}
 
 	public void debugAxioms()

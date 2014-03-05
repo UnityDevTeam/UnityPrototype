@@ -27,8 +27,6 @@ public class CommunicationSymbol : ISymbol
 	// operationPosition and operationOrientation transformed to global
 	private Vector3    _globalPosition    = Vector3.zero;
 	private Quaternion _globalOrientation = Quaternion.identity;
-	
-
 
 	public Vector3 globalPosition
 	{
