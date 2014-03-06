@@ -7,6 +7,11 @@ public class Rules : ScriptableObject
 {
 	[SerializeField] public List<Rule> _lookupTable;
 
+	public void init()
+	{
+		_lookupTable = new List<Rule> ();
+	}
+
 	public int getRulesCount()
 	{
 		return _lookupTable.Count;

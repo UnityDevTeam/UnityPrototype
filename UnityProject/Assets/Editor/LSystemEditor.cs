@@ -14,8 +14,7 @@ public class LSystemEditor : Editor
 		RulesTab,
 		SimulationTab
 	};
-
-
+	
 	private tabType lastFocusedTab = tabType.AlphabetTab;
 	private LSystem lSystem;
 	
@@ -24,8 +23,9 @@ public class LSystemEditor : Editor
 
 	private int structureIndex = 0;
 
-	private Vector3 bindingPosition = Vector3.zero;
-	private Vector3 bindingRotation = Vector3.zero;
+	private Vector3 bindingPosition   = Vector3.zero;
+	private Vector3 bindingRotation   = Vector3.zero;
+	private Vector3 bindingAlteration = Vector3.zero;
 	private bool isBranching = false;
 
 	private string communicationIdentifier = "";
@@ -137,10 +137,11 @@ public class LSystemEditor : Editor
 			}
 			else if(symbol.GetType() == typeof(BindingSymbol))
 			{
-				EditorGUILayout.LabelField(symbol.GetType().ToString()                                                      , GUILayout.MaxWidth(140));
-				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                             , GUILayout.MaxWidth(30));
-				EditorGUILayout.LabelField("[position - " + ((BindingSymbol)lSystem.alphabet[i]).bindingPosition + "]"      , GUILayout.MaxWidth(180));
-				EditorGUILayout.LabelField("[orientation - " + ((BindingSymbol)lSystem.alphabet[i]).bindingOrientation + "]", GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField(symbol.GetType().ToString()                                                       , GUILayout.MaxWidth(140));
+				EditorGUILayout.LabelField("[" + lSystem.alphabet[i].name + "]"                                              , GUILayout.MaxWidth(30));
+				EditorGUILayout.LabelField("[position - " + ((BindingSymbol)lSystem.alphabet[i]).bindingPosition + "]"       , GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField("[orientation - " + ((BindingSymbol)lSystem.alphabet[i]).bindingOrientation + "]" , GUILayout.MaxWidth(180));
+				EditorGUILayout.LabelField("[orientationAlt - " + ((BindingSymbol)lSystem.alphabet[i]).orientAlteration + "]", GUILayout.MaxWidth(180));
 			}
 			else if(symbol.GetType() == typeof(CommunicationSymbol))
 			{
@@ -184,15 +185,16 @@ public class LSystemEditor : Editor
 
 				break;
 			case 1:
-				symbolName    = EditorGUILayout.TextField("Symbol name : ", symbolName);
+				symbolName     = EditorGUILayout.TextField("Symbol name : ", symbolName);
 				structureIndex = EditorGUILayout.Popup ("Structure type : ", structureIndex, GlobalLists.monomerTypes);
 
 				break;
 			case 2:
-				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
-				bindingPosition = EditorGUILayout.Vector3Field("Binding position : ", bindingPosition);
-				bindingRotation = EditorGUILayout.Vector3Field("Binding orientation : ", bindingRotation);
-				isBranching     = EditorGUILayout.Toggle("Is branching : ", isBranching);
+				symbolName        = EditorGUILayout.TextField("Symbol name : ",               symbolName);
+				bindingPosition   = EditorGUILayout.Vector3Field("Binding position : ",       bindingPosition);
+				bindingRotation   = EditorGUILayout.Vector3Field("Binding orientation : ",    bindingRotation);
+				bindingAlteration = EditorGUILayout.Vector3Field("Binding orientationAlt : ", bindingAlteration);
+				isBranching       = EditorGUILayout.Toggle("Is branching : ",                 isBranching);
 				break;
 			case 3:
 				symbolName = EditorGUILayout.TextField("Symbol name : ", symbolName);
@@ -224,7 +226,7 @@ public class LSystemEditor : Editor
 					break;
 				case 2:
 					newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
-					((BindingSymbol)newSymbol).init(symbolName, bindingPosition, bindingRotation, isBranching);
+					((BindingSymbol)newSymbol).init(symbolName, bindingPosition, bindingRotation, bindingAlteration, isBranching);
 					break;
 				case 3:
 					newSymbol = ScriptableObject.CreateInstance<CommunicationSymbol> ();
@@ -293,6 +295,10 @@ public class LSystemEditor : Editor
 
 				GUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Binding orientation : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((BindingSymbol)lSystem.axiom).bindingOrientation.ToString());
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Binding alteration : ", GUILayout.MaxWidth(120)); EditorGUILayout.LabelField(((BindingSymbol)lSystem.axiom).orientAlteration.ToString());
 				GUILayout.EndHorizontal();
 			}
 			else if(axiom.GetType() == typeof(CommunicationSymbol))

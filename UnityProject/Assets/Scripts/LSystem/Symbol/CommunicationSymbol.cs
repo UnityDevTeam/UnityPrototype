@@ -17,8 +17,10 @@ public class CommunicationSymbol : ISymbol
 	[SerializeField] public AnimationCurve probability;
 
 	// filled by enviroment
-	private KeyValuePair<float,      bool> _timer;
-	private KeyValuePair<GameObject, bool> _result;
+	public float      timer;
+	public bool       timerVar;
+	public GameObject result;
+	public bool       resultVar;
 
 	// filled by interpret
 	private Vector3    _turtlePosition    = Vector3.zero;
@@ -36,31 +38,6 @@ public class CommunicationSymbol : ISymbol
 	public Quaternion globalOrientation
 	{
 		get { return this._globalOrientation; }
-	}
-	
-	public float timer
-	{
-		get { return this._timer.Key; }
-		set { this._timer = new KeyValuePair<float, bool>(value, true); }
-	}
-	
-	public bool timerVar
-	{
-		get { return this._timer.Value; }
-		set { this._timer = new KeyValuePair<float, bool>(this._timer.Key, value ); }
-	}
-
-
-	public GameObject result
-	{
-		get { return this._result.Key; }
-		set { this._result = new KeyValuePair<GameObject, bool>(value, true); }
-	}
-	
-	public bool resultVar
-	{
-		get { return this._result.Value; }
-		set { this._result = new KeyValuePair<GameObject, bool>(this._result.Key, value ); }
 	}
 
 	public void init( string nName, string nProcess)
@@ -106,6 +83,7 @@ public class CommunicationSymbol : ISymbol
 		orientation    = nSymbol.orientation;
 		orientationVar = nSymbol.orientationVar;
 		timer          = nSymbol.timer;
+		timerVar       = nSymbol.timerVar;
 		resultType     = nSymbol.resultType;
 		result         = nSymbol.result;
 		resultVar      = nSymbol.resultVar;
@@ -128,10 +106,6 @@ public class CommunicationSymbol : ISymbol
 
 			if(x.orientationVar && y.orientationVar)
 				if(x.orientation != y.orientation)
-					return false;
-
-			if(x.timerVar && y.timerVar)
-				if(x.timer != y.timer)
 					return false;
 
 			if(x.resultTypeVar && y.resultTypeVar)
@@ -158,10 +132,6 @@ public class CommunicationSymbol : ISymbol
 			
 			if(x.orientationVar && y.orientationVar)
 				if(x.orientation != y.orientation)
-					return true;
-			
-			if(x.timerVar && y.timerVar)
-				if(x.timer != y.timer)
 					return true;
 
 			if(x.resultTypeVar && y.resultTypeVar)
@@ -199,10 +169,6 @@ public class CommunicationSymbol : ISymbol
 			
 			if(orientationVar && p.orientationVar)
 				if(orientation != p.orientation)
-					return false;
-			
-			if(timerVar && p.timerVar)
-				if(timer != p.timer)
 					return false;
 
 			if(resultTypeVar && p.resultTypeVar)

@@ -60,6 +60,22 @@ public class CommunicationCondition : ScriptableObject
 		floatValue  = 0.0f;
 	}
 
+	public void init(CommParameters nParam, CommOperation nOperation, float nValue)
+	{
+		param       = nParam;
+		operation   = nOperation;
+		resultValue = null;
+		floatValue  = nValue;
+	}
+
+	public void init(CommParameters nParam, CommOperation nOperation, GameObject nResultValue)
+	{
+		param       = nParam;
+		operation   = nOperation;
+		resultValue = nResultValue;
+		floatValue  = 0.0f;
+	}
+
 	public bool Evaluate(CommunicationSymbol symbol)
 	{
 		if (param == CommParameters.result)
