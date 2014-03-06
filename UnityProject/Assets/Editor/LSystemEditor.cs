@@ -412,171 +412,173 @@ public class LSystemEditor : Editor
 		EditorGUILayout.LabelField("LSystem rules", EditorStyles.boldLabel);
 
 		int toDeleteRule = -1;
-		for (int i = 0; i < lSystem.rules.getRulesCount(); i++)
+		if(lSystem.rules != null)
 		{
-			Rule rule = lSystem.rules.getRule(i);
-
-			GUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField(rule.predecessor.toShortString(), GUILayout.MaxWidth(35));
-
-			EditorGUILayout.LabelField("->", GUILayout.MaxWidth(20));
-
-			string conditionString = "";
-
-			conditionString += rule.condition.param.ToString();
-
-			switch(rule.condition.operation)
+			for (int i = 0; i < lSystem.rules.getRulesCount(); i++)
 			{
-			case CommunicationCondition.CommOperation.equal:
-				conditionString += "==";
-				break;
-			case CommunicationCondition.CommOperation.notEqual:
-				conditionString += "!=";
-				break;
-			case CommunicationCondition.CommOperation.less:
-				conditionString += "<";
-				break;
-			case CommunicationCondition.CommOperation.more:
-				conditionString += ">";
-				break;
-			}
+				Rule rule = lSystem.rules.getRule(i);
 
+				GUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField(rule.predecessor.toShortString(), GUILayout.MaxWidth(35));
 
-			// fuj
-			if(rule.condition.param == CommunicationCondition.CommParameters.time)
-			{
-				conditionString += rule.condition.floatValue.ToString();
-			}
-			else
-			{
-				if(rule.condition.resultValue == null)
+				EditorGUILayout.LabelField("->", GUILayout.MaxWidth(20));
+
+				string conditionString = "";
+
+				conditionString += rule.condition.param.ToString();
+
+				switch(rule.condition.operation)
 				{
-					conditionString += "null";
+				case CommunicationCondition.CommOperation.equal:
+					conditionString += "==";
+					break;
+				case CommunicationCondition.CommOperation.notEqual:
+					conditionString += "!=";
+					break;
+				case CommunicationCondition.CommOperation.less:
+					conditionString += "<";
+					break;
+				case CommunicationCondition.CommOperation.more:
+					conditionString += ">";
+					break;
+				}
+
+
+				// fuj
+				if(rule.condition.param == CommunicationCondition.CommParameters.time)
+				{
+					conditionString += rule.condition.floatValue.ToString();
 				}
 				else
 				{
-					conditionString += rule.condition.resultValue.name;
-				}
-			}
-
-			EditorGUILayout.LabelField("[" + conditionString + "]", GUILayout.MaxWidth(100));
-
-			string succesor = "";
-			for(int j = 0; j < rule.successor.Count; j++)
-			{
-				succesor += rule.successor[j].toShortString();
-			}
-			EditorGUILayout.LabelField(succesor, GUILayout.MaxWidth(150));
-			EditorGUILayout.LabelField("[ " + rule.probability + " ]");
-
-			if(changeRuleIndex != -1)
-				GUI.enabled = false;
-
-			if(GUILayout.Button ("Change Rule"))
-			{
-				changeRuleIndex = i;
-			}
-
-			if(GUILayout.Button ("Remove Rule"))
-			{
-				toDeleteRule = i;
-			}
-
-			GUI.enabled = true;
-
-			GUILayout.EndHorizontal ();
-
-			if(changeRuleIndex == i)
-			{
-				string[] alphabetStr = lSystem.alphabetArray();
-
-				GUILayout.BeginHorizontal();
-				GUILayout.BeginVertical();
-
-				EditorGUILayout.LabelField("Predecessor ", EditorStyles.boldLabel);
-				int predecessorIndex = lSystem.alphabet.IndexOf(rule.predecessor);
-				predecessorIndex = EditorGUILayout.Popup ("Predecessor : ", predecessorIndex, alphabetStr);
-				
-				if(predecessorIndex != -1)
-				{
-					rule.predecessor = lSystem.alphabet[predecessorIndex];
-					
-					if(rule.predecessor.GetType() == typeof(CommunicationSymbol) && rule.condition == null)
+					if(rule.condition.resultValue == null)
 					{
-						rule.condition = ScriptableObject.CreateInstance<CommunicationCondition> ();
-						rule.condition.init();
-					}
-				}
-				
-				if(rule.predecessor != null && rule.predecessor.GetType() == typeof(CommunicationSymbol))
-				{
-					EditorGUILayout.LabelField("Condition ", EditorStyles.boldLabel);
-					
-					int paramIndex     = (int)(rule.condition).param;
-					int operationIndex = (int)(rule.condition).operation;
-					
-					paramIndex     = EditorGUILayout.Popup(paramIndex,     CommunicationCondition.CommParametersStr);
-					operationIndex = EditorGUILayout.Popup(operationIndex, CommunicationCondition.CommOperationStr);
-					
-					rule.condition.param     = (CommunicationCondition.CommParameters)paramIndex;
-					rule.condition.operation = (CommunicationCondition.CommOperation)operationIndex;
-					
-					if(rule.condition.param == CommunicationCondition.CommParameters.time)
-					{
-						rule.condition.floatValue = EditorGUILayout.FloatField(rule.condition.floatValue);
+						conditionString += "null";
 					}
 					else
 					{
-						EditorGUILayout.LabelField("null");
-						rule.condition.resultValue = null;
+						conditionString += rule.condition.resultValue.name;
 					}
 				}
-				
-				EditorGUILayout.LabelField("Successors ", EditorStyles.boldLabel);
-				
-				int toDeleteSuccessor = -1;
+
+				EditorGUILayout.LabelField("[" + conditionString + "]", GUILayout.MaxWidth(100));
+
+				string succesor = "";
 				for(int j = 0; j < rule.successor.Count; j++)
 				{
-					GUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField(rule.successor[j].GetType().ToString() + "(" + rule.successor[j].name + ")");
-					if (GUILayout.Button ("Del"))
-					{
-						toDeleteSuccessor = j;
-					}
-					GUILayout.EndHorizontal ();
+					succesor += rule.successor[j].toShortString();
 				}
-				if(toDeleteSuccessor != -1)
-					rule.successor.RemoveAt(toDeleteSuccessor);
-				
-				GUILayout.BeginHorizontal ();
-				updateRuleSuccessorIndex = EditorGUILayout.Popup (updateRuleSuccessorIndex, alphabetStr);
-				if (GUILayout.Button ("Add succesor"))
+				EditorGUILayout.LabelField(succesor, GUILayout.MaxWidth(150));
+				EditorGUILayout.LabelField("[ " + rule.probability + " ]");
+
+				if(changeRuleIndex != -1)
+					GUI.enabled = false;
+
+				if(GUILayout.Button ("Change Rule"))
 				{
-					if(updateRuleSuccessorIndex != -1)
-					{
-						rule.successor.Add(lSystem.alphabet[updateRuleSuccessorIndex]);
-						updateRuleSuccessorIndex = -1;
-					}
+					changeRuleIndex = i;
 				}
+
+				if(GUILayout.Button ("Remove Rule"))
+				{
+					toDeleteRule = i;
+				}
+
+				GUI.enabled = true;
+
 				GUILayout.EndHorizontal ();
-				
-				rule.probability = EditorGUILayout.Slider("Probability ", rule.probability, 0.0f, 1.0f);
 
-				GUILayout.EndVertical();
-
-				if (GUILayout.Button ("Cancel", new GUILayoutOption[] {GUILayout.ExpandHeight(true), GUILayout.MaxHeight(140)}))
+				if(changeRuleIndex == i)
 				{
+					string[] alphabetStr = lSystem.alphabetArray();
+
+					GUILayout.BeginHorizontal();
+					GUILayout.BeginVertical();
+
+					EditorGUILayout.LabelField("Predecessor ", EditorStyles.boldLabel);
+					int predecessorIndex = lSystem.alphabet.IndexOf(rule.predecessor);
+					predecessorIndex = EditorGUILayout.Popup ("Predecessor : ", predecessorIndex, alphabetStr);
+					
 					if(predecessorIndex != -1)
 					{
-						lSystem.rules.setRule(i,rule);
-						changeRuleIndex = -1;
+						rule.predecessor = lSystem.alphabet[predecessorIndex];
+						
+						if(rule.predecessor.GetType() == typeof(CommunicationSymbol) && rule.condition == null)
+						{
+							rule.condition = ScriptableObject.CreateInstance<CommunicationCondition> ();
+							rule.condition.init();
+						}
 					}
-				}
+					
+					if(rule.predecessor != null && rule.predecessor.GetType() == typeof(CommunicationSymbol))
+					{
+						EditorGUILayout.LabelField("Condition ", EditorStyles.boldLabel);
+						
+						int paramIndex     = (int)(rule.condition).param;
+						int operationIndex = (int)(rule.condition).operation;
+						
+						paramIndex     = EditorGUILayout.Popup(paramIndex,     CommunicationCondition.CommParametersStr);
+						operationIndex = EditorGUILayout.Popup(operationIndex, CommunicationCondition.CommOperationStr);
+						
+						rule.condition.param     = (CommunicationCondition.CommParameters)paramIndex;
+						rule.condition.operation = (CommunicationCondition.CommOperation)operationIndex;
+						
+						if(rule.condition.param == CommunicationCondition.CommParameters.time)
+						{
+							rule.condition.floatValue = EditorGUILayout.FloatField(rule.condition.floatValue);
+						}
+						else
+						{
+							EditorGUILayout.LabelField("null");
+							rule.condition.resultValue = null;
+						}
+					}
+					
+					EditorGUILayout.LabelField("Successors ", EditorStyles.boldLabel);
+					
+					int toDeleteSuccessor = -1;
+					for(int j = 0; j < rule.successor.Count; j++)
+					{
+						GUILayout.BeginHorizontal ();
+						EditorGUILayout.LabelField(rule.successor[j].GetType().ToString() + "(" + rule.successor[j].name + ")");
+						if (GUILayout.Button ("Del"))
+						{
+							toDeleteSuccessor = j;
+						}
+						GUILayout.EndHorizontal ();
+					}
+					if(toDeleteSuccessor != -1)
+						rule.successor.RemoveAt(toDeleteSuccessor);
+					
+					GUILayout.BeginHorizontal ();
+					updateRuleSuccessorIndex = EditorGUILayout.Popup (updateRuleSuccessorIndex, alphabetStr);
+					if (GUILayout.Button ("Add succesor"))
+					{
+						if(updateRuleSuccessorIndex != -1)
+						{
+							rule.successor.Add(lSystem.alphabet[updateRuleSuccessorIndex]);
+							updateRuleSuccessorIndex = -1;
+						}
+					}
+					GUILayout.EndHorizontal ();
+					
+					rule.probability = EditorGUILayout.Slider("Probability ", rule.probability, 0.0f, 1.0f);
 
-				GUILayout.EndHorizontal();
+					GUILayout.EndVertical();
+
+					if (GUILayout.Button ("Cancel", new GUILayoutOption[] {GUILayout.ExpandHeight(true), GUILayout.MaxHeight(140)}))
+					{
+						if(predecessorIndex != -1)
+						{
+							lSystem.rules.setRule(i,rule);
+							changeRuleIndex = -1;
+						}
+					}
+
+					GUILayout.EndHorizontal();
+				}
 			}
 		}
-
 		if (toDeleteRule != -1)
 		{
 			lSystem.rules.Remove(toDeleteRule);

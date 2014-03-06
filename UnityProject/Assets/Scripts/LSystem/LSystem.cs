@@ -25,7 +25,7 @@ public class LSystem : MonoBehaviour
 	int monomerCounting = 0;
 	public int monomerCountingStop = 100;
 
-	public string[] examples = {"none", "PARP", "Star", "Differ", "Cellulose" };
+	public string[] examples = {"none", "PARP", "Star", "Differ", "Cellulose", "Tubulin" };
 	public int exampleIndex = 1;
 
 	void Awake()
@@ -104,6 +104,17 @@ public class LSystem : MonoBehaviour
 			
 			setTestRules4();
 		}
+		else if (exampleIndex == 5)
+		{
+			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
+			ax.init("C", "G", new Vector3(-0.7555f, -0.8697f, -1.2740f), Quaternion.Euler(new Vector3(0, 27.6639f, 0)), 0.0f, "tubulin", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+			axiom = ax;
+			
+			state.Add (axiom);
+			activeSymbols.Add (0, (CommunicationSymbol)axiom);
+			
+			setTestRules5();
+		}
 	}
 
 	void testState()
@@ -114,94 +125,80 @@ public class LSystem : MonoBehaviour
 		BindingSymbol bDGlucoseBin = ScriptableObject.CreateInstance<BindingSymbol> ();
 		bDGlucoseBin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), new Vector3(0, 10.0f, 10.0f), false);
 
-		StructureSymbol ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
+		for (int i = 0; i < 100; i++)
+		{
+			StructureSymbol ss = ScriptableObject.CreateInstance<StructureSymbol> ();
+			ss.init (bDGlucose);
+			state.Add (ss);
 
-		BindingSymbol bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
+			BindingSymbol bs = ScriptableObject.CreateInstance<BindingSymbol> ();
+			bs.init (bDGlucoseBin);
+			bs.alterOrientation ();
+			state.Add (bs);
+		}
 
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-		
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-		
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-		
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-		
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-
-		bs = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bs.init(bDGlucoseBin);
-		bs.alterOrientation ();
-		state.Add (bs);
-		
-		ss = ScriptableObject.CreateInstance<StructureSymbol> ();
-		ss.init (bDGlucose);
-		state.Add (ss);
-
-		TimeStep ();
+		Interpret ();
 	}
-	
+
+	void testState2()
+	{
+		StructureSymbol tubulin = ScriptableObject.CreateInstance<StructureSymbol> ();
+		tubulin.init ("t", "tubulin", null);
+		
+		BindingSymbol tubulinBin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		tubulinBin.init("b", new Vector3(-0.7555f, 0.2f, -1.2740f), new Vector3(0, 27.6639f, 0), new Vector3(0, 0, 0), false);
+
+		for (int i = 0; i < 100; i++)
+		{
+			StructureSymbol ss = ScriptableObject.CreateInstance<StructureSymbol> ();
+			ss.init (tubulin);
+			state.Add (ss);
+
+			BindingSymbol bs = ScriptableObject.CreateInstance<BindingSymbol> ();
+			bs.init (tubulinBin);
+			bs.alterOrientation ();
+			state.Add (bs);
+		}
+		
+		Interpret ();
+	}
+
+	void testState3()
+	{
+		StructureSymbol alpha_tubulin = ScriptableObject.CreateInstance<StructureSymbol> ();
+		alpha_tubulin.init ("a", "alpha-tubulin", null);
+
+		StructureSymbol beta_tubulin = ScriptableObject.CreateInstance<StructureSymbol> ();
+		beta_tubulin.init ("b", "beta-tubulin", null);
+
+		BindingSymbol abBin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		abBin.init("d", new Vector3(0, 1.0697f, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
+
+		BindingSymbol tubulinBin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		tubulinBin.init("t", new Vector3(-0.7555f, -0.8697f, -1.2740f), new Vector3(0, 27.6639f, 0), new Vector3(0, 0, 0), false);
+		
+		for (int i = 0; i < 100; i++)
+		{
+			StructureSymbol ss = ScriptableObject.CreateInstance<StructureSymbol> ();
+			ss.init (alpha_tubulin);
+			state.Add (ss);
+			
+			BindingSymbol bs = ScriptableObject.CreateInstance<BindingSymbol> ();
+			bs.init (abBin);
+			state.Add (bs);
+
+			ss = ScriptableObject.CreateInstance<StructureSymbol> ();
+			ss.init (beta_tubulin);
+			state.Add (ss);
+			
+			bs = ScriptableObject.CreateInstance<BindingSymbol> ();
+			bs.init (tubulinBin);
+			state.Add (bs);
+		}
+		
+		Interpret ();
+	}
+
 	void setTestRules()
 	{
 		///////////////////////////////////////////////////////////////////////
@@ -544,9 +541,6 @@ public class LSystem : MonoBehaviour
 		CommunicationSymbol CG = ScriptableObject.CreateInstance<CommunicationSymbol>();
 		CG.init("C", "G", new Vector3(0, 0.8550f, 0), Quaternion.Euler(new Vector3(0, 180.0f, 0)), 0.0f, "b-D-glucose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
-		CommunicationSymbol CGS = ScriptableObject.CreateInstance<CommunicationSymbol>();
-		CGS.init("C", "G");
-
 		StructureSymbol bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
 		bDGlucose.init ("g", "b-D-glucose", null);
 		
@@ -581,6 +575,62 @@ public class LSystem : MonoBehaviour
 		R = ScriptableObject.CreateInstance<Rule> ();
 		R.init(RP, RS, RC, 1.0f);
 
+		rules.Add (R);
+	}
+
+	void setTestRules5()
+	{
+		StructureSymbol alpha_tubulin = ScriptableObject.CreateInstance<StructureSymbol> ();
+		alpha_tubulin.init ("a", "alpha-tubulin", null);
+		
+		StructureSymbol beta_tubulin = ScriptableObject.CreateInstance<StructureSymbol> ();
+		beta_tubulin.init ("b", "beta-tubulin", null);
+		
+		BindingSymbol abBin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		abBin.init("d", new Vector3(0, 1.0697f, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
+		
+		BindingSymbol tubulinBin = ScriptableObject.CreateInstance<BindingSymbol> ();
+		tubulinBin.init("t", new Vector3(-0.7555f, -0.8697f, -1.2740f), new Vector3(0, 27.6639f, 0), new Vector3(0, 0, 0), false);
+
+		CommunicationSymbol process = ScriptableObject.CreateInstance<CommunicationSymbol>();
+		process.init("C", "G", new Vector3(-0.7555f, -0.8697f, -1.2740f), Quaternion.Euler(new Vector3(0, 27.6639f, 0)), 0.0f, "tubulin", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+
+		CommunicationSymbol    RP  = null;
+		ISymbol                RSS = null;
+		List<ISymbol>          RS  = new List<ISymbol> ();
+		CommunicationCondition RC  = null;
+		Rule                   R   = null;
+		///////////////////////////////////////////////////////////////////////
+		
+		RP = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		RP.init(process);
+		
+		RSS = ScriptableObject.CreateInstance<BindingSymbol> ();
+		((BindingSymbol)RSS).init (tubulinBin);
+		RS.Add (RSS);
+		
+		RSS = ScriptableObject.CreateInstance<StructureSymbol> ();
+		((StructureSymbol)RSS).init (beta_tubulin);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<BindingSymbol> ();
+		((BindingSymbol)RSS).init (abBin);
+		RS.Add (RSS);
+		
+		RSS = ScriptableObject.CreateInstance<StructureSymbol> ();
+		((StructureSymbol)RSS).init (alpha_tubulin);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<CommunicationSymbol> ();
+		((CommunicationSymbol)RSS).init (process);
+		RS.Add (RSS);
+		
+		RC = ScriptableObject.CreateInstance<CommunicationCondition> ();
+		RC.init(CommunicationCondition.CommParameters.result, CommunicationCondition.CommOperation.notEqual, null);
+		
+		R = ScriptableObject.CreateInstance<Rule> ();
+		R.init(RP, RS, RC, 1.0f);
+		
 		rules.Add (R);
 	}
 
