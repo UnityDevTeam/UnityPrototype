@@ -31,6 +31,11 @@ public class GlobalAttraction : AgentBehaviourNary
 					
 					if(pos.magnitude < attractionRadius)
 					{
+						if(GetComponent<RandomRotate>())
+						{
+							Destroy(GetComponent<RandomRotate>());
+						}
+
 						rigidbody.velocity = -pos.normalized * RandomMove.speed;
 						rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 						
@@ -52,6 +57,11 @@ public class GlobalAttraction : AgentBehaviourNary
 						
 						if(pos.magnitude < attractionRadius)
 						{
+							if(GetComponent<RandomRotate>())
+							{
+								Destroy(GetComponent<RandomRotate>());
+							}
+
 							rigidbody.velocity = -pos.normalized * RandomMove.speed;
 							rigidbody.velocity = rigidbody.velocity.normalized * RandomMove.speed;
 							

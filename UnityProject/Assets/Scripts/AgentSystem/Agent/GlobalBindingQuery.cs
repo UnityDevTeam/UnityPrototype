@@ -9,11 +9,6 @@ public class GlobalBindingQuery : AgentTriggerNary
 
 	public float bindingRadius = 0.4f;
 
-	void Start ()
-	{
-	
-	}
-
 	void Update ()
 	{
 		Dictionary<int, CommunicationQuery> queries = agentSystemScr.agentQueries;
