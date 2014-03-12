@@ -402,6 +402,7 @@ public class LSystemEditor : Editor
 				}
 
 				lSystem.axiom = symbol;
+				//lSystem.activeSymbols
 				changeAxiom = false;
 			}
 		}

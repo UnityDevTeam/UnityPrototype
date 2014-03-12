@@ -15,9 +15,9 @@ public class LSystem : MonoBehaviour
 	
 	private GameObject communicationQueryObject = null;
 
-	private SortedDictionary<int, CommunicationSymbol> activeSymbols = new SortedDictionary<int, CommunicationSymbol> ();
+	public SortedDictionary<int, CommunicationSymbol> activeSymbols = new SortedDictionary<int, CommunicationSymbol> ();
 	
-	Material diffWhite;
+	Material basicWhite;
 	Material diffTransBlue;
 
 	Material diffTransLightBlue;
@@ -60,7 +60,7 @@ public class LSystem : MonoBehaviour
 		communications = new GameObject("Communications");
 
 		// fuj
-		diffWhite     = (Material)Resources.Load("Materials/diffWhite", typeof(Material));
+		basicWhite     = (Material)Resources.Load("Materials/basicWhite", typeof(Material));
 		diffTransBlue = (Material)Resources.Load("Materials/diffTransBlue", typeof(Material));
 
 		diffTransLightBlue = (Material)Resources.Load("Materials/diffTransLightBlue", typeof(Material));
@@ -102,7 +102,7 @@ public class LSystem : MonoBehaviour
 		else if (exampleIndex == 4)
 		{
 			CommunicationSymbol ax = ScriptableObject.CreateInstance<CommunicationSymbol>();
-			ax.init("C", "G", new Vector3(0, 0.8550f, 0), Quaternion.Euler(new Vector3(0, 180.0f, 0)), 0.0f, "b-D-glucose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+			ax.init("C", "G", new Vector3(0, 0.8550f, 0), Quaternion.Euler(new Vector3(0, 180.0f, 0)), 0.0f, "a-D-glucose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 			axiom = ax;
 
 			state.Add (axiom);
@@ -602,13 +602,13 @@ public class LSystem : MonoBehaviour
 	void setTestRules4()
 	{
 		CommunicationSymbol CG = ScriptableObject.CreateInstance<CommunicationSymbol>();
-		CG.init("C", "G", new Vector3(0, 0.8550f, 0), Quaternion.Euler(new Vector3(0, 180.0f, 0)), 0.0f, "b-D-glucose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
+		CG.init("C", "G", new Vector3(0, 0.8550f, 0), Quaternion.Euler(new Vector3(0, 180.0f, 0)), 0.0f, "a-D-glucose", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
 
 		StructureSymbol bDGlucose = ScriptableObject.CreateInstance<StructureSymbol> ();
-		bDGlucose.init ("g", "b-D-glucose", null);
+		bDGlucose.init ("g", "a-D-glucose", null);
 		
 		BindingSymbol bDGlucoseBin = ScriptableObject.CreateInstance<BindingSymbol> ();
-		bDGlucoseBin.init("b", new Vector3(0, 0.8550f, 0), new Vector3(0, 180f, 0), new Vector3(0, 10.0f, 10.0f), false);
+		bDGlucoseBin.init("b", new Vector3(0.20f, 0.8550f, 0), new Vector3(0, 45f, 0), new Vector3(0, 10.0f, 10.0f), false);
 
 		CommunicationSymbol    RP  = null;
 		ISymbol                RSS = null;
@@ -653,7 +653,7 @@ public class LSystem : MonoBehaviour
 		abBin.init("d", new Vector3(0, 1.0697f, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
 		
 		BindingSymbol tubulinBin = ScriptableObject.CreateInstance<BindingSymbol> ();
-		tubulinBin.init("t", new Vector3(-0.7555f, -0.8697f, -1.2740f), new Vector3(0, 27.6639f, 0), new Vector3(0, 5.0f, 0), false);
+		tubulinBin.init("t", new Vector3(-0.7555f, -0.8697f, -1.2740f), new Vector3(0, 27.6639f, 0), new Vector3(0, 0.0f, 0), false);
 
 		CommunicationSymbol process = ScriptableObject.CreateInstance<CommunicationSymbol>();
 		process.init("C", "G", new Vector3(-0.7555f, -0.8697f, -1.2740f), Quaternion.Euler(new Vector3(0, 27.6639f, 0)), 0.0f, "tubulin", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
@@ -711,7 +711,7 @@ public class LSystem : MonoBehaviour
 		{
 			if(prefabName == "adpRibose")
 			{
-				mol.renderer.material = diffWhite;
+				mol.renderer.material = basicWhite;
 			}
 
 			if(prefabName == "alpha-tubulin")
