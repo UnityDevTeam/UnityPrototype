@@ -645,7 +645,17 @@ public class LSystemEditor : Editor
 			for(int j = 0; j < newRule.successor.Count; j++)
 			{
 				GUILayout.BeginHorizontal ();
-				EditorGUILayout.LabelField(newRule.successor[j].GetType().ToString() + "(" + newRule.successor[j].name + ")");
+
+				if(newRule.successor[j].GetType()== typeof(StructureSymbol))
+				{
+					EditorGUILayout.LabelField(newRule.successor[j].GetType().ToString() + "(" + ((StructureSymbol)newRule.successor[j]).structurePrefabName + ")");
+				}
+				else
+				{
+					EditorGUILayout.LabelField(newRule.successor[j].GetType().ToString() + "(" + newRule.successor[j].name + ")");
+				}
+
+
 				if (GUILayout.Button ("Del"))
 				{
 					toDeleteSuccessor = j;

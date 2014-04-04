@@ -6,11 +6,13 @@
 	}
 	
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		//Tags { "RenderType"="Opaque" }
+		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
 		LOD 200	
 		
 		CGPROGRAM
-		#pragma surface surf Cartoon
+		#pragma surface surf Cartoon alpha
+		//#pragma surface surf Lambert alpha
 		
 		half4 _Color;
 		half _RimPower;
@@ -36,7 +38,7 @@
 			
 			half4 rimColor = _Color - half4(0.5, 0.5, 0.5, 0.5);
 
-			o.Emission = NdotView * rimColor;
+			//o.Emission = NdotView * rimColor;
 			
 			o.Albedo = _Color * ( 1 - NdotView );
 			o.Alpha = _Color.a;
