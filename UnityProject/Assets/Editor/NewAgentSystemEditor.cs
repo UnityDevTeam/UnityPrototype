@@ -75,7 +75,7 @@ public class NewAgentSystemEditor : Editor
 		}
 
 		EditorGUILayout.Separator ();
-		RandomMove.speed = EditorGUILayout.Slider ("Agents speed : ", RandomMove.speed, 0.0f, 40.0f);
+		Movement.speed = EditorGUILayout.Slider ("Agents speed : ", Movement.speed, 0.0f, 40.0f);
 
 		EditorGUILayout.Separator ();
 		NewAgentSystem.agentScale = EditorGUILayout.Slider ("Agents scale : ", NewAgentSystem.agentScale, 1.0f, 100.0f);

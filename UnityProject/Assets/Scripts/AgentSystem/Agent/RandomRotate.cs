@@ -17,7 +17,7 @@ public class RandomRotate : BehaviourUnary
 	void Update ()
 	{
 		timer += Time.deltaTime;
-		
+		/*
 		if (timer > randomTime)
 		{
 			randomOrientation.eulerAngles = randomEulerAngles ();
@@ -25,8 +25,12 @@ public class RandomRotate : BehaviourUnary
 			randomTime = Random.Range (0.5f, 2.0f);
 			timer = 0.0f;
 		}
+		*/
 
-		transform.rotation = Quaternion.Slerp (transform.rotation, randomOrientation, Time.deltaTime);
+		randomOrientation.eulerAngles = randomEulerAngles ();
+
+		//transform.rotation = Quaternion.Slerp (transform.rotation, randomOrientation, Time.deltaTime);
+		transform.rotation = Quaternion.Slerp (transform.rotation, randomOrientation, 0.15f);
 	}
 	
 	private Vector3 randomEulerAngles()

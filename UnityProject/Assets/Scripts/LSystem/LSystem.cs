@@ -4,29 +4,25 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {
-	// global variables ?
-	[HideInInspector] public static float timeDelta = 0.1f;
-
 	[SerializeField] public List<ISymbol> alphabet;
 	[SerializeField] public ISymbol       axiom;
 	[SerializeField] public Rules         rules;
-
-	public List<ISymbol> state = new List<ISymbol>();
-	
-	private GameObject communicationQueryObject = null;
+	                 public List<ISymbol> state = new List<ISymbol>();
 
 	public SortedDictionary<int, CommunicationSymbol> activeSymbols = new SortedDictionary<int, CommunicationSymbol> ();
+
+	[HideInInspector] public static float timeDelta = 0.1f;
+		
+	private GameObject communicationQueryObject = null;
+
+	int monomerCounting = 0;
+	public int monomerCountingStop = 100;
 	
 	Material basicWhite;
 	Material diffTransBlue;
 
 	Material diffTransLightBlue;
 	Material diffTransDarkBlue;
-
-	GameObject communications;
-
-	int monomerCounting = 0;
-	public int monomerCountingStop = 100;
 
 	public string[] examples = {"none", "PARP", "Star", "Differ", "Cellulose", "Tubulin", "Showcase1", "Showcase2" };
 	public int exampleIndex = 1;
@@ -54,10 +50,6 @@ public class LSystem : MonoBehaviour
 			state.Add(axiom);
 			activeSymbols.Add(0, (CommunicationSymbol)axiom);
 		}
-
-		// fuj
-		RenderSettings.haloStrength = 1.0f;
-		communications = new GameObject("Communications");
 
 		// fuj
 		basicWhite     = (Material)Resources.Load("Materials/basicWhite", typeof(Material));
@@ -355,7 +347,7 @@ public class LSystem : MonoBehaviour
 		
 		StructureSymbol str = null;
 		BindingSymbol bin = null;
-		EndSymbol ee = null;
+		//EndSymbol ee = null;
 		
 		for (int i = 0; i < 34; i++)
 		{
@@ -1843,48 +1835,28 @@ public class LSystem : MonoBehaviour
 
 	void postEnviromentStep()
 	{
-		int childCount = communications.transform.childCount;
-		for (int i = 0; i < childCount; i++)
-		{
-			DestroyImmediate(communications.transform.GetChild(0).gameObject);
-		}
-
 		CommunicationManager cql = communicationQueryObject.GetComponent<CommunicationManager> ();
 
 		foreach(KeyValuePair<int, CommunicationSymbol> symbol in activeSymbols)
 		{
 			cql.Add(symbol.Key, symbol.Value);
-
-			/*
-			GameObject haloEffect = new GameObject();
-			haloEffect.transform.position = symbol.Value.globalPosition;
-			haloEffect.AddComponent("Halo");
-			haloEffect.transform.parent = communications.transform;
-			*/
 		}
 	}
 
 	private void TimeStep()
 	{
-
 		preEnviromentStep ();
 
 		Derive ();
 
-		//debugState ();
-
 		Interpret ();
 
 		postEnviromentStep ();
-
-		//debugState ();
 	}
 	
 	void Update()
 	{
 		TimeStep ();
-
-		debugState ();
 	}
 
 	public void debugAxioms()

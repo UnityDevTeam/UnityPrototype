@@ -37,7 +37,8 @@ void surf (Input IN, inout SurfaceOutput o)
 	half4 rimColor = _Color - half4(0.5, 0.5, 0.5, 0.5);
 
 	o.Albedo = _Color.rgb * ( 1 - NdotView ) + rimColor * NdotView;
-	o.Alpha = _Color.a;
+	o.Alpha = 0.5f;
+	//o.Alpha = _Color.a;
 }
 ENDCG
 }

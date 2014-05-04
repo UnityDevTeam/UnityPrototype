@@ -705,9 +705,9 @@ public class LSystemEditor : Editor
 
 		LSystem.timeDelta = EditorGUILayout.Slider ("Time delta: ", LSystem.timeDelta, 0.02f, 3.0f);
 		
-		RandomMove.speed = LSystem.timeDelta * 50.0f;
-		if (RandomMove.speed > 30.0f) RandomMove.speed = 30.0f;
+		Movement.speed = LSystem.timeDelta * 50.0f;
+		if (Movement.speed > 30.0f) Movement.speed = 30.0f;
 		
-		EditorGUILayout.LabelField("Speed: " + RandomMove.speed);
+		EditorGUILayout.LabelField("Speed: " + Movement.speed);
 	}
 }

@@ -7,8 +7,8 @@ public class GlobalAttraction : AgentBehaviourNary
 {
 	public NewAgentSystem agentSystemScr;
 
-	public float attractionRadius = 5.0f;
-	public float attractionPower  = 10.0f;
+	public float attractionRadius = 2.0f;
+	public float attractionPower  = 1.0f;
 
 	public int queryId = -1;
 
@@ -23,6 +23,7 @@ public class GlobalAttraction : AgentBehaviourNary
 
 		if (queries != null && RandomMove.speed < 30)
 		{
+			/*
 			if(queryId > -1 && queries.ContainsKey(queryId))
 			{
 				if(queries[queryId].type == transform.parent.gameObject.name)
@@ -49,6 +50,7 @@ public class GlobalAttraction : AgentBehaviourNary
 			}
 			else
 			{
+			*/
 				foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 				{
 					if(query.Value.type == transform.parent.gameObject.name)
@@ -68,12 +70,15 @@ public class GlobalAttraction : AgentBehaviourNary
 							rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
 							
 							queryId = query.Key;
-							
+
+							print(gameObject.GetInstanceID() + " is near in " + Time.frameCount);
+
 							return;
 						}
 					}
 				}
-			}
+
+			//}
 		}
 	}
 }

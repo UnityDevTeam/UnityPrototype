@@ -17,7 +17,7 @@ public class BoundaryBounce : AgentConditionUnary
 		}
 
 		worldPosition = currentTransform.position;
-		worldSize = currentTransform.GetComponent<NewAgentSystem> ().systemSize;
+		worldSize = NewAgentSystem.systemSize;
 
 	}
 

@@ -6,7 +6,8 @@ public class NewAgentSystem : MonoBehaviour
 {
 	public static float agentScale = 1.0f;
 
-	public Vector3 systemSize = new Vector3(100, 100, 100);	
+	public static Vector3 systemSize = new Vector3(100, 100, 100);	
+	public static Vector3 minBox;
 
 	[HideInInspector] public int agentsCount = 0;
 	[HideInInspector] public float time      = 0.0f;
@@ -16,8 +17,11 @@ public class NewAgentSystem : MonoBehaviour
 	private GameObject communicationQueryObject = null;
 
 	private float oldAgentScale = 1.0f;
-	private Vector3 minBox;
+
 	private float volume;
+	public static bool  bindingMotion = false;
+	public static float motionTime    = 0.5f;
+	public static float motionTimer   = motionTime;
 
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +100,12 @@ public class NewAgentSystem : MonoBehaviour
 		{
 			mol.GetComponent<GlobalBindingQuery> ().agentSystemScr = this;
 		}
-			
+
+		if (mol.GetComponent<Movement> ())
+		{
+			mol.GetComponent<Movement> ().agentSystemScr = this;
+		}
+
 	}
 
 	public void getCommunicationQuerries()
@@ -151,13 +160,14 @@ public class NewAgentSystem : MonoBehaviour
 	void Update ()
 	{
 		time += Time.deltaTime;
+		motionTimer -= Time.deltaTime;
 
 		if (agentScale != oldAgentScale)
 		{
 			scaleAgents ();
 		}
 
-		if (RandomMove.speed == 30)
+		if (Movement.speed == 30)
 		{
 			for(int i = 0; i < transform.childCount; i++)
 				transform.GetChild (i).gameObject.SetActive (false);
