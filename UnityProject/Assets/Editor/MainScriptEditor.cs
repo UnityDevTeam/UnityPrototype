@@ -21,6 +21,22 @@ public class MyWindow : EditorWindow
 			LoadScene();
 		}
 	}
+
+	public Texture2D createAtomTexture(Vector3[] vertices)
+	{
+		int maxTexSize = 1024;
+		var positionTexture = new Texture2D (maxTexSize, maxTexSize, TextureFormat.ARGB32);
+		var pixels = new Color[vertices.Length];
+		int rows = vertices.Length / maxTexSize;
+		int cols = vertices.Length - rows * vertices.Length;
+		int counter = 0;
+		for (int j=0; j<vertices.Length; j++)
+						pixels [j] = vertices [j];
+	
+		positionTexture.SetPixels (pixels);
+		positionTexture.Apply ();
+		return positionTexture;
+	}
 	
 	public void LoadScene()
 	{
