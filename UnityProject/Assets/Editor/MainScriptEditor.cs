@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 public class MyWindow : EditorWindow
 {	
+
+	//atom buffer
+	public ComputeBuffer atomBuffer;
+	//public float SpriteSize;
 	// Add menu item named "My Window" to the Window menu
 	[MenuItem("CellUnity/Show Window")]
 	public static void ShowWindow()
@@ -22,34 +26,39 @@ public class MyWindow : EditorWindow
 		}
 	}
 
-	public Texture2D createAtomTexture(Vector3[] vertices)
+	public Texture2D createAtomTexture(Vector4[] vertices)
 	{
 		int maxTexSize = 1024;
-		var positionTexture = new Texture2D (maxTexSize, maxTexSize, TextureFormat.ARGB32);
-		var pixels = new Color[vertices.Length];
-		int rows = vertices.Length / maxTexSize;
-		int cols = vertices.Length - rows * vertices.Length;
-		int counter = 0;
+		var positionTexture = new Texture2D(maxTexSize, maxTexSize, TextureFormat.ARGB32, false);
+		var pixels = new Color[maxTexSize * maxTexSize];
 		for (int j=0; j<vertices.Length; j++)
-						pixels [j] = vertices [j];
+			pixels [j] = new Color(vertices[j].x,vertices[j].y, vertices[j].z, vertices[j].w);
 	
 		positionTexture.SetPixels (pixels);
 		positionTexture.Apply ();
 		return positionTexture;
 	}
 	
+	public ComputeBuffer createAtomBuffer(Vector4[] vertices)
+	{
+		var buffer = new ComputeBuffer (vertices.Length, 16); 
+		//vertices [0].Set (0, 10, 0, 0);
+		buffer.SetData(vertices);
+		return buffer;
+	}
+	
 	public void LoadScene()
 	{
 		List<Vector4> molAtomPositions = ReadPdbFileSimple ();
-		int atomCount = molAtomPositions.Count;
-		Vector3[] vertices = new Vector3[atomCount];
-		int[] indices = new int[atomCount];
+		int molCount = 10000; //molAtomPositions.Count;
+		Vector3[] vertices = new Vector3[molCount];
+		int[] indices = new int[molCount];
 
-		for (var i=0; i < atomCount; i++)
+		for (var i=0; i < molCount; i++)
 		{
 			indices[i] = i;
-			//vertices[i] = new Vector3 ( (UnityEngine.Random.value - 0.5f), (UnityEngine.Random.value - 0.5f), (UnityEngine.Random.value - 0.5f));
-			vertices[i] = new Vector3 ( molAtomPositions[i].x, molAtomPositions[i].y, molAtomPositions[i].z);
+			vertices[i] = new Vector3 ( (UnityEngine.Random.value - 0.5f), (UnityEngine.Random.value - 0.5f), (UnityEngine.Random.value - 0.5f))*200.0f;
+			//vertices[i] = new Vector3 ( molAtomPositions[i].x, molAtomPositions[i].y, molAtomPositions[i].z);
 		}
 
 		GameObject gameObject = GameObject.Find ("Main Object");
@@ -59,14 +68,29 @@ public class MyWindow : EditorWindow
 
 		gameObject = new GameObject("Main Object");
 		gameObject.AddComponent<MainScript>();		
+
 		
 		MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
 		meshRenderer.material = Resources.Load("MolMaterial") as Material;
+		//create and setup texture with atoms
+		//Debug.Log (@"Creating atom texture");
+		//var tex = createAtomTexture (vertices);
+		//meshRenderer.sharedMaterial.SetTexture ("_AtomTexture", tex);
+		Debug.Log (@"Creating atom buffer");
+
+		if (atomBuffer==null)
+			atomBuffer = createAtomBuffer (molAtomPositions.ToArray());
+
+		meshRenderer.sharedMaterial.SetBuffer ("_AtomBuffer", atomBuffer);
+		meshRenderer.sharedMaterial.SetColor ("_Color", Color.red);
+		meshRenderer.sharedMaterial.SetFloat ("_SpriteSize", 0.4f);
+
 		
 		MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();	
 		meshFilter.sharedMesh = new Mesh();
 		meshFilter.sharedMesh.vertices = vertices;
 		meshFilter.sharedMesh.SetIndices(indices, MeshTopology.Points, 0);
+
 	}
 
 	public List<Vector4> ReadPdbFileSimple()

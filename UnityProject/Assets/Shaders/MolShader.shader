@@ -3,7 +3,7 @@
 	Properties 
 	{
 	    _Color ("Color", Color) = (1,1,1,1)	    
-        _SpriteSize("SpriteSize", Float) = 1
+        _SpriteSize("SpriteSize", Float) = 0.1
 	}
 	SubShader 
 	{
@@ -13,34 +13,44 @@
 	    	LOD 200
 	    
 			CGPROGRAM				
-
-				#pragma only_renderers d3d11
-				#pragma target 5.0
-				
 				#include "UnityCG.cginc"
-
-				#pragma vertex   VS_Main
-				#pragma geometry GS_Main
-				#pragma fragment FS_Main
-				#pragma hull HS_Main
-				#pragma domain DS_Main
+				
+				#pragma only_renderers d3d11
+				#pragma target 5.0				
+				
+				#pragma vertex VS
+				#pragma hull HS
+				#pragma domain DS				
+				#pragma geometry GS
+				#pragma fragment FS
 				
 				// **************************************************************
-				// Samplers
+				// IO Data structures												*
 				// **************************************************************
-				Texture2D _atomTexture;
-
-				// **************************************************************
-				// Data structures												*
-				// **************************************************************
-				
-				
-				struct GS_INPUT
+								
+				struct vs2hs
 				{
-					float4 pos : SV_POSITION;
+					float3 pos : CPOINT;
 				};
+				
+				struct hsConst
+				{
+				    float tessFactor[2] : SV_TessFactor;
+				};
+				
+				struct hs2ds
+				{
+				    float3 pos : CPOINT;
+				}; 
+				
+				struct ds2gs
+				{
+				    float4 pos : SV_Position;
+				    float4 color : COLOR;
+				    float size : PSIZE;
+				}; 
 
-				struct FS_INPUT
+				struct gs2fs
 				{
 					float4 pos : SV_POSITION;									
 					float3 normal : NORMAL;			
@@ -53,124 +63,78 @@
 				
 				float4 _Color;
 				float _SpriteSize;	
-				int _atomCount;		
-
-				// **************************************************************
-				// Vertex Program												*
-				// **************************************************************			
-
-				GS_INPUT VS_Main (appdata_base v)
+//				int _AtomCount;		
+				StructuredBuffer<float4> _AtomBuffer;
+				
+				// Vertex Program											
+				vs2hs VS(appdata_base base)
 				{
-				    GS_INPUT output;
-				    
-				    output.pos = mul (UNITY_MATRIX_MV, v.vertex);
+				    vs2hs output;
+				    float4 _newPos = base.vertex; //mul(UNITY_MATRIX_MV,base.vertex);
+				    output.pos = _newPos.xyz;
 				    
 				    return output;
 				}
 				
-				// **************************************************************
-				// Hull shader Program												*
-				// **************************************************************
-				struct ConstantOutputType
+				// Hull shader Program
+				hsConst HSConst()
 				{
-				    float edges[3] : SV_TessFactor;
-				    float inside[2] : SV_InsideTessFactor;
-				};
-				struct HS_ConstantOutput
-				{
-					// Tess factor for the FF HW block
-					float fTessFactor[3] : SV_TessFactor;
-					float fInsideTessFactor[2] : SV_InsideTessFactor;
-
-					// molecul position
-					float3 center : CENTER;
-				};
-				struct HS_ControlPointOutput
-				{
-					float3 f3Position : POS;
-					float3 f3Normal : NORMAL;
-					float2 f2TexCoord : TEXCOORD;
-				};
-				
-				HS_ConstantOutput HS_MainConstant( InputPatch<HS_Input, 3> I )
-				{
-					HS_ConstantOutput O = (HS_ConstantOutput)0;
-
-					// Simply output the tessellation factors from constant space 
-					// for use by the FF tessellation unit
-					O.fTessFactor[0] = 3000;
-					O.fTessFactor[1] = 1;
-					O.fTessFactor[2] = 1;
-					O.fInsideTessFactor[0] = 0;
-					O.fInsideTessFactor[1] = 0;
-
-						
-					// Assign Positions
-					float3 f3B003 = I[0].f4Position.xyz;
-					float3 f3B030 = I[1].f4Position.xyz;
-					float3 f3B300 = I[2].f4Position.xyz;
-					// And Normals
-					float3 f3N002 = I[0].f3Normal;
-					float3 f3N020 = I[1].f3Normal;
-					float3 f3N200 = I[2].f3Normal;
-
-					//retrieve ID molecule, position and orientation
-
-					return O;
-				}
-
-				[patchsize(3)]
-				[partitioning("fractional_odd")]
-				[outputtopology("line")]
-				[patchconstantfunc("HS_MainConstant")]
-				[outputcontrolpoints(1)]
-				HS_ControlPointOutput HS_Main( InputPatch<HS_Input, 3> I, uint uCPID : SV_OutputControlPointID )
-				{
-						HS_ControlPointOutput O = (HS_ControlPointOutput)0;
-						// Just pass through inputs = fast pass through mode triggered
-						
-						O.f3Position = I[uCPID].f4Position.xyz;
-						O.f3Normal = I[uCPID].f3Normal;
-						O.f2TexCoord = I[uCPID].f2TexCoord;
-
-						return O;
-				}
-				
-				================================================== =============================
-				// domain shader generating
-				//================================================== ================================================== =============================
-				struct DS_Output
-				{
-					float4 f4Position : SV_Position;
-				};
-				[domain("tri")]
-				DS_Output DS_PNTriangles( HS_ConstantOutput HSConstantData, const OutputPatch<HS_ControlPointOutput, 3> I, float2 params : SV_DomainLocation )
-				{
-					DS_Output O = (DS_Output)0;
-
-					// The barycentric coordinates
-					float fU = params.x;
-					float fV = params.y;
-
-					//get molecular position
-					float3 pos = I[0].f3Position;
+					hsConst output;
 					
-					float3 atomPos = tex2D(_atomTex, float4(v.texcoord.xy,0,0));
+					output.tessFactor[0] = 64.0f;
+					output.tessFactor[1] = 64.0f;
+					
+					return output;
+				}
 
+				[domain("isoline")]
+				[partitioning("integer")]
+				[outputtopology("point")]
+				[outputcontrolpoints(1)]				
+				[patchconstantfunc("HSConst")]
+				hs2ds HS (InputPatch<vs2hs, 1> input, uint id : SV_OutputControlPointID)
+				{
+				    hs2ds output;
+				    
+				    output.pos = input[id].pos;
+				    
+				    return output;
+				} 
+				
+				[domain("isoline")]
+				ds2gs DS(hsConst input, const OutputPatch<hs2ds, 1> op, float2 uv : SV_DomainLocation)
+				{
+					ds2gs output;				
+  					
+					//output.pos = mul (UNITY_MATRIX_MVP, float4(op[0].pos, 1) + float4(uv.x * 100, uv.y * 100, 0, 0)); //float4(op[0].pos, 1);
+					//output.color = float4(1-uv.x, 1-uv.y, 1-(uv.y * uv.x), 1);
+					//output.size = 10.0f;
+					//
+					//return output;
+					
+					//get molecular position
+					float3 pos = op[0].pos;
+
+					// atom position in the texture
+					int atomId = uv.x*64*64+uv.y*64;
+					atomId = min(atomId,3000);
+					float3 atomPos = pos + float4(0.1f*_AtomBuffer[atomId].xyz,1.0);// mul(UNITY_MATRIX_MV, float4(0.1f*_AtomBuffer[atomId].xyz,1.0));
 					// Transform position with projection matrix
-					O.f4Position = mul (UNITY_MATRIX_P, float4(f3Position.xyz,1.0));
-
-					return O;
+					output.pos = mul (UNITY_MATRIX_MV, float4(atomPos.xyz,1.0));		
+					//output.pos = float4(atomPos.xyz,1.0);		
+					return output;			
 				}
 				
-				// **************************************************************
-				// Geometry Program												*
-				// **************************************************************	
-				
+//				float4 FS (ds2gs input) : COLOR
+//				{
+//					return input.color;
+//				}
+							
+				// Geometry Program
 				[maxvertexcount(4)]
-				void GS_Main(point GS_INPUT input[1], inout TriangleStream<FS_INPUT> pointStream)
+				void GS(point ds2gs input[1], inout TriangleStream<gs2fs> pointStream)
 				{
-					FS_INPUT output;
+					gs2fs output;
 					
 					output.pos = input[0].pos + float4(  0.5,  0.5, 0, 0) * _SpriteSize;
 					output.pos = mul (UNITY_MATRIX_P, output.pos);
@@ -201,8 +165,9 @@
 				// Fragment Program												*
 				// **************************************************************
 
-				float4 FS_Main (FS_INPUT input) : COLOR
+				float4 FS (gs2fs input) : COLOR
 				{
+				
 					// Center the texture coordinate
 				    float3 normal = float3(input.tex0 * 2.0 - float2(1.0, 1.0), 0);
 
@@ -228,4 +193,3 @@
 	}
 	Fallback Off
 } 
-
