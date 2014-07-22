@@ -66,10 +66,10 @@ public class TimeGuiScript : MonoBehaviour
 			secondStyle = activeStyle;
 			time += Time.deltaTime;
 
-			microSeconds = UnityEngine.Random.Range(0, 99);
-			nanoSeconds  = UnityEngine.Random.Range(0, 99);
+			microSeconds = UnityEngine.Random.Range(0, 999);
+			nanoSeconds  = UnityEngine.Random.Range(0, 999);
 		}
-		else if (NewAgentSystem.bindingMotion)
+		else if (NewAgentSystem.bindingMotion && (Movement.bindingTimerSaved == 0.0f))
 		{
 			nanoSecondStyle = activeStyle;
 
@@ -93,21 +93,21 @@ public class TimeGuiScript : MonoBehaviour
 				microNanoAccumulate = 0.0f;
 			}
 
-			nanoSeconds  = UnityEngine.Random.Range(0, 99);
+			nanoSeconds  = UnityEngine.Random.Range(0, 999);
 		}
 
 		seconds     = (float)Math.Truncate(time);
-		miliSeconds = (float)Math.Truncate((time * 100) % 100 );
+		miliSeconds = (float)Math.Truncate((time * 1000) % 1000 );
 
 		strSeconds      = seconds      + "s";
 		strMiliSeconds  = miliSeconds  + "ms";
 		strMicroSeconds = microSeconds + "µs";
 		strNanoSeconds  = nanoSeconds  + "ns";
 
-		GUI.Box (new Rect (5,   Screen.height - 45,  185, 35), "",           backgroundStyle);
-		GUI.Box (new Rect (10,  Screen.height - 40,  40,  25), strSeconds,      secondStyle);
-		GUI.Box (new Rect (55,  Screen.height - 40,  40,  25), strMiliSeconds,  miliSecondStyle);
-		GUI.Box (new Rect (100, Screen.height - 40,  40,  25), strMicroSeconds, microSecondStyle);
-		GUI.Box (new Rect (145, Screen.height - 40,  40,  25), strNanoSeconds,  nanoSecondStyle);
+		GUI.Box (new Rect (5,   Screen.height - 45,  225, 35), "",           backgroundStyle);
+		GUI.Box (new Rect (10,  Screen.height - 40,  50,  25), strSeconds,      secondStyle);
+		GUI.Box (new Rect (65,  Screen.height - 40,  50,  25), strMiliSeconds,  miliSecondStyle);
+		GUI.Box (new Rect (120, Screen.height - 40,  50,  25), strMicroSeconds, microSecondStyle);
+		GUI.Box (new Rect (175, Screen.height - 40,  50,  25), strNanoSeconds,  nanoSecondStyle);
 	}
 }

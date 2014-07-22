@@ -48,7 +48,7 @@ public class TimeScaleTransparency : AgentConditionUnary
 
 	void LateUpdate ()
 	{
-		if (!NewAgentSystem.bindingMotion)
+		if (!NewAgentSystem.bindingMotion || ((Movement.bindingMonomerID != gameObject.GetInstanceID()) && (Movement.bindingTimerSaved != 0.0f)))
 		{
 			for (int i = 0; i < materials.Count; i++)
 			{

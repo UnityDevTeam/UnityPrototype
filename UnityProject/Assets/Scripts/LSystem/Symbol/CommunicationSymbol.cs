@@ -22,6 +22,8 @@ public class CommunicationSymbol : ISymbol
 	public GameObject result;
 	public bool       resultVar;
 
+	public float      uncertainity;
+
 	// filled by interpret
 	private Vector3    _turtlePosition    = Vector3.zero;
 	private Quaternion _turtleOrientation = Quaternion.identity;
@@ -46,6 +48,7 @@ public class CommunicationSymbol : ISymbol
 		name       = nName;
 		process    = nProcess;
 		processVar = true;
+		uncertainity = 0.0f;
 		
 		idCounter++;
 	}
@@ -67,6 +70,7 @@ public class CommunicationSymbol : ISymbol
 		result         = nResult;
 		resultVar      = false;
 		probability    = nProbability;
+		uncertainity = 0.0f;
 		
 		idCounter++;
 	}
@@ -88,6 +92,7 @@ public class CommunicationSymbol : ISymbol
 		result         = nSymbol.result;
 		resultVar      = nSymbol.resultVar;
 		probability    = nSymbol.probability;
+		uncertainity   = nSymbol.uncertainity;
 		
 		idCounter++;
 	}

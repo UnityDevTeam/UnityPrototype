@@ -28,18 +28,32 @@ fixed4 LightingAAA (SurfaceOutput s, fixed3 lightDir, fixed atten)
 	return c;
 }
 
-void surf (Input IN, inout SurfaceOutput o)
-{
-	half NdotView = 1 - dot(normalize(IN.viewDir), o.Normal);
-			
-	NdotView = pow(NdotView, _RimPower);
-			
-	half4 rimColor = _Color - half4(0.5, 0.5, 0.5, 0.5);
+//void surf (Input IN, inout SurfaceOutput o)
+//{
+//	half NdotView = 1 - dot(normalize(IN.viewDir), o.Normal);
+//			
+//	NdotView = pow(NdotView, _RimPower);
+//			
+//	half4 rimColor = _Color - half4(0.5, 0.5, 0.5, 0.5);
+//
+//	o.Albedo = _Color.rgb * ( 1 - NdotView ) + rimColor * NdotView;
+//	o.Alpha = 0.5f;
+//	//o.Alpha = _Color.a;
+//}
 
-	o.Albedo = _Color.rgb * ( 1 - NdotView ) + rimColor * NdotView;
-	o.Alpha = 0.5f;
-	//o.Alpha = _Color.a;
-}
+		void surf (Input IN, inout SurfaceOutput o)
+		{
+			half NdotView = 1 - dot(normalize(IN.viewDir), o.Normal);
+			
+			NdotView = pow(NdotView, _RimPower);
+			
+			half4 rimColor = _Color - half4(0.5, 0.5, 0.5, 0.5);
+
+			//o.Emission = NdotView * rimColor;
+			
+			o.Albedo = _Color * ( 1 - NdotView );
+			o.Alpha = _Color.a;
+		}
 ENDCG
 }
 

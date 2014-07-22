@@ -55,8 +55,9 @@ public class Rules : ScriptableObject
 		return result;
 	}
 	
-	public Rule Get (ISymbol module)
+	public Rule Get (ISymbol module, out float chance)
 	{
+		chance = 1.0f;
 		List<Rule> list = new List<Rule> ();
 		foreach (Rule row in _lookupTable)
 		{
@@ -69,10 +70,11 @@ public class Rules : ScriptableObject
 		
 		if (list.Count == 1)
 		{
+			chance = 2.0f;
 			return list [0];
 		}
 		
-		float chance      = UnityEngine.Random.value;
+		chance      = UnityEngine.Random.value;
 		float probability = 0.0f;
 		
 		foreach (Rule rule in list)

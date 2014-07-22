@@ -7,6 +7,8 @@ public class StructureSymbol : ISymbol
 {
 	public string structurePrefabName = "";
 	public GameObject structureObject = null;
+	public float uncertainity = 0.0f;
+	public float branchFail = 0.0f;
 
 	public void init(string nName, string nStructurePrefabName, GameObject nStructureObject)
 	{
@@ -14,6 +16,8 @@ public class StructureSymbol : ISymbol
 		name                = nName;
 		structurePrefabName = nStructurePrefabName;
 		structureObject     = nStructureObject;
+		uncertainity        = 0.0f;
+		branchFail          = 0.0f;
 		
 		idCounter++;
 	}
@@ -21,6 +25,8 @@ public class StructureSymbol : ISymbol
 	public void init(StructureSymbol nSymbol)
 	{
 		init (nSymbol.name, nSymbol.structurePrefabName, nSymbol.structureObject);
+		uncertainity = nSymbol.uncertainity;
+		branchFail   = nSymbol.branchFail;
 	}
 	
 	public static bool operator ==(StructureSymbol x, StructureSymbol y) 
