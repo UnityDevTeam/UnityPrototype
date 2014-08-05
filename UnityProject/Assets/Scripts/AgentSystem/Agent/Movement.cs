@@ -44,12 +44,11 @@ public class Movement : BehaviourUnary
 
 	void FixedUpdate()
 	{
-		NewAgentSystem.bindingMotion = true;
+		NewAgentSystem.bindingMotion = false;
 	}
 
 	void Update ()
 	{
-		/*
 		if (alreadyRun) return;
 
 		if (!rigidbody.isKinematic && NewAgentSystem.motionTimer < 0)
@@ -121,7 +120,7 @@ public class Movement : BehaviourUnary
 				}
 			}
 		}
-		*/
+
 
 		velocity = Vector3.Lerp (velocity, speed * randomNormalVector (), 0.25f);
 		velocity = velocity.normalized * speed;
@@ -183,8 +182,6 @@ public class Movement : BehaviourUnary
 					gameObject.renderer.material.color = colFrom;
 				}
 			}
-
-			print (bindingMonomerID + " : " + transform.position);
 		}
 	}
 	
