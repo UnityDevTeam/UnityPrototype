@@ -32,9 +32,13 @@ public class CommunicationManager : MonoBehaviour
 
 	void Update()
 	{
+		int childs = transform.childCount;
+		for (int i = 0; i < childs; i++)
+		{
+			DestroyImmediate(transform.GetChild(0).gameObject);
+		}
 
 		if (LSystem.timeDelta > 0.6f)
-		//if (AdvLSystem.timeDelta > 0.6f)
 		{
 			Movement.bindingMonomerID = 0;
 			Movement.queryId = -1;
@@ -46,7 +50,6 @@ public class CommunicationManager : MonoBehaviour
 			foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 			{
 				float prob = query.Value.probability.Evaluate(LSystem.timeDelta);
-				//float prob = query.Value.probability.Evaluate(AdvLSystem.timeDelta);
 
 				bool populate = prob == 1.0f;
 
@@ -58,10 +61,13 @@ public class CommunicationManager : MonoBehaviour
 						populate = true;
 				}
 
-				if(populate)
+				if(populate && LSystem.canAddItem)
 				{
-					//GameObject go = Instantiate(Resources.Load(queries[query.Key].type)) as GameObject;
-					queries[query.Key].result = new GameObject("temporary");
+					GameObject go = Resources.Load(queries[query.Key].type) as GameObject;
+					go = Instantiate(go, Vector3.zero, Quaternion.identity) as GameObject;
+					go.transform.parent = transform;
+					go.SetActive(false);
+					queries[query.Key].result = go;
 				}
 			}
 		}

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Agent/Behaviour/Movement")]
-public class Movement : BehaviourUnary
+public class Movement : MonoBehaviour
 {	
 	public static float speed = 5.0f;
 
@@ -173,14 +173,6 @@ public class Movement : BehaviourUnary
 				float randomZ = UnityEngine.Random.Range (-orientAlteration.z, orientAlteration.z);
 
 				transform.rotation = orientation * Quaternion.Euler (new Vector3(randomX, randomY, randomZ));
-			}
-			else
-			{
-				if(transform.parent.gameObject.name != "tubulin")
-				{
-					gameObject.renderer.material = basicWhite;
-					gameObject.renderer.material.color = colFrom;
-				}
 			}
 		}
 	}

@@ -18,13 +18,9 @@ public class LSystem : MonoBehaviour
 	int monomerCounting = 0;
 	public int monomerCountingStop = 100;
 	
-	Material basicWhite;
-	Material diffTransBlue;
-
-	Material diffTransLightBlue;
-	Material diffTransDarkBlue;
-	
 	public int exampleIndex = 1;
+
+	public static bool canAddItem;
 
 	void Awake()
 	{
@@ -83,47 +79,12 @@ public class LSystem : MonoBehaviour
 
 		state.Add(axiom);
 		activeSymbols.Add (0, (CommunicationSymbol)axiom);
-
-		// fuj
-		basicWhite     = (Material)Resources.Load("Materials/basicWhite", typeof(Material));
-		diffTransBlue = (Material)Resources.Load("Materials/diffTransBlue", typeof(Material));
-		
-		diffTransLightBlue = (Material)Resources.Load("Materials/basicLightBlue", typeof(Material));
-		diffTransDarkBlue  = (Material)Resources.Load("Materials/basicDarkBlue", typeof(Material));
 	}
 
 	GameObject addObject(ref Turtle turtle, string prefabName)
 	{
 		GameObject prefab = Resources.Load(prefabName) as GameObject;
 		GameObject mol = Instantiate(prefab, turtle.position, turtle.direction) as GameObject;
-
-		//fuj
-		if (exampleIndex == 3 && prefabName == "molecule")
-		{
-			mol.renderer.material = diffTransBlue;
-		}
-		else
-		{
-			if(prefabName == "adpRibose")
-			{
-				mol.renderer.material = basicWhite;
-			}
-
-			if(prefabName == "b-D-glucose")
-			{
-				mol.renderer.material.color = new Color(146f/255f, 176f/255f, 148f/255f);
-			}
-
-			if(prefabName == "alpha-tubulin")
-			{
-				mol.renderer.material = diffTransLightBlue;
-			}
-
-			if(prefabName == "beta-tubulin")
-			{
-				mol.renderer.material = diffTransDarkBlue;
-			}
-		}
 
 		// remove agents components
 		if (mol.GetComponent<RandomMove> ())
@@ -146,10 +107,6 @@ public class LSystem : MonoBehaviour
 
 		if (mol.GetComponent<Movement> ())
 			Destroy (mol.GetComponent<Movement> ());
-
-
-		// will be removed somehow
-		mol.rigidbody.isKinematic = true;
 
 		mol.transform.parent = transform;
 		mol.transform.localScale = NewAgentSystem.agentScale * mol.transform.localScale;
@@ -263,12 +220,6 @@ public class LSystem : MonoBehaviour
 			else if(symbol.GetType() == typeof(CommunicationSymbol))
 			{
 				((CommunicationSymbol)symbol).fillTurtleValues(current);
-
-				// fuj
-				if((((CommunicationSymbol)symbol).process == "G") || (((CommunicationSymbol)symbol).process == "BG")  || (((CommunicationSymbol)symbol).process == "grB")  || (((CommunicationSymbol)symbol).process == "grC"))
-				{
-					current = stack.Pop();
-				}
 			}
 		}
 	}
@@ -298,65 +249,18 @@ public class LSystem : MonoBehaviour
 			cql.Add(symbol.Key, symbol.Value);
 		}
 	}
-
-	private void TimeStep()
-	{
-		preEnviromentStep ();
-
-		Derive ();
-
-		Interpret ();
-
-		postEnviromentStep ();
-	}
 	
 	void Update()
 	{
-		TimeStep ();
-
-		//debugState ();
-	}
-
-	public void debugAxioms()
-	{
-		string output = "";
-		for (int i = 0; i < alphabet.Count; i++)
-		{
-			if(alphabet[i].GetType() == typeof(StructureSymbol))
-			{
-				output += "StructureSymbol(" + alphabet[i].name + ")";
-			}
-			else if(alphabet[i].GetType() == typeof(BindingSymbol))
-			{
-				output += "BindingSymbol(" + alphabet[i].name + ")";
-			}
-			else if(alphabet[i].GetType() == typeof(CommunicationSymbol))
-			{
-				output += "Communication(" + ((CommunicationSymbol)alphabet[i]).process + ")";
-			}
-			else if(alphabet[i].GetType() == typeof(ISymbol))
-			{
-				output += "ISymbol(" + alphabet[i].name + ")";
-			}
-		}
+		preEnviromentStep ();
 		
-		print (output);
-	}
+		Derive ();
+		
+		Interpret ();
+		
+		postEnviromentStep ();
 
-	void debugState()
-	{
-		string output = "";
-		for (int i = 0; i < state.Count; i++)
-		{
-			output += state[i].name;
-
-			if(state[i].GetType() == typeof(CommunicationSymbol))
-			{
-				output += "(" + ((CommunicationSymbol)state[i]).process + ")";
-			}
-		}
-
-		print (output);
+		canAddItem = (monomerCountingStop - monomerCounting) > 0;
 	}
 
 	public string[] alphabetArray()
