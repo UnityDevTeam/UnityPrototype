@@ -701,7 +701,7 @@ public class AdvLSystemEditor : Editor
 		EditorGUILayout.LabelField("Simulation properties", EditorStyles.boldLabel);
 		
 		lSystem.monomerCountingStop = EditorGUILayout.IntSlider ("Monomer count : ",   lSystem.monomerCountingStop, 0, 1000);
-		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, lSystem.examples);
+		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, GlobalLists.examples);
 		
 		AdvLSystem.timeDelta = EditorGUILayout.Slider ("Time delta: ", AdvLSystem.timeDelta, 0.02f, 3.0f);
 		

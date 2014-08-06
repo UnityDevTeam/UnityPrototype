@@ -701,7 +701,7 @@ public class LSystemEditor : Editor
 		EditorGUILayout.LabelField("Simulation properties", EditorStyles.boldLabel);
 
 		lSystem.monomerCountingStop = EditorGUILayout.IntSlider ("Monomer count : ",   lSystem.monomerCountingStop, 0, 1000);
-		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, lSystem.examples);
+		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, GlobalLists.examples);
 
 		LSystem.timeDelta = EditorGUILayout.Slider ("Time delta: ", LSystem.timeDelta, 0.02f, 3.0f);
 		

@@ -88,32 +88,4 @@ public class Rules : ScriptableObject
 		
 		return null;
 	}
-
-	/*
-	public bool CheckProbabilities ()
-	{
-		foreach (List<Rule> list in _lookupTable.Values)
-		{
-			// Shortcut for modules with only 1 rule
-			if (list.Count == 1 && list [0].probability != 1)
-			{
-				return false;
-			}
-			
-			float acc = 0;
-			foreach (Rule rule in list)
-			{
-				acc += rule.probability;
-			}
-			
-			if (acc != 1)
-			{
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	*/
-	
 }

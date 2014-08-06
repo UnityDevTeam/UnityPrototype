@@ -23,8 +23,7 @@ public class AdvLSystem : MonoBehaviour
 	
 	Material diffTransLightBlue;
 	Material diffTransDarkBlue;
-	
-	public string[] examples = {"none", "PARP", "Star", "Differ", "Cellulose", "Tubulin", "Showcase1", "Showcase2" };
+
 	public int exampleIndex = 1;
 	
 	void Awake()
