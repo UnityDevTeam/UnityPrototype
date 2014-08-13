@@ -5,12 +5,12 @@ using System.Collections.Generic;
 [AddComponentMenu("Agent/Behaviour/Movement")]
 public class Movement : MonoBehaviour
 {	
-	public static float speed = 5.0f;
+	//public static float speed = 5.0f;
 
 	public static int   bindingMonomerID = 0;
 	public static float bindingTimer     = 0.0f;
 
-	public NewAgentSystem agentSystemScr;
+	public AgentSystem agentSystemScr;
 
 	public float attractionRadius = 2.0f;
 	public float attractionPower  = 0.15f;
@@ -28,13 +28,10 @@ public class Movement : MonoBehaviour
 
 	public static int queryId = -1;
 
-	Material basicWhite;
-
 	bool alreadyRun = false;
 
 	void Start ()
 	{
-		basicWhite = (Material)Resources.Load("Materials/basicWhite", typeof(Material));
 		if (!gameObject.rigidbody)
 		{
 			gameObject.AddComponent<Rigidbody>();
@@ -44,18 +41,18 @@ public class Movement : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		NewAgentSystem.bindingMotion = false;
+		AgentSystem.bindingMotion = false;
 	}
 
 	void Update ()
 	{
 		if (alreadyRun) return;
 
-		if (!rigidbody.isKinematic && NewAgentSystem.motionTimer < 0)
+		if (!rigidbody.isKinematic && AgentSystem.motionTimer < 0 && LSystem.canAddItem)
 		{
 			Dictionary<int, CommunicationQuery> queries = agentSystemScr.agentQueries;
 			
-			if (queries != null && speed < 30)
+			if (queries != null && GlobalVariables.monomerSpeed < 30)
 			{
 				foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 				{
@@ -72,7 +69,7 @@ public class Movement : MonoBehaviour
 							}
 
 							bindingTimer -= Time.deltaTime;
-							NewAgentSystem.bindingMotion = true;
+							AgentSystem.bindingMotion = true;
 							transform.position = query.Value.position;
 
 							velocity = Vector3.zero;
@@ -81,7 +78,6 @@ public class Movement : MonoBehaviour
 							{
 								bindingMonomerID = 0;
 								queries[query.Key].result  = transform.gameObject;
-								NewAgentSystem.motionTimer = NewAgentSystem.motionTime;
 								bindingTimer = 0.0f;
 								bindingTimerSaved = 0.0f;
 								queryId = -1;
@@ -95,10 +91,10 @@ public class Movement : MonoBehaviour
 							bindingMonomerID = gameObject.GetInstanceID();
 							bindingTimer += Time.deltaTime;
 
-							velocity = -pos.normalized * speed * 0.25f;
+							velocity = -pos.normalized * GlobalVariables.monomerSpeed * 0.25f;
 							
 							rotation = Quaternion.Slerp(rotation, query.Value.orientation, (attractionRadius - pos.magnitude) / attractionRadius);
-							NewAgentSystem.bindingMotion = true;
+							AgentSystem.bindingMotion = true;
 							queryId = query.Key;
 
 							alreadyRun = true;
@@ -106,15 +102,15 @@ public class Movement : MonoBehaviour
 						}
 						else
 						{
-							velocity = Vector3.Lerp (velocity, speed * randomNormalVector (), 0.25f);
-							velocity = velocity.normalized * speed;
+							velocity = Vector3.Lerp (velocity, GlobalVariables.monomerSpeed * randomNormalVector (), 0.25f);
+							velocity = velocity.normalized * GlobalVariables.monomerSpeed;
 							rotation = Quaternion.Slerp (rotation, Quaternion.Euler (randomEulerAngles ()), 0.05f);
 						}
 					}
 					else
 					{
-						velocity = Vector3.Lerp (velocity, speed * randomNormalVector (), 0.25f);
-						velocity = velocity.normalized * speed;
+						velocity = Vector3.Lerp (velocity, GlobalVariables.monomerSpeed * randomNormalVector (), 0.25f);
+						velocity = velocity.normalized * GlobalVariables.monomerSpeed;
 						rotation = Quaternion.Slerp (rotation, Quaternion.Euler (randomEulerAngles ()), 0.05f);
 					}
 				}
@@ -122,8 +118,8 @@ public class Movement : MonoBehaviour
 		}
 
 
-		velocity = Vector3.Lerp (velocity, speed * randomNormalVector (), 0.25f);
-		velocity = velocity.normalized * speed;
+		velocity = Vector3.Lerp (velocity, GlobalVariables.monomerSpeed * randomNormalVector (), 0.25f);
+		velocity = velocity.normalized * GlobalVariables.monomerSpeed;
 		rotation = Quaternion.Slerp (rotation, Quaternion.Euler (randomEulerAngles ()), 0.05f);
 
 		alreadyRun = true;
@@ -135,7 +131,7 @@ public class Movement : MonoBehaviour
 
 		if (!rigidbody.isKinematic)
 		{
-			if (NewAgentSystem.bindingMotion)
+			if (AgentSystem.bindingMotion)
 			{
 				if(((bindingMonomerID != gameObject.GetInstanceID())) && (bindingTimerSaved != 0.0f))
 				{
@@ -154,6 +150,13 @@ public class Movement : MonoBehaviour
 				{
 					transform.position = randomPosition ();
 					transform.rotation = Quaternion.Euler (randomEulerAngles ());
+				}
+				else
+				{
+					bindingMonomerID = 0;
+					bindingTimer = 0.0f;
+					bindingTimerSaved = 0.0f;
+					queryId = -1;
 				}
 			}
 		}
@@ -186,8 +189,8 @@ public class Movement : MonoBehaviour
 	
 	private Vector3 randomPosition()
 	{
-		Vector3 dim = NewAgentSystem.systemSize;
-		Vector3 min = NewAgentSystem.minBox;
+		Vector3 dim = AgentSystem.systemSize;
+		Vector3 min = AgentSystem.minBox;
 		return new Vector3 ( Random.value * dim.x, Random.value * dim.y, Random.value * dim.z ) + min;
 	}
 	

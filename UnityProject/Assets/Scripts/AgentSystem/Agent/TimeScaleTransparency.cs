@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Agent/Condition/TimeScaleTransparency")]
-public class TimeScaleTransparency : AgentConditionUnary
+public class TimeScaleTransparency : MonoBehaviour
 {
-	private float speed = Movement.speed;
+	private float speed = GlobalVariables.monomerSpeed;//Movement.speed;
 	private List<Material> materials = new List<Material> ();
 
 	void Start ()
@@ -26,29 +26,29 @@ public class TimeScaleTransparency : AgentConditionUnary
 
 	void Update ()
 	{
-		if (speed != Movement.speed)
+		if (speed != GlobalVariables.monomerSpeed)
 		{
 			for(int i = 0; i < materials.Count; i++)
 			{
 				Color col = materials[i].color;
 				
 				float transparency = 1.0f;
-				if (Movement.speed > 25.0f)
+				if (GlobalVariables.monomerSpeed > 25.0f)
 				{
-					transparency = (30.0f - Movement.speed) / 5.0f; 
+					transparency = (30.0f - GlobalVariables.monomerSpeed) / 5.0f; 
 				}
 				col.a = transparency;
 				
 				materials[i].color = col;
 				
-				speed = Movement.speed;
+				speed = GlobalVariables.monomerSpeed;
 			}
 		}
 	}
 
 	void LateUpdate ()
 	{
-		if (!NewAgentSystem.bindingMotion || ((Movement.bindingMonomerID != gameObject.GetInstanceID()) && (Movement.bindingTimerSaved != 0.0f)))
+		if (!AgentSystem.bindingMotion || ((Movement.bindingMonomerID != gameObject.GetInstanceID()) && (Movement.bindingTimerSaved != 0.0f)))
 		{
 			for (int i = 0; i < materials.Count; i++)
 			{

@@ -176,7 +176,7 @@ public class AdvLSystemEditor : Editor
 		
 		if (addNewLetter)
 		{
-			symbolTypeindex = EditorGUILayout.Popup (symbolTypeindex, GlobalLists.symbolTypes);
+			symbolTypeindex = EditorGUILayout.Popup (symbolTypeindex, GlobalVariables.symbolTypes);
 			
 			switch(symbolTypeindex)
 			{
@@ -186,7 +186,7 @@ public class AdvLSystemEditor : Editor
 				break;
 			case 1:
 				symbolName     = EditorGUILayout.TextField("Symbol name : ", symbolName);
-				structureIndex = EditorGUILayout.Popup ("Structure type : ", structureIndex, GlobalLists.monomerTypes);
+				structureIndex = EditorGUILayout.Popup ("Structure type : ", structureIndex, GlobalVariables.monomerTypes);
 				
 				break;
 			case 2:
@@ -201,7 +201,7 @@ public class AdvLSystemEditor : Editor
 				communicationIdentifier       = EditorGUILayout.TextField("Process identifier : ", communicationIdentifier);
 				communicationPosition         = EditorGUILayout.Vector3Field("Process position : ", communicationPosition);
 				communicationOrientation      = EditorGUILayout.Vector3Field("Process orientation : ", communicationOrientation);
-				communicationResultTypeIndex  = EditorGUILayout.Popup("Process result type : ", communicationResultTypeIndex, GlobalLists.monomerTypes);
+				communicationResultTypeIndex  = EditorGUILayout.Popup("Process result type : ", communicationResultTypeIndex, GlobalVariables.monomerTypes);
 				communicationProbability      = EditorGUILayout.CurveField("Process probability function : ", communicationProbability);
 				
 				AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f);
@@ -222,7 +222,7 @@ public class AdvLSystemEditor : Editor
 					break;
 				case 1:
 					newSymbol = ScriptableObject.CreateInstance<StructureSymbol>();
-					((StructureSymbol)newSymbol).init(symbolName, GlobalLists.monomerTypes[structureIndex], null);
+					((StructureSymbol)newSymbol).init(symbolName, GlobalVariables.monomerTypes[structureIndex], null);
 					break;
 				case 2:
 					newSymbol = ScriptableObject.CreateInstance<BindingSymbol> ();
@@ -230,7 +230,7 @@ public class AdvLSystemEditor : Editor
 					break;
 				case 3:
 					newSymbol = ScriptableObject.CreateInstance<CommunicationSymbol> ();
-					((CommunicationSymbol)newSymbol).init(symbolName, communicationIdentifier, communicationPosition, Quaternion.Euler(communicationOrientation), 0, GlobalLists.monomerTypes[communicationResultTypeIndex], null, communicationProbability);
+					((CommunicationSymbol)newSymbol).init(symbolName, communicationIdentifier, communicationPosition, Quaternion.Euler(communicationOrientation), 0, GlobalVariables.monomerTypes[communicationResultTypeIndex], null, communicationProbability);
 					break;
 				case 4:
 					newSymbol = ScriptableObject.CreateInstance<EndSymbol> ();
@@ -701,13 +701,13 @@ public class AdvLSystemEditor : Editor
 		EditorGUILayout.LabelField("Simulation properties", EditorStyles.boldLabel);
 		
 		lSystem.monomerCountingStop = EditorGUILayout.IntSlider ("Monomer count : ",   lSystem.monomerCountingStop, 0, 1000);
-		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, GlobalLists.examples);
+		lSystem.exampleIndex        = EditorGUILayout.Popup ("Polymer Example : ", lSystem.exampleIndex, GlobalVariables.examples);
 		
-		AdvLSystem.timeDelta = EditorGUILayout.Slider ("Time delta: ", AdvLSystem.timeDelta, 0.02f, 3.0f);
+		GlobalVariables.timeDelta = EditorGUILayout.Slider ("Time delta: ", GlobalVariables.timeDelta, 0.02f, 3.0f);
 		
-		Movement.speed = AdvLSystem.timeDelta * 50.0f;
-		if (Movement.speed > 30.0f) Movement.speed = 30.0f;
+		GlobalVariables.monomerSpeed = GlobalVariables.timeDelta * 50.0f;
+		if (GlobalVariables.monomerSpeed > 30.0f) GlobalVariables.monomerSpeed = 30.0f;
 		
-		EditorGUILayout.LabelField("Speed: " + Movement.speed);
+		EditorGUILayout.LabelField("Speed: " + GlobalVariables.monomerSpeed);
 	}
 }

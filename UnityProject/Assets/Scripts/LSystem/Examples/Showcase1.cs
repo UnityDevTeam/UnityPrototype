@@ -161,7 +161,7 @@ public class Showcase1
 		R.init (RP, RS, RC, 0.15f);
 		rules.Add (R);
 		
-		// C(B, r) : r != 0 -> bsC(BG, 0) : 100%
+		// C(B, r) : r != 0 -> bsC(BG, 0)e : 100%
 		RP = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		RP.init (mainBranch);
 		
@@ -177,6 +177,10 @@ public class Showcase1
 		
 		RSS = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		((CommunicationSymbol)RSS).init (branchGrow);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<EndSymbol> ();
+		((EndSymbol)RSS).init (end);
 		RS.Add (RSS);
 		
 		RC = ScriptableObject.CreateInstance<CommunicationCondition> ();
@@ -244,7 +248,7 @@ public class Showcase1
 		R.init (RP, RS, RC, 0.05f);
 		rules.Add (R);
 		
-		// C(SB1, r) : r != 0 -> s1cC(SG1, 0) : 100%
+		// C(SB1, r) : r != 0 -> s1cC(SG1, 0)e : 100%
 		RP = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		RP.init (star1Branch);
 		
@@ -260,6 +264,10 @@ public class Showcase1
 		
 		RSS = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		((CommunicationSymbol)RSS).init (star1Grow);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<EndSymbol> ();
+		((EndSymbol)RSS).init (end);
 		RS.Add (RSS);
 		
 		RC = ScriptableObject.CreateInstance<CommunicationCondition> ();
@@ -294,7 +302,7 @@ public class Showcase1
 		R.init (RP, RS, RC, 1.0f);
 		rules.Add (R);
 		
-		// C(SB2, r) : r != 0 -> s2cC(SG2, 0) : 100%
+		// C(SB2, r) : r != 0 -> s2cC(SG2, 0)e : 100%
 		RP = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		RP.init (star2Branch);
 		
@@ -310,6 +318,10 @@ public class Showcase1
 		
 		RSS = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		((CommunicationSymbol)RSS).init (star2Grow);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<EndSymbol> ();
+		((EndSymbol)RSS).init (end);
 		RS.Add (RSS);
 		
 		RC = ScriptableObject.CreateInstance<CommunicationCondition> ();
@@ -344,7 +356,7 @@ public class Showcase1
 		R.init (RP, RS, RC, 1.0f);
 		rules.Add (R);
 		
-		// C(SB3, r) : r != 0 -> s3cC(SG3, 0) : 100%
+		// C(SB3, r) : r != 0 -> s3cC(SG3, 0)e : 100%
 		
 		RP = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		RP.init (star3Branch);
@@ -361,6 +373,10 @@ public class Showcase1
 		
 		RSS = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		((CommunicationSymbol)RSS).init (star3Grow);
+		RS.Add (RSS);
+
+		RSS = ScriptableObject.CreateInstance<EndSymbol> ();
+		((EndSymbol)RSS).init (end);
 		RS.Add (RSS);
 		
 		RC = ScriptableObject.CreateInstance<CommunicationCondition> ();

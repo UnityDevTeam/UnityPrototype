@@ -61,7 +61,7 @@ public class TimeGuiScript : MonoBehaviour
 		GUIStyle microSecondStyle = inactiveStyle;
 		GUIStyle nanoSecondStyle  = inactiveStyle;
 
-		if (Movement.speed >= 30)
+		if (GlobalVariables.monomerSpeed >= 30)//(Movement.speed >= 30)
 		{
 			secondStyle = activeStyle;
 			time += Time.deltaTime;
@@ -69,7 +69,7 @@ public class TimeGuiScript : MonoBehaviour
 			microSeconds = UnityEngine.Random.Range(0, 999);
 			nanoSeconds  = UnityEngine.Random.Range(0, 999);
 		}
-		else if (NewAgentSystem.bindingMotion && (Movement.bindingTimerSaved == 0.0f))
+		else if (AgentSystem.bindingMotion && (Movement.bindingTimerSaved == 0.0f))
 		{
 			nanoSecondStyle = activeStyle;
 

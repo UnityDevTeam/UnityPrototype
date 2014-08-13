@@ -42,7 +42,7 @@ public class PARP
 		
 		CommunicationSymbol branchGrow = ScriptableObject.CreateInstance<CommunicationSymbol> ();
 		branchGrow.init("C", "BG", new Vector3(-0.957f, 0.4984f, 1.1267f), Quaternion.Euler(new Vector3(0, -61.7598f, 0)), 0.0f, "NAD", null, AnimationCurve.Linear(0.0f, 0.0f, 5.0f, 1.0f));
-		alphabet.Add (mainGrow);
+		alphabet.Add (branchGrow);
 
 		// rules
 		CommunicationSymbol    RP  = null;

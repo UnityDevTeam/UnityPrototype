@@ -38,18 +38,19 @@ public class CommunicationManager : MonoBehaviour
 			DestroyImmediate(transform.GetChild(0).gameObject);
 		}
 
-		if (LSystem.timeDelta > 0.6f)
+		if (GlobalVariables.timeDelta > 0.6f)
 		{
 			Movement.bindingMonomerID = 0;
 			Movement.queryId = -1;
 			Movement.bindingTimerSaved = 0.0f;
 			Movement.bindingTimer = 0.0f;
-			NewAgentSystem.motionTimer = 0.0f;
-			NewAgentSystem.motionTime = 0.0f;
+
+			AgentSystem.motionTimer = 0.0f;
+			AgentSystem.motionTime = 0.0f;
 
 			foreach (KeyValuePair<int, CommunicationQuery> query in queries)
 			{
-				float prob = query.Value.probability.Evaluate(LSystem.timeDelta);
+				float prob = query.Value.probability.Evaluate(GlobalVariables.timeDelta);
 
 				bool populate = prob == 1.0f;
 
